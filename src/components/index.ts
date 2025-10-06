@@ -1,0 +1,9 @@
+export { default as Header } from './home/Header';
+export { default as HeroSection } from './home/HeroSection';
+export { default as BackgroundOverlay } from './home/BackgroundOverlay';
+export { default as LandingPageLayout } from './home/LandingPageLayout';
+export { default as BrandsMarquee } from './home/BrandsMarquee';
+export { default as ServicesSection } from './home/ServicesSection';
+export { default as AchievementsSection } from './home/AchievementsSection';
+export { default as LocationsSection } from './home/LocationsSection';
+export { default as FooterSection } from './home/FooterSection';

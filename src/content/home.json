@@ -1,0 +1,136 @@
+{
+  "header": {
+    "logo": "/logo.png",
+    "nav": ["Home", "About", "Contact", "FAQ", "Service"],
+    "loginText": "LOG IN"
+  },
+  "hero": {
+    "titleLines": [
+      "Hello, Welcome to",
+      "Customer Care ParagonCorp"
+    ],
+    "taglines": [
+      "Clear Answers",
+      "Caring Service",
+      "Continuous Support"
+    ]
+  },
+  "brands": {
+    "title": "Our Brands",
+    "description": "Discover the diverse portfolio of brands under the ParagonCorp family, each delivering excellence in their respective domains.",
+    "items": [
+      { "name": "Wardah", "logo": "/brands/wardah.png", "alt": "Wardah", "link": "https://www.wardahbeauty.com/" },
+      { "name": "Kahf", "logo": "/brands/kahf.png", "alt": "Kahf", "link": "https://www.kahfeveryday.com/" },
+      { "name": "Emina", "logo": "/brands/emina.png", "alt": "Emina Born to be Loved", "link": "https://www.eminacosmetics.com/" },
+      { "name": "OMG", "logo": "/brands/omg.png", "alt": "OMG", "link": "https://www.itsomgbeauty.com/" },
+      { "name": "Make Over", "logo": "/brands/makeover.png", "alt": "Make Over", "link": "https://www.makeoverforall.com/" },
+      { "name": "Tavi", "logo": "/brands/tavi.png", "alt": "Tavi", "link": "https://www.tavi-world.com/" },
+      { "name": "Crystallure", "logo": "/brands/crystallure.png", "alt": "Crystallure", "link": "https://www.crystallurebeauty.com/" },
+      { "name": "Instaperfect", "logo": "/brands/instaperfect.png", "alt": "Instaperfect", "link": "https://shop.myinstaperfect.com/" },
+      { "name": "Putri", "logo": "/brands/putri.png", "alt": "Putri", "link": "" },
+      { "name": "Beyondly", "logo": "/brands/beyondly.png", "alt": "Beyondly", "link": "" },
+      { "name": "Wonderly", "logo": "/brands/wonderly.png", "alt": "Wonderly", "link": "https://wonderlyskin.com/" },
+      { "name": "Earth Love Life", "logo": "/brands/earth.png", "alt": "Earth Love Life", "link": "https://www.earthlovelife.com/" },
+      { "name": "Biodef", "logo": "/brands/biodef.png", "alt": "Biodef", "link": "https://biodef.co.id/" },
+      { "name": "Labore", "logo": "/brands/labore.png", "alt": "Labore", "link": "https://www.laboreskinexpert.com/" }
+    ]
+  },
+  "services": {
+    "title": "Customer Care ParagonCorp Services",
+    "subtitle": "Recognition and milestones that reflect our commitment to excellence and continuous improvement in customer service.",
+    "categoriesTitle": "Service Categories",
+    "items": [
+      {
+        "title": "Live Chat",
+        "description": "Real-time chat support with AI-powered assistance and seamless agent handoffs when needed.",
+        "features": ["AI-powered assistance", "Seamless handoffs", "Real-time support"]
+      },
+      {
+        "title": "Social Media",
+        "description": "Active social media monitoring and support across all major platforms for public engagement when needed.",
+        "features": ["Multi-platform support (WhatsApp, Instagram, TikTok, Facebook)", "Active monitoring", "Public engagement"]
+      },
+      {
+        "title": "Call Center",
+        "description": "Multilingual phone support with expert agents ready to assist with any inquiry or concern.",
+        "features": ["Multilingual agents", "Expert assistance"]
+      },
+      {
+        "title": "Email Support",
+        "description": "Comprehensive email support with detailed responses and follow-up tracking for complex inquiries.",
+        "features": ["Detailed responses", "Follow-up tracking", "Complex inquiry handling"]
+      },
+      {
+        "title": "Marketplace Support",
+        "description": "Support for marketplace platforms (Shopee, Tokopedia, Lazada, Tiktok), with dedicated agents ready to assist with any inquiry or concern.",
+        "features": ["Shopee", "Tokopedia", "Lazada", "Tiktok"]
+      },
+      {
+        "title": "Technical Support",
+        "description": "Specialized technical assistance for product issues, troubleshooting, and advanced problem resolution.",
+        "features": ["Specialized assistance", "Troubleshooting", "Problem resolution"]
+      }
+    ]
+  },
+  "achievements": {
+    "title": "Customer Care Achievements",
+    "subtitle": "Celebrating our commitment to excellence and continuous innovation in customer service",
+    "items": [
+      {
+        "year": "2023",
+        "title": "Indonesia Customer Service Champions 2023",
+        "image": "/achievements/champion-2023.svg",
+        "alt": "Indonesia Customer Service Champions 2023 Badge",
+        "description": "Recognized as the leading customer service provider in Indonesia"
+      },
+      {
+        "year": "2025",
+        "title": "Best AI on CX Awards Conversa 5.0 held by Qiscus",
+        "image": "/achievements/cx-awards-2025.svg",
+        "alt": "CX Awards Conversa 5.0",
+        "description": "Awarded for excellence in AI-powered customer experience solutions"
+      }
+    ]
+  },
+  "locations": {
+    "title": "Locations",
+    "subtitle": "Visit our offices across different regions to experience our world-class customer service in person.",
+    "items": [
+      {
+        "title": "Head Office (Indonesia)",
+        "address": "Jalan Swadarma Raya Kampung Baru IV No. 1. Jakarta - 12250 Indonesia.",
+        "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15865.12855035889!2d106.75814399399886!3d-6.226483038327802!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0d1bdcc141b%3A0xd95a9784f83c0065!2sPT%20Paragon%20Technology%20and%20Innovation%20-%20Paragon%203!5e0!3m2!1sid!2sid!4v1759731310682!5m2!1sid!2sid"
+      },
+      {
+        "title": "Head Office (Malaysia)",
+        "address": "Pharmacore Technology and Innovation, Sdn Bhd (DC BSS), Malaysia",
+        "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d676330.3112170785!2d101.10439046710425!3d2.782237288307914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc55f93da8b2a1%3A0xc575b6fe09f0e270!2sPharmacore%20Technology%20and%20Innovation%2C%20Sdn%20Bhd%20(DC%20BSS)!5e0!3m2!1sid!2sid!4v1759731452767!5m2!1sid!2sid"
+      }
+    ]
+  },
+  "footer": {
+    "company": {
+      "logo": "/logoCC.png",
+      "tagline": "Excellence in Service",
+      "description": "Delivering exceptional customer experiences through innovative solutions and dedicated support."
+    },
+    "social": [
+      { "platform": "instagram", "url": "https://www.instagram.com/customercareparagon?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" },
+      { "platform": "tiktok", "url": "https://www.tiktok.com/@customercareparagoncorp?is_from_webapp=1&sender_device=pc" }
+    ],
+    "contact": {
+      "phone": "+62 877 0112 3000",
+      "email": "customercare@paracorpgroup.com",
+      "addressLines": [
+        "Jalan Swadarma Raya Kampung Baru IV No. 1",
+        "Jakarta - 12250 Indonesia"
+      ]
+    },
+    "links": {
+      "quick": ["Home", "About Us", "Services", "Contact"],
+      "support": ["FAQ", "Help Center", "Live Chat", "Report Issue"],
+      "legal": ["Privacy Policy", "Terms of Service", "Cookie Policy"]
+    },
+    "copyright": "© 2025 Customer Care Division. All rights reserved."
+  }
+}

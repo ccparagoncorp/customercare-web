@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer gold border -->
+  <circle cx="60" cy="60" r="58" stroke="#FFD700" stroke-width="4" fill="none"/>
+  
+  <!-- Red background -->
+  <circle cx="60" cy="60" r="54" fill="#DC2626"/>
+  
+  <!-- Gold crown at top -->
+  <g transform="translate(60, 25)">
+    <path d="M-15,-5 L-10,-15 L-5,-5 L0,-15 L5,-5 L10,-15 L15,-5 L12,8 L-12,8 Z" fill="#FFD700"/>
+    <circle cx="0" cy="-12" r="2" fill="#FFD700"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="60" y="45" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">INDONESIA</text>
+  <text x="60" y="55" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">CUSTOMER</text>
+  <text x="60" y="65" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">SERVICE</text>
+  <text x="60" y="75" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">CHAMPION</text>
+  <text x="60" y="85" text-anchor="middle" fill="#FFD700" font-family="Arial, sans-serif" font-size="10" font-weight="bold">2023</text>
+</svg>
