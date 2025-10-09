@@ -1,0 +1,138 @@
+{
+  "hero": {
+    "titleLines": [
+      "About Our",
+      "Division"
+    ],
+    "highlightedText": "Customer Care",
+    "subtitle": "We are a world-class customer care organization dedicated to delivering exceptional experiences through innovation, expertise, and unwavering commitment to excellence.",
+    "backgroundImage": "/about-hero-bg.jpg"
+  },
+  "mission": {
+    "title": "Mission",
+    "items": [
+      {
+        "title": "Mengembangkan Paragonian",
+        "description": "Mengembangkan potensi dan kemampuan SDM Paragon melalui program pelatihan dan pengembangan berkelanjutan.",
+        "icon": "people",
+        "color": "blue"
+      },
+      {
+        "title": "Menjaga Bumi",
+        "description": "Berkontribusi dalam pelestarian lingkungan melalui inovasi produk dan praktik bisnis yang ramah lingkungan.",
+        "icon": "earth",
+        "color": "green"
+      },
+      {
+        "title": "Menciptakan Kebaikan untuk Pelanggan",
+        "description": "Memberikan layanan terbaik dan produk berkualitas tinggi untuk kepuasan dan kesejahteraan pelanggan.",
+        "icon": "heart",
+        "color": "red"
+      },
+      {
+        "title": "Mendukung Pendidikan dan Kesehatan Bangsa",
+        "description": "Berkontribusi dalam meningkatkan kualitas pendidikan dan kesehatan masyarakat Indonesia.",
+        "icon": "education",
+        "color": "purple"
+      },
+      {
+        "title": "Perbaikan terus menerus",
+        "description": "Melakukan inovasi dan perbaikan berkelanjutan dalam semua aspek operasional dan layanan.",
+        "icon": "gear",
+        "color": "orange"
+      },
+      {
+        "title": "Mengembangkan Bisnis",
+        "description": "Mengembangkan bisnis yang berkelanjutan dan memberikan nilai tambah bagi semua stakeholder.",
+        "icon": "chart",
+        "color": "teal"
+      }
+    ]
+  },
+  "vision": {
+    "title": "Vision",
+    "description": "Menjadi perusahaan yang menjalankan tata kelola perusahaan terbaik, melakukan perbaikan terus menerus, menghasilkan produk berkualitas tinggi, serta memberikan manfaat bagi Paragonian, mitra bisnis, dan masyarakat."
+  },
+  "companyInfo": {
+    "title": "About Customer Care Paragon Corp",
+    "description": "Customer Care Paragon Corp adalah divisi yang berdedikasi untuk memberikan layanan pelanggan terbaik dengan standar internasional. Kami berkomitmen untuk memberikan pengalaman yang luar biasa kepada setiap pelanggan melalui inovasi, keahlian, dan dedikasi yang tak tergoyahkan terhadap keunggulan.",
+    "stats": [
+      {
+        "number": "500+",
+        "label": "Happy Customers"
+      },
+      {
+        "number": "24/7",
+        "label": "Customer Support"
+      },
+      {
+        "number": "99.9%",
+        "label": "Uptime"
+      },
+      {
+        "number": "5+",
+        "label": "Years Experience"
+      }
+    ]
+  },
+  "customerValues": {
+    "title": "Our CUSTOMER Values",
+    "acronym": "CUSTOMER",
+    "acronymSubtitle": "Excellence Through Every Interaction",
+    "subtitle": "We are committed to delivering exceptional experiences that go beyond expectations, building lasting relationships through genuine care and professional excellence.",
+    "values": [
+      {
+        "letter": "C",
+        "word": "CARE",
+        "description": "We demonstrate genuine empathy and compassion in every customer interaction, understanding their needs and providing solutions with heartfelt dedication."
+      },
+      {
+        "letter": "U",
+        "word": "USEFUL",
+        "description": "We deliver practical, valuable solutions that make a real difference in our customers' lives, ensuring every service adds meaningful value."
+      },
+      {
+        "letter": "S",
+        "word": "SERVE",
+        "description": "We provide exceptional service with unwavering commitment, going above and beyond to exceed expectations and create memorable experiences."
+      },
+      {
+        "letter": "T",
+        "word": "THANKFUL",
+        "description": "We approach every interaction with gratitude and appreciation, recognizing that our customers' trust is our greatest privilege and motivation."
+      },
+      {
+        "letter": "O",
+        "word": "OPTIMISTIC",
+        "description": "We maintain a positive, solution-focused mindset that transforms challenges into opportunities for growth and improvement."
+      },
+      {
+        "letter": "M",
+        "word": "MEMORY",
+        "description": "We remember and personalize every interaction, building deep understanding of our customers to provide tailored, meaningful experiences."
+      },
+      {
+        "letter": "E",
+        "word": "ENERGETIC",
+        "description": "We bring enthusiasm and passion to every conversation, creating an engaging atmosphere that makes customers feel valued and excited."
+      },
+      {
+        "letter": "R",
+        "word": "RESPECTFUL",
+        "description": "We honor each customer's dignity and individuality, treating everyone with the highest level of respect and professionalism."
+      }
+    ]
+  },
+  "leaders": {
+    "title": "Our Leadership Team",
+    "subtitle": "Meet the visionary leaders who guide our commitment to excellence in customer care",
+    "members": [
+      {
+        "name": "Nurul Rizka Hadiningsih",
+        "position": "Customer Care Deputy Head",
+        "image": "/MbaUnye.jpg",
+        "description": "Visionary leader with 15+ years in customer service excellence"
+      }
+    ]
+  }
+}

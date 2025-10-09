@@ -1,18 +1,13 @@
 {
-  "header": {
-    "logo": "/logo.png",
-    "nav": ["Home", "About", "Contact", "FAQ", "Service"],
-    "loginText": "LOG IN"
-  },
   "hero": {
     "titleLines": [
       "Hello, Welcome to",
       "Customer Care ParagonCorp"
     ],
     "taglines": [
-      "Clear Answers",
-      "Caring Service",
-      "Continuous Support"
+      "Responsive",
+      "Solutive",
+      "Persuasive"
     ]
   },
   "brands": {
@@ -77,18 +72,18 @@
     "subtitle": "Celebrating our commitment to excellence and continuous innovation in customer service",
     "items": [
       {
-        "year": "2023",
-        "title": "Indonesia Customer Service Champions 2023",
-        "image": "/achievements/champion-2023.svg",
-        "alt": "Indonesia Customer Service Champions 2023 Badge",
-        "description": "Recognized as the leading customer service provider in Indonesia"
-      },
-      {
         "year": "2025",
         "title": "Best AI on CX Awards Conversa 5.0 held by Qiscus",
-        "image": "/achievements/cx-awards-2025.svg",
+        "image": "/achievements/cx-awards-2025.jpg",
         "alt": "CX Awards Conversa 5.0",
         "description": "Awarded for excellence in AI-powered customer experience solutions"
+      },
+      {
+        "year": "2023",
+        "title": "Indonesia Customer Service Champions 2023",
+        "image": "/achievements/champion-2023.png",
+        "alt": "Indonesia Customer Service Champions 2023 Badge",
+        "description": "Recognized as the leading customer service provider in Indonesia"
       }
     ]
   },
@@ -107,30 +102,5 @@
         "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d676330.3112170785!2d101.10439046710425!3d2.782237288307914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc55f93da8b2a1%3A0xc575b6fe09f0e270!2sPharmacore%20Technology%20and%20Innovation%2C%20Sdn%20Bhd%20(DC%20BSS)!5e0!3m2!1sid!2sid!4v1759731452767!5m2!1sid!2sid"
       }
     ]
-  },
-  "footer": {
-    "company": {
-      "logo": "/logoCC.png",
-      "tagline": "Excellence in Service",
-      "description": "Delivering exceptional customer experiences through innovative solutions and dedicated support."
-    },
-    "social": [
-      { "platform": "instagram", "url": "https://www.instagram.com/customercareparagon?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" },
-      { "platform": "tiktok", "url": "https://www.tiktok.com/@customercareparagoncorp?is_from_webapp=1&sender_device=pc" }
-    ],
-    "contact": {
-      "phone": "+62 877 0112 3000",
-      "email": "customercare@paracorpgroup.com",
-      "addressLines": [
-        "Jalan Swadarma Raya Kampung Baru IV No. 1",
-        "Jakarta - 12250 Indonesia"
-      ]
-    },
-    "links": {
-      "quick": ["Home", "About Us", "Services", "Contact"],
-      "support": ["FAQ", "Help Center", "Live Chat", "Report Issue"],
-      "legal": ["Privacy Policy", "Terms of Service", "Cookie Policy"]
-    },
-    "copyright": "© 2025 Customer Care Division. All rights reserved."
   }
 }

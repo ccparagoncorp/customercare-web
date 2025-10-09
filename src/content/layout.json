@@ -1,0 +1,36 @@
+{
+  "header": {
+    "logo": "/logo.png",
+    "nav": ["Home", "About", "FAQ", "Contact"],
+    "loginText": "LOG IN"
+  },
+  "footer": {
+    "company": {
+      "logo": "/logoCC.png",
+      "tagline": "Excellence in Customer Care",
+      "description": "Dedicated to providing world-class customer service through innovation and expertise."
+    },
+    "social": [
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com/paragoncorp"
+      },
+      {
+        "name": "TikTok", 
+        "url": "https://tiktok.com/@paragoncorp"
+      }
+    ],
+    "links": {
+      "quick": ["Home", "About", "Services", "Contact", "FAQ"]
+    },
+    "contact": {
+      "phone": "+62 21 1234 5678",
+      "email": "support@paragoncorp.com",
+      "addressLines": [
+        "Jl. Paragon Business Center",
+        "Jakarta 12345, Indonesia"
+      ]
+    },
+    "copyright": "© 2024 Customer Care Paragon Corp. All rights reserved."
+  }
+}
