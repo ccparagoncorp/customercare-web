@@ -1,4 +1,5 @@
 import aboutContent from '@/content/about.json';
+import { ScrollAnimation, StaggerAnimation } from '@/components/animations';
 
 interface AboutSectionProps {
   className?: string;
@@ -6,34 +7,32 @@ interface AboutSectionProps {
 
 export default function AboutSection({ className = '' }: AboutSectionProps) {
   return (
-    <section className={`py-24 bg-gradient-to-b from-[#0a0e13] to-[#1a1f2e] relative overflow-hidden ${className}`}>
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-500/3 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-transparent rounded-full blur-2xl"></div>
-      </div>
+    <section className={`py-16 sm:py-20 md:py-24 bg-gradient-to-b from-[#0a0e13] to-[#1a1f2e] relative overflow-hidden ${className}`}>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         {/* Mission and Vision Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Vision */}
-          <div>
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center lg:text-left">
-              {aboutContent.vision.title}
-            </h3>
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-              <p className="text-white/80 text-lg leading-relaxed">
-                {aboutContent.vision.description}
-              </p>
+        <StaggerAnimation staggerDelay={0.2} direction="up">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16">
+            {/* Vision */}
+            <div>
+              <ScrollAnimation direction="left" delay={0.1}>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-8 sm:mb-10 md:mb-12 text-center lg:text-left">
+                  {aboutContent.vision.title}
+                </h3>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                  <p className="text-white/80 text-base sm:text-lg leading-relaxed">
+                    {aboutContent.vision.description}
+                  </p>
+                </div>
+              </ScrollAnimation>
             </div>
-          </div>
-          {/* Mission */}
-          <div>
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center lg:text-left">
-              {aboutContent.mission.title}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Mission */}
+            <div>
+              <ScrollAnimation direction="right" delay={0.2}>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-8 sm:mb-10 md:mb-12 text-center lg:text-left">
+                  {aboutContent.mission.title}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-stretch">
               {aboutContent.mission.items.map((item, index) => {
                 // Icon mapping
                 const getIcon = (iconName: string) => {
@@ -89,31 +88,35 @@ export default function AboutSection({ className = '' }: AboutSectionProps) {
                 };
 
                 return (
-                  <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                    {/* Icon */}
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${getColorClasses(item.color)}`}>
-                      {getIcon(item.icon)}
+                  <ScrollAnimation key={index} direction="up" delay={index * 0.1}>
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 h-[180px] sm:h-[200px] md:h-[220px] flex flex-col">
+                      {/* Icon */}
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 ${getColorClasses(item.color)}`}>
+                        {getIcon(item.icon)}
+                      </div>
+                      
+                      <h4 className="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 flex-shrink-0">
+                        {item.title}
+                      </h4>
+                      <p className="text-white/70 text-xs sm:text-sm leading-relaxed flex-grow overflow-hidden">
+                        {item.description}
+                      </p>
                     </div>
-                    
-                    <h4 className="text-lg font-bold text-white mb-3">
-                      {item.title}
-                    </h4>
-                    <p className="text-white/70 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
+                  </ScrollAnimation>
                 );
               })}
+                </div>
+              </ScrollAnimation>
             </div>
           </div>
-        </div>
+        </StaggerAnimation>
 
         {/* Bottom Decoration */}
-        <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-4">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent to-white/30"></div>
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <div className="w-8 h-px bg-gradient-to-l from-transparent to-white/30"></div>
+        <div className="text-center mt-12 sm:mt-16 md:mt-20">
+          <div className="inline-flex items-center gap-2 sm:gap-4">
+            <div className="w-6 sm:w-8 h-px bg-gradient-to-r from-transparent to-white/30"></div>
+            <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full animate-pulse"></div>
+            <div className="w-6 sm:w-8 h-px bg-gradient-to-l from-transparent to-white/30"></div>
           </div>
         </div>
       </div>

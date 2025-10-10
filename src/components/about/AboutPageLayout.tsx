@@ -8,7 +8,7 @@ interface AboutPageLayoutProps {
 
 export default function AboutPageLayout({ children, className = '' }: AboutPageLayoutProps) {
   return (
-    <div className={`min-h-[60vh] relative overflow-hidden ${className}`}>
+    <div className={`sm:min-h-[60vh] min-h-[35vh] relative overflow-hidden ${className}`}>
       <AboutBackgroundOverlay />
       {children}
     </div>

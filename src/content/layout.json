@@ -4,6 +4,38 @@
     "nav": ["Home", "About", "FAQ", "Contact"],
     "loginText": "LOG IN"
   },
+  "feedback": {
+    "floatingButton": {
+      "ariaLabel": "Give Feedback"
+    },
+    "modal": {
+      "title": "Share Your Feedback",
+      "closeButton": {
+        "ariaLabel": "Close"
+      },
+      "rating": {
+        "label": "How would you rate your experience?",
+        "starLabels": {
+          "1": "Rate 1 star",
+          "2": "Rate 2 stars", 
+          "3": "Rate 3 stars",
+          "4": "Rate 4 stars",
+          "5": "Rate 5 stars"
+        }
+      },
+      "message": {
+        "label": "Your message (optional)",
+        "placeholder": "Tell us what you think..."
+      },
+      "submitButton": "Submit Feedback",
+      "messages": {
+        "selectRating": "Please select a rating",
+        "success": "Thank you for your feedback!",
+        "error": "Failed to submit feedback. Please try again.",
+        "noMessage": "No message provided"
+      }
+    }
+  },
   "footer": {
     "company": {
       "logo": "/logoCC.png",

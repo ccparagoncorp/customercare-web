@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import faqContent from '@/content/faq.json';
 import FAQItem from './FAQItem';
 import FAQFilterTabs from './FAQFilterTabs';
+import { StaggerAnimation } from '@/components/animations';
 
 interface FAQListProps {
   className?: string;
@@ -30,19 +31,21 @@ export default function FAQList({ className = '' }: FAQListProps) {
     <>
       <FAQFilterTabs onCategoryChange={handleCategoryChange} />
       
-      <section className={`py-16 bg-gray-900 ${className}`}>
-        <div className="max-w-4xl mx-auto px-6 lg:px-12">
-          <div className="space-y-4">
-            {filteredFAQs.map((faq) => (
-              <FAQItem
-                key={faq.id}
-                id={faq.id}
-                category={faq.category}
-                question={faq.question}
-                answer={faq.answer}
-              />
-            ))}
-          </div>
+          <section className={`py-12 sm:py-16 bg-gray-900 ${className}`}>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12">
+              <StaggerAnimation staggerDelay={0.1} direction="up">
+                <div className="space-y-3 sm:space-y-4">
+                  {filteredFAQs.map((faq) => (
+                    <FAQItem
+                      key={faq.id}
+                      id={faq.id}
+                      category={faq.category}
+                      question={faq.question}
+                      answer={faq.answer}
+                    />
+                  ))}
+                </div>
+              </StaggerAnimation>
           
           {filteredFAQs.length === 0 && (
             <div className="text-center py-12">

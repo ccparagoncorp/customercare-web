@@ -6,11 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "debug:sheets": "node scripts/debug-sheets.js",
+    "test:feedback": "node scripts/test-feedback.js"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
     "@supabase/supabase-js": "^2.58.0",
+    "framer-motion": "^12.23.22",
+    "googleapis": "^162.0.0",
     "next": "15.5.4",
     "nodemailer": "^6.9.13",
     "prisma": "^6.16.3",

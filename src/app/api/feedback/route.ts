@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { saveToGoogleSheets, FeedbackData } from '@/lib/googleSheets';
 
 export const runtime = 'nodejs';
 
@@ -12,8 +13,10 @@ export async function POST(request: Request) {
     const email = String(data.email || '').trim();
     const subject = String(data.subject || 'New Feedback').trim();
     const message = String(data.message || '').trim();
+    const source = String(data.source || 'contact-form').trim() as 'contact-form' | 'feedback-widget';
+    const rating = data.rating ? Number(data.rating) : undefined;
 
-    console.log('Processed fields:', { name, email, subject, messageLength: message.length }); // Debug log
+    console.log('Processed fields:', { name, email, subject, messageLength: message.length, source, rating }); // Debug log
 
     if (!name || !email || !message) {
       return NextResponse.json({
@@ -61,6 +64,7 @@ export async function POST(request: Request) {
     `;
 
     try {
+      // Send email
       await transporter.sendMail({
         from,
         to,
@@ -70,10 +74,23 @@ export async function POST(request: Request) {
         html,
       });
 
+      // Save to Google Sheets
+      const feedbackData: FeedbackData = {
+        name,
+        email,
+        title: source === 'contact-form' ? subject : undefined, // hanya untuk contact form
+        rating: source === 'feedback-widget' ? rating : undefined, // hanya untuk feedback widget
+        feedback: message,
+        source,
+        timestamp: new Date().toISOString(),
+      };
+
+      await saveToGoogleSheets(feedbackData);
+
       return NextResponse.json({ ok: true }, { status: 200 });
     } catch (smtpError) {
       console.error('SMTP Error:', smtpError);
-      // Fallback: still return success but log the email
+      // Fallback: still return success but log the email and try to save to Google Sheets
       console.log('Email saved to logs (SMTP failed):', {
         to,
         from,
@@ -83,6 +100,19 @@ export async function POST(request: Request) {
         message,
         timestamp: new Date().toISOString()
       });
+
+      // Try to save to Google Sheets even if email fails
+      const feedbackData: FeedbackData = {
+        name,
+        email,
+        title: source === 'contact-form' ? subject : undefined, // hanya untuk contact form
+        rating: source === 'feedback-widget' ? rating : undefined, // hanya untuk feedback widget
+        feedback: message,
+        source,
+        timestamp: new Date().toISOString(),
+      };
+
+      await saveToGoogleSheets(feedbackData);
       
       return NextResponse.json({ 
         ok: true, 

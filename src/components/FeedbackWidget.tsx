@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import layoutContent from '@/content/layout.json';
 
 export default function FeedbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function FeedbackWidget() {
     e.preventDefault();
     
     if (rating === 0) {
-      setFeedbackMessage('Please select a rating');
+      setFeedbackMessage(layoutContent.feedback.modal.messages.selectRating);
       setStatus('error');
       return;
     }
@@ -30,13 +31,15 @@ export default function FeedbackWidget() {
           name: 'Anonymous User',
           email: 'anonymous@feedback.com',
           subject: `Feedback - ${rating} Star Rating`,
-          message: `Rating: ${rating}/5 stars\n\nMessage: ${message || 'No message provided'}`
+          message: `Rating: ${rating}/5 stars\n\nMessage: ${message || layoutContent.feedback.modal.messages.noMessage}`,
+          source: 'feedback-widget',
+          rating: rating
         }),
       });
 
       if (res.ok) {
         setStatus('success');
-        setFeedbackMessage('Thank you for your feedback!');
+        setFeedbackMessage(layoutContent.feedback.modal.messages.success);
         setRating(0);
         setMessage('');
         setTimeout(() => {
@@ -49,7 +52,7 @@ export default function FeedbackWidget() {
       }
     } catch (err) {
       setStatus('error');
-      setFeedbackMessage('Failed to submit feedback. Please try again.');
+      setFeedbackMessage(layoutContent.feedback.modal.messages.error);
     }
   };
 
@@ -58,8 +61,8 @@ export default function FeedbackWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-[#03438f] hover:bg-[#012f65] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
-        aria-label="Give Feedback"
+        className="fixed bottom-6 right-6 z-50 bg-[#03438f] hover:bg-[#012f65] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+        aria-label={layoutContent.feedback.floatingButton.ariaLabel}
       >
         <svg 
           className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" 
@@ -78,29 +81,29 @@ export default function FeedbackWidget() {
 
       {/* Popup Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Share Your Feedback</h3>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">{layoutContent.feedback.modal.title}</h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label="Close"
+                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer p-1"
+                  aria-label={layoutContent.feedback.modal.closeButton.ariaLabel}
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
               {/* Rating Section */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  How would you rate your experience?
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+                  {layoutContent.feedback.modal.rating.label}
                 </label>
-                <div className="flex gap-1">
+                <div className="flex gap-1 justify-center">
                   {[1, 2, 3, 4, 5].map((star) => {
                     const active = (hoveredStar ?? rating) >= star;
                     return (
@@ -110,11 +113,11 @@ export default function FeedbackWidget() {
                         onMouseEnter={() => setHoveredStar(star)}
                         onMouseLeave={() => setHoveredStar(null)}
                         onClick={() => setRating(star)}
-                        aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
-                        className="p-1 transition-transform duration-150 hover:scale-105"
+                        aria-label={layoutContent.feedback.modal.rating.starLabels[star.toString() as keyof typeof layoutContent.feedback.modal.rating.starLabels]}
+                        className="p-1 sm:p-1.5 transition-transform duration-150 hover:scale-105 cursor-pointer"
                       >
                         <svg
-                          className={`w-7 h-7 ${active ? 'text-yellow-400' : 'text-gray-300'}`}
+                          className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ${active ? 'text-yellow-400' : 'text-gray-300'}`}
                           viewBox="0 0 24 24"
                           fill={active ? 'currentColor' : 'none'}
                           stroke="currentColor"
@@ -132,16 +135,16 @@ export default function FeedbackWidget() {
 
               {/* Message Section */}
               <form onSubmit={handleSubmit}>
-                <div className="mb-6">
-                  <label htmlFor="feedback-message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Your message (optional)
+                <div className="mb-4 sm:mb-6">
+                  <label htmlFor="feedback-message" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                    {layoutContent.feedback.modal.message.label}
                   </label>
                   <textarea
                     id="feedback-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell us what you think..."
-                    className="w-full rounded-xl border border-gray-300 bg-white p-3 min-h-[100px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03438f] focus:border-[#03438f] resize-none"
+                    placeholder={layoutContent.feedback.modal.message.placeholder}
+                    className="w-full rounded-xl border border-gray-300 bg-white p-3 min-h-[80px] sm:min-h-[100px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03438f] focus:border-[#03438f] resize-none text-sm sm:text-base"
                   />
                 </div>
 
@@ -149,12 +152,12 @@ export default function FeedbackWidget() {
                 <button
                   type="submit"
                   disabled={status === 'loading' || rating === 0}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#03438f] text-white px-6 py-3 font-semibold hover:bg-[#013b7c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#03438f] text-white px-4 sm:px-6 py-2.5 sm:py-3 font-semibold hover:bg-[#013b7c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 cursor-pointer text-sm sm:text-base"
                 >
                   {status === 'loading' && (
                     <span className="inline-block w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin" />
                   )}
-                  Submit Feedback
+                  {layoutContent.feedback.modal.submitButton}
                 </button>
 
                 {/* Status Message */}
