@@ -18,9 +18,9 @@ export function LoginHeader() {
         <div className={`bg-white backdrop-blur-sm shadow-xl ${isMobileMenuOpen ? 'sm:rounded-full rounded-4xl' : 'rounded-full'}`}>
           <div className="flex items-center justify-between py-3 sm:py-4 px-4 sm:px-6">
           {/* Logo */}
-          <div>
+          <Link href="/">
             <Image src={layoutContent.header.logo} alt="Logo" width={120} height={64} className="sm:w-[150px] sm:h-auto"/>
-          </div>
+          </Link>
           
           {/* Desktop Back to Home Button */}
           <Link href="/" className="hidden md:block bg-[#03438f] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#012f65] cursor-pointer text-sm">
