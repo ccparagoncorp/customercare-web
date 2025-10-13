@@ -64,9 +64,9 @@ export default function Header({ className = '' }: HeaderProps) {
           </nav>
           
           {/* Desktop Login Button */}
-          <button className="hidden md:block bg-[#03438f] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#012f65] cursor-pointer text-sm">
+          <Link href="/login" className="hidden md:block bg-[#03438f] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#012f65] cursor-pointer text-sm">
             {layoutContent.header.loginText}
-          </button>
+          </Link>
 
           {/* Mobile Menu Button */}
           <button 
@@ -123,9 +123,13 @@ export default function Header({ className = '' }: HeaderProps) {
                 })}
                 
                 {/* Mobile Login Button */}
-                <button className="w-full mt-4 bg-[#03438f] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#012f65] cursor-pointer text-sm">
+                <Link 
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full mt-4 bg-[#03438f] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#012f65] cursor-pointer text-sm block text-center"
+                >
                   {layoutContent.header.loginText}
-                </button>
+                </Link>
               </div>
             </div>
           )}

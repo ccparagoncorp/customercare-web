@@ -54,34 +54,34 @@ export default function CustomerValuesSection({ className = '' }: CustomerValues
               {aboutContent.customerValues.values.map((value, index) => (
                 <ScaleAnimation key={index} scale={0.9}>
                   <div 
-                    className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer h-64 flex flex-col"
                     onMouseEnter={() => setHoveredLetter(value.letter)}
                     onMouseLeave={() => setHoveredLetter(null)}
                   >
-                {/* Letter & Word Header */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center border border-blue-200">
-                    <span className="text-xl font-bold text-blue-600">{value.letter}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      {value.word}
-                    </h3>
-                    <div className="text-sm text-gray-500 font-medium">
-                      {value.letter} = {value.word}
+                    {/* Letter & Word Header */}
+                    <div className="flex items-center gap-4 mb-4 flex-shrink-0">
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center border border-blue-200">
+                        <span className="text-xl font-bold text-blue-600">{value.letter}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {value.word}
+                        </h3>
+                        <div className="text-sm text-gray-500 font-medium">
+                          {value.letter} = {value.word}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Description */}
-                <div className="border-l-2 border-blue-300 pl-4">
-                  <p className="text-gray-600 leading-relaxed text-sm">
-                    {value.description}
-                  </p>
-                </div>
-                
+                    
+                    {/* Description */}
+                    <div className="border-l-2 border-blue-300 pl-4 flex-grow flex flex-col">
+                      <p className="text-gray-600 leading-relaxed text-sm flex-grow">
+                        {value.description}
+                      </p>
+                    </div>
+                    
                     {/* Hover indicator */}
-                    <div className={`mt-4 h-1 bg-gradient-to-r from-blue-400 to-transparent rounded-full transition-all duration-300 ${
+                    <div className={`mt-4 h-1 bg-gradient-to-r from-blue-400 to-transparent rounded-full transition-all duration-300 flex-shrink-0 ${
                       hoveredLetter === value.letter ? 'w-full opacity-100' : 'w-0 opacity-0'
                     }`}></div>
                   </div>

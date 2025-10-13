@@ -1,5 +1,5 @@
 import { Header, FooterSection } from '@/components';
-import { FAQHeroSection, FAQList } from '@/components/faq';
+import { FAQHeroSection, FAQList, StillNeedHelpSection } from '@/components/faq';
 
 export default function FAQ() {
   return (
@@ -7,6 +7,7 @@ export default function FAQ() {
       <Header />
       <FAQHeroSection />
       <FAQList />
+      <StillNeedHelpSection />
       <FooterSection />
     </>
   );

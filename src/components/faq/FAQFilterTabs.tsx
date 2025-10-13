@@ -20,7 +20,7 @@ export default function FAQFilterTabs({ onCategoryChange, className = '' }: FAQF
   return (
     <section className={`py-6 sm:py-8 bg-gray-800 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <StaggerAnimation staggerDelay={0.1} direction="up">
+        <StaggerAnimation staggerDelay={0} direction="up">
           <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
             {faqContent.categories.map((category) => (
               <button

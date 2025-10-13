@@ -1,13 +1,13 @@
-interface AboutBackgroundOverlayProps {
+interface LoginBackgroundProps {
   backgroundImage?: string;
   overlayOpacity?: number;
   className?: string;
 }
 
-export default function AboutBackgroundOverlay({ 
-  backgroundImage = 'about-hero-bg.jpg',
+export default function LoginBackground({ 
+  backgroundImage = 'login.png',
   className = ''
-}: AboutBackgroundOverlayProps) {
+}: LoginBackgroundProps) {
   return (
     <>
       {/* Background Image */}

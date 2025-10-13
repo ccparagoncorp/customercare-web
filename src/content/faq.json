@@ -88,5 +88,25 @@
       "question": "Can I speak to a manager if I'm not satisfied?",
       "answer": "Of course! If you're not satisfied with the initial resolution, you can request to speak with a supervisor or manager. We also have an escalation process for complex issues and a dedicated customer satisfaction team that follows up on all escalated cases to ensure complete resolution."
     }
-  ]
+  ],
+  "stillNeedHelp": {
+    "title": "Still Need Help?",
+    "description": "Can't find the answer you're looking for? Our customer support team is here to help you 24/7.",
+    "contactOptions": [
+      {
+        "type": "call",
+        "title": "Call Us",
+        "description": "Get instant support from our team",
+        "contact": "(+62) 812-3456-7890",
+        "phoneNumber": "+6281234567890"
+      },
+      {
+        "type": "email",
+        "title": "Email Us",
+        "description": "Send us a message for detailed support",
+        "contact": "paragon@company.com",
+        "emailAddress": "paragon@company.com"
+      }
+    ]
+  }
 }
