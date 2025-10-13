@@ -47,14 +47,6 @@ export function LoginHeader() {
           {isMobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200 bg-white rounded-b-full">
               <div className="px-4 py-4 space-y-3">
-                {layoutContent.header.nav.map((label) => (
-                  <span 
-                    key={label} 
-                    className="block py-3 px-4 rounded-lg font-medium text-gray-400 cursor-default"
-                  >
-                    {label}
-                  </span>
-                ))}
                 
                 {/* Mobile Back to Home Button */}
                 <Link 
