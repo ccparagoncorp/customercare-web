@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import { ConditionalHeader } from "@/components/ConditionalHeader";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ConditionalHeader />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <FeedbackWidget />
+        <AuthProvider>
+          <ConditionalHeader />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <FeedbackWidget />
+        </AuthProvider>
       </body>
     </html>
   );

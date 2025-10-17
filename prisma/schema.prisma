@@ -1,185 +1,217 @@
-  // This is your Prisma schema file,
-  // learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
-  generator client {
-    provider = "prisma-client-js"
-  }
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
-  datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-  }
+model Brand {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  kategoriProduks KategoriProduk[]
 
-  // ====================
-  // PRODUK SYSTEM
-  // ====================
+  @@map("brands")
+}
 
-  model Brand {
-    id          String   @id @default(cuid())
-    name        String   @unique
-    description String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+model KategoriProduk {
+  id                 String              @id @default(cuid())
+  name               String
+  description        String?
+  brandId            String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  brand              Brand               @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  subkategoriProduks SubkategoriProduk[]
 
-    // Relations
-    kategoriProduks KategoriProduk[]
+  @@map("kategori_produks")
+}
 
-    @@map("brands")
-  }
+model SubkategoriProduk {
+  id               String         @id @default(cuid())
+  name             String
+  description      String?
+  kategoriProdukId String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  produks          Produk[]
+  kategoriProduk   KategoriProduk @relation(fields: [kategoriProdukId], references: [id], onDelete: Cascade)
 
-  model KategoriProduk {
-    id          String   @id @default(cuid())
-    name        String
-    description String?
-    brandId     String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  @@map("subkategori_produks")
+}
 
-    // Relations
-    brand             Brand                @relation(fields: [brandId], references: [id], onDelete: Cascade)
-    subkategoriProduks SubkategoriProduk[]
+model Produk {
+  id                  String            @id @default(cuid())
+  name                String
+  description         String?
+  sku                 String?           @unique
+  price               Decimal?          @db.Decimal(10, 2)
+  stock               Int?              @default(0)
+  subkategoriProdukId String
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  detailProduks       DetailProduk[]
+  subkategoriProduk   SubkategoriProduk @relation(fields: [subkategoriProdukId], references: [id], onDelete: Cascade)
 
-    @@map("kategori_produks")
-  }
+  @@map("produks")
+}
 
-  model SubkategoriProduk {
-    id                String   @id @default(cuid())
-    name              String
-    description       String?
-    kategoriProdukId  String
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime @updatedAt
+model DetailProduk {
+  id        String   @id @default(cuid())
+  name      String
+  value     String
+  produkId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  produk    Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
 
-    // Relations
-    kategoriProduk KategoriProduk @relation(fields: [kategoriProdukId], references: [id], onDelete: Cascade)
-    produks        Produk[]
+  @@map("detail_produks")
+}
 
-    @@map("subkategori_produks")
-  }
+model KategoriSOP {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sops        SOP[]
 
-  model Produk {
-    id                   String   @id @default(cuid())
-    name                 String
-    description          String?
-    sku                  String?  @unique
-    price                Decimal? @db.Decimal(10, 2)
-    stock                Int?     @default(0)
-    subkategoriProdukId  String
-    createdAt            DateTime @default(now())
-    updatedAt            DateTime @updatedAt
+  @@map("kategori_sops")
+}
 
-    // Relations
-    subkategoriProduk SubkategoriProduk @relation(fields: [subkategoriProdukId], references: [id], onDelete: Cascade)
-    detailProduks     DetailProduk[]
+model SOP {
+  id            String      @id @default(cuid())
+  name          String
+  description   String?
+  kategoriSOPId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  jenisSOPs     JenisSOP[]
+  kategoriSOP   KategoriSOP @relation(fields: [kategoriSOPId], references: [id], onDelete: Cascade)
 
-    @@map("produks")
-  }
+  @@map("sops")
+}
 
-  model DetailProduk {
-    id        String   @id @default(cuid())
-    name      String
-    value     String
-    produkId  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model JenisSOP {
+  id         String      @id @default(cuid())
+  name       String
+  content    String?
+  sopId      String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  detailSOPs DetailSOP[]
+  sop        SOP         @relation(fields: [sopId], references: [id], onDelete: Cascade)
 
-    // Relations
-    produk Produk @relation(fields: [produkId], references: [id], onDelete: Cascade)
+  @@map("jenis_sops")
+}
 
-    @@map("detail_produks")
-  }
+model DetailSOP {
+  id         String   @id @default(cuid())
+  name       String
+  value      String
+  jenisSOPId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  jenisSOP   JenisSOP @relation(fields: [jenisSOPId], references: [id], onDelete: Cascade)
 
-  // ====================
-  // SOP SYSTEM
-  // ====================
+  @@map("detail_sops")
+}
 
-  model KategoriSOP {
-    id          String   @id @default(cuid())
-    name        String   @unique
-    description String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(SUPER_ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    // Relations
-    sops SOP[]
+  @@map("users")
+}
 
-    @@map("kategori_sops")
-  }
+model Agent {
+  id        String   @id
+  name      String
+  email     String   @unique
+  password  String
+  category  String   @default("socialMedia")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  model SOP {
-    id            String   @id @default(cuid())
-    name          String
-    description   String?
-    kategoriSOPId String
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+  @@index([name])
+  @@index([email])
+  @@index([category])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("agents")
+}
 
-    // Relations
-    kategoriSOP KategoriSOP @relation(fields: [kategoriSOPId], references: [id], onDelete: Cascade)
-    jenisSOPs   JenisSOP[]
+model Knowledge {
+  id               String            @id @default(cuid())
+  title            String
+  description      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  createdBy        String?
+  updatedBy        String?
+  logos            String[]
+  updateNotes      String?
+  detailKnowledges DetailKnowledge[]
 
-    @@map("sops")
-  }
+  @@index([title])
+  @@index([createdAt])
+  @@map("knowledges")
+}
 
-  model JenisSOP {
-    id        String   @id @default(cuid())
-    name      String
-    content   String?
-    sopId     String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model DetailKnowledge {
+  id                    String                 @id @default(cuid())
+  name                  String
+  knowledgeId           String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  description           String?
+  logos                 String[]
+  knowledge             Knowledge              @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  jenisDetailKnowledges JenisDetailKnowledge[]
 
-    // Relations
-    sop          SOP          @relation(fields: [sopId], references: [id], onDelete: Cascade)
-    detailSOPs   DetailSOP[]
+  @@map("detail_knowledges")
+}
 
-    @@map("jenis_sops")
-  }
+model JenisDetailKnowledge {
+  id                          String                       @id @default(cuid())
+  name                        String
+  description                 String?
+  logos                       String[]
+  detailKnowledgeId           String
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  detailKnowledge             DetailKnowledge              @relation(fields: [detailKnowledgeId], references: [id], onDelete: Cascade)
+  produkJenisDetailKnowledges ProdukJenisDetailKnowledge[]
 
-  model DetailSOP {
-    id        String   @id @default(cuid())
-    name      String
-    value     String
-    jenisSOPId String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  @@map("jenis_detail_knowledges")
+}
 
-    // Relations
-    jenisSOP JenisSOP @relation(fields: [jenisSOPId], references: [id], onDelete: Cascade)
+model ProdukJenisDetailKnowledge {
+  id                     String               @id @default(cuid())
+  name                   String
+  description            String?
+  logos                  String[]
+  jenisDetailKnowledgeId String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  jenisDetailKnowledge   JenisDetailKnowledge @relation(fields: [jenisDetailKnowledgeId], references: [id], onDelete: Cascade)
 
-    @@map("detail_sops")
-  }
+  @@map("produk_jenis_detail_knowledges")
+}
 
-  // ====================
-  // KNOWLEDGE SYSTEM
-  // ====================
-
-  model Knowledge {
-    id          String   @id @default(cuid())
-    title       String
-    description String?
-    content     String?
-    category    String?
-    tags        String[] // PostgreSQL array
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    // Relations
-    detailKnowledges DetailKnowledge[]
-
-    @@map("knowledges")
-  }
-
-  model DetailKnowledge {
-    id          String   @id @default(cuid())
-    name        String
-    value       String
-    knowledgeId String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    // Relations
-    knowledge Knowledge @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
-
-    @@map("detail_knowledges")
-  }
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  AGENT
+}

@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Eye, EyeOff, Lock, User, Key, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "./AuthProvider"
 import authContent from "@/content/auth.json"
 
 const { login } = authContent
 
 const loginSchema = z.object({
-  username: z.string().min(1, login.messages.usernameRequired),
+  email: z.string().email("Format email tidak valid"),
   password: z.string().min(6, login.messages.passwordMinLength),
 })
 
@@ -26,6 +27,7 @@ export function LoginForm() {
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+  const { login: authLogin } = useAuth()
 
   const {
     register,
@@ -40,24 +42,15 @@ export function LoginForm() {
     setError("")
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await authLogin(data.email, data.password)
       
-      // Demo authentication for agent - replace with real authentication
-      if ((data.username === login.demo.username1 || data.username === login.demo.username2) && data.password === login.demo.password) {
-        // Store auth token in cookie and localStorage
-        document.cookie = `auth-token=demo-agent-token; path=/; max-age=${rememberMe ? 604800 : 86400}` // 7 days or 24 hours
-        localStorage.setItem("auth-token", "demo-agent-token")
-        localStorage.setItem("user-email", data.username)
-        localStorage.setItem("user-role", "agent")
-        
-        // Show success message (no redirect for now)
-        alert(login.messages.loginSuccess)
-        router.push("/")
+      if (result.success) {
+        router.push("/agent/dashboard")
       } else {
-        setError(login.messages.loginError)
+        setError(result.error || login.messages.loginError)
       }
     } catch (err) {
+      console.error("Login error:", err)
       setError(login.messages.generalError)
     } finally {
       setIsLoading(false)
@@ -86,26 +79,26 @@ export function LoginForm() {
           </div>
         )}
 
-        {/* Username/Email Input */}
+        {/* Email Input */}
         <div className="space-y-1">
-          <Label htmlFor="username" className="text-sm font-medium text-gray-700">
-            {login.form.usernameLabel}
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+            Email
           </Label>
           <div className="relative mt-1">
             <div className="absolute inset-y-0 left-0 pl-3 z-100 flex items-center pointer-events-none">
               <User className="h-4 w-4 text-[#03438f]" />
             </div>
             <Input
-              id="username"
-              type="text"
-              {...register("username")}
-              placeholder={login.form.usernamePlaceholder}
+              id="email"
+              type="email"
+              {...register("email")}
+              placeholder="Enter your email address"
               disabled={isLoading}
               className="pl-10 h-11 rounded-lg border-gray-300 focus:border-[#03438f] focus:ring-[#03438f] bg-white/80 backdrop-blur-sm"
             />
           </div>
-          {errors.username && (
-            <p className="text-sm text-red-600">{errors.username.message}</p>
+          {errors.email && (
+            <p className="text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
 
@@ -160,11 +153,11 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{login.form.signingInButton}</span>
+              <span>Signing In...</span>
             </>
           ) : (
             <>
-              <span>{login.form.signInButton}</span>
+              <span>Sign In</span>
               <ArrowRight className="h-4 w-4" />
             </>
           )}

@@ -6,8 +6,10 @@ import Header from "@/components/Header"
 export function ConditionalHeader() {
   const pathname = usePathname()
   
-  // Don't show header on login page
-  if (pathname === "/login") {
+  // Only show header on specific pages
+  const showHeaderPages = ["/", "/about", "/contact", "/faq"]
+  
+  if (!showHeaderPages.includes(pathname)) {
     return null
   }
   
