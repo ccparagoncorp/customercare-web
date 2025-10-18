@@ -1,0 +1,23 @@
+{
+    "makeup": {
+    "title": "Make-up Knowledge",
+    "description": "Expert make-up knowledge and techniques for beauty consultants",
+    "information": {
+      "title": "Information",
+      "stats": {
+        "totalItems": "30+",
+        "categories": "4",
+        "lastUpdated": "2024-01-20"
+      }
+    },
+    "knowledgeDetails": {
+      "title": "Knowledge Details",
+      "description": "Click on any card below to view detailed information"
+    },
+    "emptyState": {
+      "title": "No Knowledge Found",
+      "description": "We couldn't find any knowledge items matching your search."
+    },
+    "loading": "Loading knowledge..."
+  }
+}

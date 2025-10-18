@@ -1,0 +1,45 @@
+{
+    "skin-knowledge": {
+    "title": "Skin Knowledge",
+    "description": "Comprehensive skin care knowledge and treatment recommendations",
+    "information": {
+      "title": "Information",
+      "stats": {
+        "totalItems": "40+",
+        "categories": "6",
+        "lastUpdated": "2024-01-18"
+      }
+    },
+    "knowledgeDetails": {
+      "title": "Knowledge Details",
+      "description": "Click on any card below to view detailed information"
+    },
+    "emptyState": {
+      "title": "No Knowledge Found",
+      "description": "We couldn't find any knowledge items matching your search."
+    },
+    "loading": "Loading knowledge..."
+  },
+  "main": {
+    "title": "Knowledge Base",
+    "description": "Access comprehensive knowledge resources for customer service excellence",
+    "searchPlaceholder": "Search knowledge...",
+    "information": {
+      "title": "Information Stats",
+      "stats": {
+        "totalKnowledge": "120+",
+        "categories": "15",
+        "lastUpdated": "2024-01-25"
+      }
+    },
+    "knowledgeDetails": {
+      "title": "Knowledge Details",
+      "description": "Click on any card below to view detailed information"
+    },
+    "emptyState": {
+      "title": "No Knowledge Found",
+      "description": "We couldn't find any knowledge items matching your search."
+    },
+    "loading": "Loading knowledge..."
+  }
+}

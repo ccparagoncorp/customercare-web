@@ -1,0 +1,18 @@
+{
+  "vocabulary": {
+    "title": "Vocabulary Knowledge",
+    "description": "Comprehensive vocabulary knowledge for customer service excellence",
+    "information": {
+      "title": "Information"
+    },
+    "knowledgeDetails": {
+      "title": "Vocabulary Details",
+      "description": "Click on any card below to view detailed information"
+    },
+    "emptyState": {
+      "title": "No Vocabulary Found",
+      "description": "We couldn't find any knowledge items matching your search."
+    },
+    "loading": "Loading vocabulary..."
+  }
+}
