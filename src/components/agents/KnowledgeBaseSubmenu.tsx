@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronDown, ChevronRight } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Knowledge {
   id: string
@@ -22,6 +23,7 @@ export function KnowledgeBaseSubmenu({ isHovered, isActive }: KnowledgeBaseSubme
   const [isExpanded, setIsExpanded] = useState(false)
   const [knowledges, setKnowledges] = useState<Knowledge[]>([])
   const [loading, setLoading] = useState(false)
+  const pathname = usePathname()
 
   // Fetch knowledge data when expanded
   useEffect(() => {
@@ -54,6 +56,13 @@ export function KnowledgeBaseSubmenu({ isHovered, isActive }: KnowledgeBaseSubme
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded)
+  }
+
+  // Function to check if a knowledge item is active based on current pathname
+  const isKnowledgeItemActive = (knowledge: Knowledge): boolean => {
+    const slug = knowledge.title.toLowerCase().trim().replace(/ /g, '-')
+    const knowledgePath = `/agent/knowledge/${slug}`
+    return pathname === knowledgePath
   }
 
   return (
@@ -92,9 +101,9 @@ export function KnowledgeBaseSubmenu({ isHovered, isActive }: KnowledgeBaseSubme
         {isHovered && (
           <div className="ml-auto flex-shrink-0">
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronLeft className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
             ) : (
-              <ChevronRight className="h-4 w-4 text-gray-500" />
+              <ChevronRight className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
             )}
           </div>
         )}
@@ -116,16 +125,29 @@ export function KnowledgeBaseSubmenu({ isHovered, isActive }: KnowledgeBaseSubme
               </div>
             ) : knowledges.length > 0 ? (
               <div className="space-y-1">
-                {knowledges.map((knowledge) => (
-                  <Link
-                    key={knowledge.id}
-                    href={`/agent/knowledge/${knowledge.title.toLowerCase().trim().replace(/ /g, '-')}`}
-                    className="flex items-center px-4 py-3 text-sm text-gray-600 hover:text-[#0259b7] hover:bg-gray-50 rounded-lg transition-all duration-200 group"
-                  >
-                    <div className="w-2 h-2 bg-gray-300 rounded-full mr-3 group-hover:bg-[#0259b7] transition-colors duration-200"></div>
-                    <span className="truncate">{knowledge.title}</span>
-                  </Link>
-                ))}
+                {knowledges.map((knowledge) => {
+                  const itemIsActive = isKnowledgeItemActive(knowledge)
+                  return (
+                    <Link
+                      key={knowledge.id}
+                      href={`/agent/knowledge/${knowledge.title.toLowerCase().trim().replace(/ /g, '-')}`}
+                      className={`flex items-center px-4 py-3 text-sm rounded-lg transition-all duration-200 group ${
+                        itemIsActive
+                          ? 'bg-gradient-to-r from-[#0259b7] to-[#017cff] text-white shadow-lg shadow-[#0259b7]/20'
+                          : 'text-gray-600 hover:text-[#0259b7] hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`w-2 h-2 rounded-full mr-3 transition-colors duration-200 ${
+                        itemIsActive 
+                          ? 'bg-white' 
+                          : 'bg-gray-300 group-hover:bg-[#0259b7]'
+                      }`}></div>
+                      <span className={`truncate ${itemIsActive ? 'text-white font-medium' : ''}`}>
+                        {knowledge.title}
+                      </span>
+                    </Link>
+                  )
+                })}
               </div>
             ) : (
               <div className="px-4 py-3 text-sm text-gray-500 text-center">

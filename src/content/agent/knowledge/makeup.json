@@ -1,7 +1,7 @@
 {
     "makeup": {
     "title": "Make-up Knowledge",
-    "description": "Expert make-up knowledge and techniques for beauty consultants",
+    "description": "Tujuan bermake up:\n1. Untuk meningkatkan kepercayaan diri\n2. Menyembunyikan ketidaksempurnaan pada wajah\n3. Menekankan keindahan alami\n4. Meningkatkan penampilan untuk acara tertentu\n5. Ekspresi kreativitas dan seni\n\nMakeup knowledge ini berisi panduan lengkap tentang teknik make-up yang tepat untuk berbagai kondisi dan kebutuhan.",
     "information": {
       "title": "Information",
       "stats": {
@@ -11,13 +11,13 @@
       }
     },
     "knowledgeDetails": {
-      "title": "Knowledge Details",
-      "description": "Click on any card below to view detailed information"
+      "title": "Make-up Details",
+      "description": "Klik pada kartu di bawah untuk melihat informasi detail"
     },
     "emptyState": {
-      "title": "No Knowledge Found",
-      "description": "We couldn't find any knowledge items matching your search."
+      "title": "Tidak Ada Make-up Ditemukan",
+      "description": "Kami tidak dapat menemukan item make-up yang cocok dengan pencarian Anda."
     },
-    "loading": "Loading knowledge..."
+    "loading": "Memuat make-up..."
   }
 }
