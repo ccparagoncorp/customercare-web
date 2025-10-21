@@ -652,7 +652,7 @@ export default function MakeUpKnowledgePage() {
                       return (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                           {detail.jenisDetailKnowledges && detail.jenisDetailKnowledges.length > 0 ? (
-                            detail.jenisDetailKnowledges.map((jenis) => (
+                            detail.jenisDetailKnowledges.filter((jenis) => jenis.name !== "Eyeliner").map((jenis) => (
                               <div key={jenis.id} className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
                                 <div className="flex flex-col md:flex-row gap-6">
                                   {config.showImage && (
@@ -775,45 +775,45 @@ export default function MakeUpKnowledgePage() {
           }
 
           return (
-            <div className="rounded-xl shadow-lg overflow-hidden mt-12">
+            <div className="rounded-xl shadow-lg overflow-hidden mt-12 bg-gradient-to-b from-[#041965] to-[#51abae]">
               {/* Header Section - Dark Blue Background */}
-              <div className="bg-[#064379] p-8 text-center">
-                <h2 className="text-4xl font-bold text-white mb-4">{lastDetail.name}</h2>
+              <div className="p-8 text-center">
+                <h2 className="text-4xl font-bold text-white mb-4">{lastJenis.name}</h2>
                 <p className="text-white text-lg leading-relaxed max-w-4xl mx-auto">
-                  Informasi detail lengkap tentang {lastJenis.name} untuk membantu Anda memahami berbagai aspek dan teknik yang diperlukan dalam penerapannya.
+                  {lastJenis.description}
                 </p>
               </div>
 
               {/* Main Content Section - Light Blue Background */}
-              <div className="bg-blue-100 p-8">
+              <div className="p-8">
                 {lastJenis.produkJenisDetailKnowledges && lastJenis.produkJenisDetailKnowledges.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
                     {lastJenis.produkJenisDetailKnowledges.map((produk, index) => (
-                      <div key={produk.id} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <div key={produk.id} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         {/* Image Section */}
                         <div className="w-full mb-6">
-                          {lastJenis.logos && lastJenis.logos.length > 0 && lastJenis.logos[0] ? (
+                          {produk.logos && produk.logos.length > 0 && produk.logos[0] ? (
                             <div className="w-full h-48 mx-auto rounded-lg overflow-hidden relative">
                               <Image
                                 src={
-                                  lastJenis.logos[0].startsWith('http') 
-                                    ? lastJenis.logos[0] 
-                                    : lastJenis.logos[0].startsWith('/') 
-                                    ? lastJenis.logos[0] 
-                                    : lastJenis.logos[0].startsWith('public/')
-                                    ? lastJenis.logos[0].replace('public/', '/')
-                                    : lastJenis.logos[0].startsWith('images/')
-                                    ? `/${lastJenis.logos[0]}`
-                                    : `/images/${lastJenis.logos[0]}`
+                                  produk.logos[0].startsWith('http') 
+                                    ? produk.logos[0] 
+                                    : produk.logos[0].startsWith('/') 
+                                    ? produk.logos[0] 
+                                    : produk.logos[0].startsWith('public/')
+                                    ? produk.logos[0].replace('public/', '/')
+                                    : produk.logos[0].startsWith('images/')
+                                    ? `/${produk.logos[0]}`
+                                    : `/images/${produk.logos[0]}`
                                 }
-                                alt={lastJenis.name}
-                                width={192}
-                                height={192}
-                                className="w-full h-full object-cover"
+                                alt={produk.name}
+                                width={180}
+                                height={180}
+                                className="w-full h-full object-cover p-4"
                                 priority={false}
                                 unoptimized={true}
                                 onError={(e) => {
-                                  console.log('Image failed to load:', lastJenis.logos[0]);
+                                  console.log('Image failed to load:', produk.logos[0]);
                                   const target = e.target as HTMLImageElement;
                                   const fallback = target.parentElement?.querySelector('.fallback-image') as HTMLElement;
                                   if (fallback) {
@@ -841,9 +841,8 @@ export default function MakeUpKnowledgePage() {
                         </div>
 
                         {/* Content Section */}
-                        <div className="text-center">
+                        <div className="text-center flex justify-between flex-col">
                           <h3 className="text-xl font-bold text-[#064379] mb-2">{produk.name}</h3>
-                          <p className="text-sm text-[#064379]/70 mb-4">({lastJenis.name})</p>
                           {produk.description && (
                             <p className="text-[#064379] leading-relaxed text-sm">
                               {produk.description}
