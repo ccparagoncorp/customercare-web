@@ -1,7 +1,7 @@
 {
-    "skin-knowledge": {
+  "skin-knowledge": {
     "title": "Skin Knowledge",
-    "description": "Comprehensive skin care knowledge and treatment recommendations",
+    "description": "Pengetahuan komprehensif tentang struktur kulit, fungsi kulit, dan perawatan kulit yang tepat untuk berbagai kondisi dan kebutuhan kulit.",
     "information": {
       "title": "Information",
       "stats": {
@@ -11,35 +11,13 @@
       }
     },
     "knowledgeDetails": {
-      "title": "Knowledge Details",
-      "description": "Click on any card below to view detailed information"
+      "title": "Skin Knowledge Details",
+      "description": "Klik pada kartu di bawah untuk melihat informasi detail"
     },
     "emptyState": {
-      "title": "No Knowledge Found",
-      "description": "We couldn't find any knowledge items matching your search."
+      "title": "Tidak Ada Skin Knowledge Ditemukan",
+      "description": "Kami tidak dapat menemukan item skin knowledge yang cocok dengan pencarian Anda."
     },
-    "loading": "Loading knowledge..."
-  },
-  "main": {
-    "title": "Knowledge Base",
-    "description": "Access comprehensive knowledge resources for customer service excellence",
-    "searchPlaceholder": "Search knowledge...",
-    "information": {
-      "title": "Information Stats",
-      "stats": {
-        "totalKnowledge": "120+",
-        "categories": "15",
-        "lastUpdated": "2024-01-25"
-      }
-    },
-    "knowledgeDetails": {
-      "title": "Knowledge Details",
-      "description": "Click on any card below to view detailed information"
-    },
-    "emptyState": {
-      "title": "No Knowledge Found",
-      "description": "We couldn't find any knowledge items matching your search."
-    },
-    "loading": "Loading knowledge..."
+    "loading": "Memuat skin knowledge..."
   }
 }

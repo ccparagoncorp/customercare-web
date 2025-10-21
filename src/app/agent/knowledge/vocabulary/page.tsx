@@ -135,11 +135,18 @@ export default function VocabularyKnowledgePage() {
 
             <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
               <div className="text-4xl font-bold text-[#064379] mb-2">
-                {new Date(knowledge.updatedAt || knowledge.createdAt).toLocaleDateString("id-ID", {
+              {(() => {
+                const date = new Date(knowledge.updatedAt || knowledge.createdAt);
+                return `${date.toLocaleDateString("id-ID", {
                   day: "2-digit",
                   month: "short",
                   year: "numeric",
-                })}
+                })} ${date.toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}`;
+              })()}
               </div>
               <div className="text-sm text-[#064379]/80 font-medium">
                 {knowledge.updatedAt ? "Last Updated" : "Created On"}

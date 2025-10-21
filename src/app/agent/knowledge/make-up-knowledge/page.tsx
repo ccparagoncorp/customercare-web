@@ -328,11 +328,18 @@ export default function MakeUpKnowledgePage() {
 
             <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
               <div className="text-4xl font-bold text-[#064379] mb-2">
-                {new Date(knowledge.updatedAt || knowledge.createdAt).toLocaleDateString("id-ID", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {(() => {
+                  const date = new Date(knowledge.updatedAt || knowledge.createdAt);
+                  return `${date.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })} ${date.toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}`;
+                })()}
               </div>
               <div className="text-sm text-[#064379]/80 font-medium">
                 {knowledge.updatedAt ? "Last Updated" : "Created On"}
@@ -427,9 +434,7 @@ export default function MakeUpKnowledgePage() {
                       // Sort jenisDetailKnowledges by proper makeup order
                       const sortedJenisDetailKnowledges = detail.jenisDetailKnowledges 
                         ? [...detail.jenisDetailKnowledges].sort((a, b) => {
-                            const orderA = getMakeupStepOrder(a.name)
-                            const orderB = getMakeupStepOrder(b.name)
-                            return orderA - orderB
+                            return Number(a.id) - Number(b.id)
                           })
                         : []
                       
@@ -442,7 +447,7 @@ export default function MakeUpKnowledgePage() {
                                   {/* Step Number and Header */}
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-[#064379] text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0">
-                                      {getMakeupStepOrder(jenis.name) <= 5 ? getMakeupStepOrder(jenis.name) : index + 1}
+                                      {index + 1 }
                                     </div>
                                     <h3 className="text-xl font-bold text-[#064379]">{jenis.name}</h3>
                                   </div>
