@@ -515,13 +515,11 @@ export default function SkinKnowledgePage() {
                           ))}
                         </div>
                       ) : (
-                        <div className="text-center py-16 bg-white rounded-xl shadow-lg">
-                          {detail.logos && detail.logos.length > 0 && detail.logos[0] && (
-                            <div className="flex-shrink-0 justify-center">
-                              {renderImage(detail, 'w-3/4 h-130')}
-                            </div>
-                          )}
-                        </div>
+                        // <div className="text-center py-16 bg-white rounded-xl shadow-lg">
+                          <div className="flex-shrink-0 justify-center">
+                            {renderImage(detail, 'w-3/4 h-full')}
+                          </div>
+                        // </div>
                       )}
                     </div>
                   </div>

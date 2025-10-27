@@ -1,0 +1,26 @@
+{
+  "products": {
+    "title": "Product Knowledge",
+    "subtitle": "Explore our comprehensive product catalog across all brands",
+    "brands": {
+      "title": "Brand Categories",
+      "subtitle": "Select a category to explore products"
+    },
+    "categories": {
+      "title": "Product Categories",
+      "subtitle": "Choose a category to view available products"
+    },
+    "subcategories": {
+      "title": "Product Subcategories",
+      "subtitle": "Browse products by subcategory"
+    },
+    "products": {
+      "title": "Products",
+      "subtitle": "View all available products"
+    },
+    "productDetail": {
+      "title": "Product Details",
+      "subtitle": "Complete product information and specifications"
+    }
+  }
+}

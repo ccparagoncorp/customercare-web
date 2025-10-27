@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { createPrismaClient } from '@/lib/db'
 
 // Helper function to create slug from title
 function createSlug(title: string): string {
@@ -14,6 +12,8 @@ function createSlug(title: string): string {
 }
 
 export async function GET() {
+  const prisma = createPrismaClient()
+  
   try {
     const knowledges = await prisma.knowledge.findMany({
       select: {

@@ -16,7 +16,7 @@ interface SidebarProps {
 const navigationItems = [
   { icon: Home, label: "Home", href: "/agent/dashboard" },
   { icon: BookOpen, label: "Knowledge Base", href: "/agent/knowledge" },
-  { icon: Lightbulb, label: "Product Knowledge", href: "/agent/dashboard/products" },
+  { icon: Lightbulb, label: "Product Knowledge", href: "/agent/products" },
   { icon: Settings, label: "SOP & Workflows", href: "/agent/dashboard/sop" },
   { icon: Clipboard, label: "Quality & Training", href: "/agent/dashboard/training" },
   { icon: Calendar, label: "Scheduling & WFM", href: "/agent/dashboard/scheduling" },

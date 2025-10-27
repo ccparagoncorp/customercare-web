@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { createPrismaClient } from '@/lib/db'
 
 function toTitle(slug: string): string {
   return slug
@@ -10,6 +8,8 @@ function toTitle(slug: string): string {
 }
 
 export async function getKnowledgeBySlug(slug: string) {
+  const prisma = createPrismaClient()
+  
   try {
     const knowledges = await prisma.knowledge.findMany({
       select: {
