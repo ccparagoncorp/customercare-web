@@ -3,45 +3,33 @@ import { createPrismaClient } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ brandName: string }> }
+  { params }: { params: { brandName: string } }
 ) {
-  const prisma = createPrismaClient()
-  
+  const prisma = createPrismaClient() 
+
   try {
-    // Await params and decode the brand name from URL
     const { brandName } = await params
     const decodedBrandName = decodeURIComponent(brandName).replace(/-/g, ' ')
     
-    // Use simple Prisma query without complex includes to avoid prepared statement issues
-    const brands = await prisma.brand.findMany({
+    const brand = await prisma.brand.findFirst({
       where: {
         name: {
           equals: decodedBrandName,
           mode: 'insensitive'
         }
-      }
-    })
-
-    if (!brands || brands.length === 0) {
-      return NextResponse.json(
-        { error: 'Brand not found' },
-        { status: 404 }
-      )
-    }
-
-    const brand = brands[0]
-    
-    // Fetch related data in separate queries to avoid complex prepared statements
-    const kategoriProduks = await prisma.kategoriProduk.findMany({
-      where: { brandId: brand.id },
+      },
       include: {
-        subkategoriProduks: {
+        kategoriProduks: {
           include: {
-            produks: {
-              select: {
-                id: true,
-                name: true,
-                status: true
+            subkategoriProduks: {
+              include: {
+                produks: {
+                  select: {
+                    id: true,
+                    name: true,
+                    status: true
+                  }
+                }
               }
             }
           }
@@ -49,12 +37,16 @@ export async function GET(
       }
     })
 
-    return NextResponse.json({
-      ...brand,
-      kategoriProduks
-    })
+    if (!brand) {
+      return NextResponse.json(
+        { error: 'Brand not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(brand)
   } catch (error) {
-    console.error('Error fetching brand:', error)
+    console.error('Error fetching brand by name:', error)
     return NextResponse.json(
       { error: 'Failed to fetch brand' },
       { status: 500 }

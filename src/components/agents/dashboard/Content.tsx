@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth/AuthProvider"
 export function Content() {
   const { user, logout } = useAuth()
   return (
-    <div className="space-y-6 mt-14">
+    <div className="space-y-6 mt-14 p-6">
       {/* High Priority Case Alert */}
       <div className="bg-red-500 text-white p-4 rounded-lg shadow-lg">
         <div className="flex items-center space-x-3">

@@ -2,31 +2,10 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { 
-  Star, 
-  Package, 
-  Calendar, 
-  User, 
-  Info, 
-  ShoppingBag,
-  Layers,
-  Tag,
-  Clock,
-  CheckCircle,
-  AlertCircle
-} from "lucide-react"
-
-interface DetailProduk {
-  id: string
-  name: string
-  detail: string
-  images: string[]
-  createdAt: string
-  updatedAt: string
-}
+import { Package, Star, ArrowLeft, Info, Calendar, Tag } from "lucide-react"
+import Link from "next/link"
+import { generateColorPalette } from "@/lib/colorUtils"
 
 interface Product {
   id: string
@@ -37,34 +16,46 @@ interface Product {
   kapasitas: string | null
   createdAt: string
   updatedAt: string
-  createdBy: string | null
-  updatedBy: string | null
-  updateNotes: string | null
-  detailProduks: DetailProduk[]
+}
+
+interface Brand {
+  id: string
+  name: string
+  colorbase: string | null
 }
 
 interface ProductDetailProps {
-  brandName?: string
-  brandId?: string
-  categoryId: string
-  subcategoryId?: string
-  productId: string
+  brandName: string
+  categoryName: string
+  subcategoryName?: string
+  productName: string
 }
 
-export function ProductDetail({ brandName, brandId, categoryId, subcategoryId, productId }: ProductDetailProps) {
+export function ProductDetail({ brandName, categoryName, subcategoryName, productName }: ProductDetailProps) {
   const [product, setProduct] = useState<Product | null>(null)
+  const [brand, setBrand] = useState<Brand | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${productId}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch product')
+        let url = `/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`
+        
+        if (subcategoryName) {
+          url += `/${encodeURIComponent(subcategoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(productName.toLowerCase().replace(/\s+/g, '-'))}`
+        } else {
+          url += `/${encodeURIComponent(productName.toLowerCase().replace(/\s+/g, '-'))}`
         }
-        const data = await response.json()
-        setProduct(data)
+
+        const response = await fetch(url)
+        if (response.ok) {
+          const data = await response.json()
+          setProduct(data)
+          setBrand(data.subkategoriProduk.kategoriProduk.brand)
+        } else {
+          setError('Product not found')
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
@@ -72,25 +63,21 @@ export function ProductDetail({ brandName, brandId, categoryId, subcategoryId, p
       }
     }
 
-    fetchData()
-  }, [productId])
+    fetchProduct()
+  }, [brandName, categoryName, subcategoryName, productName])
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <div className="grid grid-cols-4 gap-2">
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          </div>
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Skeleton className="aspect-square rounded-2xl" />
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-3/4" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-2/3" />
             <Skeleton className="h-32 w-full" />
           </div>
         </div>
@@ -98,28 +85,22 @@ export function ProductDetail({ brandName, brandId, categoryId, subcategoryId, p
     )
   }
 
-  if (error) {
+  if (error || !product) {
     return (
-      <div className="text-center py-12">
-        <div className="text-red-500 mb-4">
-          <Package className="h-12 w-12 mx-auto mb-2" />
-          <p className="text-lg font-semibold">Error loading product</p>
-          <p className="text-sm">{error}</p>
+      <div className="text-center py-16">
+        <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-12 max-w-md mx-auto">
+          <div className="text-red-500 mb-6">
+            <Package className="h-16 w-16 mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2">Product Not Found</h3>
+            <p className="text-sm">{error}</p>
+          </div>
         </div>
       </div>
     )
   }
 
-  if (!product) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 mb-4">
-          <Package className="h-12 w-12 mx-auto mb-2" />
-          <p className="text-lg font-semibold">Product not found</p>
-        </div>
-      </div>
-    )
-  }
+  // Generate color palette from brand colorbase
+  const colorPalette = generateColorPalette(brand?.colorbase || '#03438f')
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -136,76 +117,58 @@ export function ProductDetail({ brandName, brandId, categoryId, subcategoryId, p
     }
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return <CheckCircle className="h-4 w-4" />
-      case 'NEW':
-        return <Star className="h-4 w-4" />
-      case 'REVAMP':
-        return <AlertCircle className="h-4 w-4" />
-      case 'DISCONTINUE':
-        return <AlertCircle className="h-4 w-4" />
-      default:
-        return <Info className="h-4 w-4" />
+  const getBackUrl = () => {
+    if (subcategoryName) {
+      return `/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(subcategoryName.toLowerCase().replace(/\s+/g, '-'))}`
+    } else {
+      return `/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`
     }
   }
 
   return (
-    <div className="space-y-6">
-      {/* Product Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {product.name}
-          </h1>
-          <div className="flex items-center space-x-4">
-            <Badge 
-              variant="outline" 
-              className={`status-badge ${getStatusColor(product.status)}`}
-            >
-              {getStatusIcon(product.status)}
-              <span className="ml-1">{product.status}</span>
-            </Badge>
-            {product.kapasitas && (
-              <Badge variant="secondary" className="bg-gray-100 text-gray-700">
-                <Package className="h-3 w-3 mr-1" />
-                {product.kapasitas}
-              </Badge>
-            )}
-          </div>
-        </div>
+    <div className="space-y-8">
+      {/* Navigation */}
+      <div className="flex items-center justify-between">
+        <Link 
+          href={getBackUrl()}
+          className="flex items-center text-gray-600 hover:text-gray-900 transition-colors px-4 py-2 rounded-lg bg-white hover:bg-gray-50 border border-gray-200"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          <span className="text-sm font-medium">
+            Back to {subcategoryName || categoryName}
+          </span>
+        </Link>
       </div>
 
-      {/* Main Content */}
+      {/* Product Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Images */}
+        {/* Product Image */}
         <div className="space-y-4">
-          <div className="relative h-80 w-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-200">
             {product.images && product.images.length > 0 ? (
               <Image
                 src={product.images[0]}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className="object-contain p-8"
               />
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <ShoppingBag className="h-16 w-16 text-gray-400" />
+              <div className="flex items-center justify-center h-full text-gray-400">
+                <Package className="h-24 w-24" />
               </div>
             )}
           </div>
           
-          {/* Thumbnail Images */}
+          {/* Additional Images */}
           {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
               {product.images.slice(1, 5).map((image, index) => (
-                <div key={index} className="relative h-16 w-full rounded-lg overflow-hidden bg-gray-100">
+                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-white shadow-sm border border-gray-200">
                   <Image
                     src={image}
                     alt={`${product.name} ${index + 2}`}
                     fill
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </div>
               ))}
@@ -213,109 +176,77 @@ export function ProductDetail({ brandName, brandId, categoryId, subcategoryId, p
           )}
         </div>
 
-        {/* Product Information */}
+        {/* Product Info */}
         <div className="space-y-6">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {product.name}
+            </h1>
+            
+            {/* Status Badge */}
+            <div className="mb-4">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(product.status)}`}>
+                <Star className="h-4 w-4 mr-1" />
+                {product.status}
+              </span>
+            </div>
+          </div>
+
           {/* Description */}
           {product.description && (
-            <Card className="p-6 card-hover-effect">
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <Info className="h-5 w-5 mr-2 text-[#0259b7]" />
-                  Description
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
-            </Card>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Info className="h-5 w-5 mr-2" style={{ color: colorPalette.primary }} />
+                Description
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+          )}
+
+          {/* Capacity */}
+          {product.kapasitas && (
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Package className="h-5 w-5 mr-2" style={{ color: colorPalette.primary }} />
+                Capacity
+              </h3>
+              <p className="text-gray-600">
+                {product.kapasitas}
+              </p>
+            </div>
           )}
 
           {/* Product Details */}
-          {product.detailProduks && product.detailProduks.length > 0 && (
-            <Card className="p-6 card-hover-effect">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <Layers className="h-5 w-5 mr-2 text-[#0259b7]" />
-                  Product Details
-                </h3>
-                <div className="space-y-4">
-                  {product.detailProduks.map((detail) => (
-                    <div key={detail.id} className="border-l-4 border-[#0259b7] pl-4">
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {detail.name}
-                      </h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {detail.detail}
-                      </p>
-                    </div>
-                  ))}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <Tag className="h-5 w-5 mr-2" style={{ color: colorPalette.primary }} />
+              Product Details
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center text-sm text-gray-600 mb-1">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Created
                 </div>
-              </div>
-            </Card>
-          )}
-
-          {/* Metadata */}
-          <Card className="p-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Tag className="h-5 w-5 mr-2 text-[#0259b7]" />
-                Product Information
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Created</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {new Date(product.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Last Updated</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {new Date(product.updatedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                {product.createdBy && (
-                  <div className="flex items-center space-x-3">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Created By</p>
-                      <p className="text-sm font-medium text-gray-900">
-                        {product.createdBy}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {product.updatedBy && (
-                  <div className="flex items-center space-x-3">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Updated By</p>
-                      <p className="text-sm font-medium text-gray-900">
-                        {product.updatedBy}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                <p className="text-gray-900 font-medium">
+                  {new Date(product.createdAt).toLocaleDateString()}
+                </p>
               </div>
               
-              {product.updateNotes && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <h4 className="text-sm font-medium text-yellow-800 mb-1">
-                    Update Notes
-                  </h4>
-                  <p className="text-sm text-yellow-700">
-                    {product.updateNotes}
-                  </p>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center text-sm text-gray-600 mb-1">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Updated
                 </div>
-              )}
+                <p className="text-gray-900 font-medium">
+                  {new Date(product.updatedAt).toLocaleDateString()}
+                </p>
+              </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

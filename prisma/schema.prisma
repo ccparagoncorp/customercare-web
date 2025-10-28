@@ -8,16 +8,24 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum ProductStatus {
+  NEW
+  REVAMP
+  DISCONTINUE
+  ACTIVE
+}
+
 model Brand {
   id              String           @id @default(cuid())
   name            String           @unique
   description     String?
+  images          String[]
+  colorbase       String?          @default("#03438f")
+  createdBy       String?
+  updatedBy       String?
+  updateNotes     String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  images          String[]
-  createdBy       String?
-  updateNotes     String?
-  updatedBy       String?
   kategoriProduks KategoriProduk[]
 
   @@map("brands")
@@ -27,13 +35,13 @@ model KategoriProduk {
   id                 String              @id @default(cuid())
   name               String
   description        String?
+  images             String[]
   brandId            String
+  createdBy             String?
+  updatedBy          String?
+  updateNotes        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  images             String[]
-  createdBy          String?
-  updateNotes        String?
-  updatedBy          String?
   brand              Brand               @relation(fields: [brandId], references: [id], onDelete: Cascade)
   subkategoriProduks SubkategoriProduk[]
 
@@ -44,13 +52,13 @@ model SubkategoriProduk {
   id               String         @id @default(cuid())
   name             String
   description      String?
+  images           String[]
   kategoriProdukId String
+  createdBy        String?
+  updatedBy        String?
+  updateNotes      String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  images           String[]
-  createdBy        String?
-  updateNotes      String?
-  updatedBy        String?
   produks          Produk[]
   kategoriProduk   KategoriProduk @relation(fields: [kategoriProdukId], references: [id], onDelete: Cascade)
 
@@ -61,15 +69,15 @@ model Produk {
   id                  String            @id @default(cuid())
   name                String
   description         String?
+  kapasitas           String?
+  status              ProductStatus     @default(ACTIVE)
+  images              String[]
   subkategoriProdukId String
+  createdBy           String?
+  updatedBy           String?
+  updateNotes         String?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
-  images              String[]
-  createdBy           String?
-  updateNotes         String?
-  updatedBy           String?
-  status              ProductStatus     @default(ACTIVE)
-  kapasitas           String?
   detailProduks       DetailProduk[]
   subkategoriProduk   SubkategoriProduk @relation(fields: [subkategoriProdukId], references: [id], onDelete: Cascade)
 
@@ -79,11 +87,11 @@ model Produk {
 model DetailProduk {
   id        String   @id @default(cuid())
   name      String
+  detail    String
+  images     String[]
   produkId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  images    String[]
-  detail    String
   produk    Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
 
   @@map("detail_produks")
@@ -172,12 +180,12 @@ model Knowledge {
   id               String            @id @default(cuid())
   title            String
   description      String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  logos            String[]
   createdBy        String?
   updatedBy        String?
-  logos            String[]
   updateNotes      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   detailKnowledges DetailKnowledge[]
 
   @@index([title])
@@ -186,51 +194,44 @@ model Knowledge {
 }
 
 model DetailKnowledge {
-  id                    String                 @id @default(cuid())
-  name                  String
-  knowledgeId           String
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  description           String?
-  logos                 String[]
-  knowledge             Knowledge              @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
-  jenisDetailKnowledges JenisDetailKnowledge[]
+  id                     String                        @id @default(cuid())
+  name                   String
+  description            String?
+  logos                  String[]
+  knowledgeId            String
+  createdAt              DateTime                      @default(now())
+  updatedAt              DateTime                      @updatedAt
+  knowledge              Knowledge                     @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  jenisDetailKnowledges  JenisDetailKnowledge[]
 
   @@map("detail_knowledges")
 }
 
 model JenisDetailKnowledge {
-  id                          String                       @id @default(cuid())
+  id                          String                             @id @default(cuid())
   name                        String
   description                 String?
   logos                       String[]
   detailKnowledgeId           String
-  createdAt                   DateTime                     @default(now())
-  updatedAt                   DateTime                     @updatedAt
-  detailKnowledge             DetailKnowledge              @relation(fields: [detailKnowledgeId], references: [id], onDelete: Cascade)
+  createdAt                   DateTime                           @default(now())
+  updatedAt                   DateTime                           @updatedAt
+  detailKnowledge             DetailKnowledge                    @relation(fields: [detailKnowledgeId], references: [id], onDelete: Cascade)
   produkJenisDetailKnowledges ProdukJenisDetailKnowledge[]
 
   @@map("jenis_detail_knowledges")
 }
 
 model ProdukJenisDetailKnowledge {
-  id                     String               @id @default(cuid())
-  name                   String
-  description            String?
-  logos                  String[]
-  jenisDetailKnowledgeId String
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  jenisDetailKnowledge   JenisDetailKnowledge @relation(fields: [jenisDetailKnowledgeId], references: [id], onDelete: Cascade)
+  id                      String                @id @default(cuid())
+  name                    String
+  description             String?
+  logos                   String[]
+  jenisDetailKnowledgeId  String
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  jenisDetailKnowledge    JenisDetailKnowledge  @relation(fields: [jenisDetailKnowledgeId], references: [id], onDelete: Cascade)
 
   @@map("produk_jenis_detail_knowledges")
-}
-
-enum ProductStatus {
-  NEW
-  REVAMP
-  DISCONTINUE
-  ACTIVE
 }
 
 enum UserRole {

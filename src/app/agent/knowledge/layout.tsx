@@ -5,5 +5,9 @@ export default function KnowledgeLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <Layout>{children}</Layout>
+  return <Layout>
+    <div className="p-6">
+      {children}
+    </div>
+  </Layout>
 }

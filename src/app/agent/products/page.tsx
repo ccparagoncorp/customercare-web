@@ -72,7 +72,7 @@ export default function ProductsPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-12 mx-48 my-24">
             {brands.map((brand) => (
-              <Link key={brand.id} href={`/agent/products/brand/${encodeURIComponent(brand.name.toLowerCase().replace(/\s+/g, '-'))}`}>
+              <Link key={brand.id} href={`/agent/products/${encodeURIComponent(brand.name.toLowerCase().replace(/\s+/g, '-'))}`}>
                 <div className="bg-white rounded-4xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 cursor-pointer">
                   {/* Brand Image */}
                   <div className="aspect-square relative bg-white">

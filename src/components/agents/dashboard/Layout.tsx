@@ -17,12 +17,12 @@ export function Layout({ children }: DashboardLayoutProps) {
         <Sidebar isOpen={false} onToggle={() => {}} />
         
         {/* Main Content */}
-        <div className="ml-20">
+        <div className="ml-18">
           {/* Header */}
           <Header />
           
           {/* Page Content */}
-          <main className="p-6">
+          <main className="">
             {children}
           </main>
         </div>

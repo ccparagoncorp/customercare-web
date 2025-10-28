@@ -1,1 +1,0 @@
-export { KnowledgeContent } from './KnowledgeContent'
