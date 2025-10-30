@@ -2,6 +2,8 @@ import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { CategoryBackgroundSection } from "@/components/agents/products/CategoryBackgroundSection"
 import { ModernSubcategoryGrid } from "@/components/agents/products/ModernSubcategoryGrid"
+import { CategoryContentWrapper } from "@/components/agents/products/CategoryContentWrapper"
+import { CategoryDescriptionSection } from "@/components/agents/products/CategoryDescriptionSection"
 
 interface CategoryPageProps {
   params: {
@@ -19,20 +21,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen mt-15 bg-gray-50">
           {/* Background Image Section - Full Width */}
           <CategoryBackgroundSection 
             brandName={decodedBrandName} 
             categoryName={decodedCategoryName} 
           />
+
+          {/* Category Description Section */}
+          <CategoryDescriptionSection brandName={decodedBrandName} categoryName={decodedCategoryName} />
           
           {/* Main Content */}
-          <div className="max-w-7xl mx-auto px-6 py-16 space-y-16">
-            {/* Subcategories Section */}
-            <section className="space-y-16">
-              <ModernSubcategoryGrid brandName={decodedBrandName} categoryName={decodedCategoryName} />
-            </section>
-          </div>
+          <CategoryContentWrapper brandName={decodedBrandName} categoryName={decodedCategoryName} />
         </div>
       </Layout>
     </ProtectedRoute>

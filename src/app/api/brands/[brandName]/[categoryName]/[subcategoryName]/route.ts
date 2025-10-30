@@ -40,7 +40,12 @@ export async function GET(
             brand: true
           }
         },
-        produks: true
+        produks: {
+          orderBy: { name: 'asc' },
+          include: {
+            detailProduks: true
+          }
+        }
       }
     })
 

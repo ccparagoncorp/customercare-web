@@ -6,11 +6,13 @@ import Image from "next/image"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import productsContent from "@/content/products.json"
+import { generateColorPalette } from "@/lib/colorUtils"
 
 interface Brand {
   id: string
   name: string
   images: string[]
+  colorbase?: string | null
 }
 
 export default function ProductsPage() {
@@ -71,27 +73,33 @@ export default function ProductsPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-12 mx-48 my-24">
-            {brands.map((brand) => (
-              <Link key={brand.id} href={`/agent/products/${encodeURIComponent(brand.name.toLowerCase().replace(/\s+/g, '-'))}`}>
-                <div className="bg-white rounded-4xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 cursor-pointer">
-                  {/* Brand Image */}
-                  <div className="aspect-square relative bg-white">
-                    {brand.images && brand.images.length > 0 ? (
-                      <Image
-                        src={brand.images[0]}
-                        alt={brand.name}
-                        fill
-                        className="object-contain p-8 hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="text-lg font-medium">{brand.name}</span>
-                      </div>
-                    )}
+            {brands.map((brand) => {
+              const palette = generateColorPalette(brand.colorbase || "#03438f")
+              return (
+                <Link key={brand.id} href={`/agent/products/${encodeURIComponent(brand.name.toLowerCase().replace(/\s+/g, '-') )}`}>
+                  <div className="bg-white rounded-4xl shadow-sm border-2 overflow-hidden transition-all duration-300 cursor-pointer group" style={{ borderColor: `${palette.primary}1A`}}>
+                    {/* Brand Image as a group for hover */}
+                    <div className="aspect-square relative bg-white">
+                      {brand.images && brand.images.length > 0 ? (
+                        <Image
+                          src={brand.images[0]}
+                          alt={brand.name}
+                          fill
+                          className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <span className="text-lg font-medium">{brand.name}</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-80 transition-opacity duration-300"
+                           style={{ background: `linear-gradient(0deg, ${palette.primary}77 0%, transparent 50%)` }}></div>
+                    </div>
+                    {/* Optional: brand name, etc... */}
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </Layout>

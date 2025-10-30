@@ -12,6 +12,7 @@ interface Brand {
   name: string
   description: string | null
   images: string[]
+  link_sampul: string | null
   colorbase: string | null
 }
 
@@ -86,13 +87,51 @@ export function BrandBackgroundSection({ brandName }: BrandBackgroundSectionProp
   // Generate color palette from brand colorbase
   const colorPalette = generateColorPalette(brand.colorbase || '#03438f')
   
-  // Get background image from second index (index 1)
+  // Prefer YouTube cover link if available
+  const youtubeUrl = brand.link_sampul || null
+  // Fallback background image from second index (index 1)
   const backgroundImage = brand.images && brand.images.length > 1 ? brand.images[1] : null
 
+  // Extract YouTube video ID (supports youtu.be and youtube.com URLs)
+  const getYouTubeId = (url: string) => {
+    try {
+      const u = new URL(url)
+      if (u.hostname === 'youtu.be') {
+        return u.pathname.slice(1)
+      }
+      if (u.hostname.includes('youtube.com')) {
+        const v = u.searchParams.get('v')
+        if (v) return v
+        const paths = u.pathname.split('/')
+        const idx = paths.indexOf('embed')
+        if (idx >= 0 && paths[idx + 1]) return paths[idx + 1]
+      }
+    } catch {}
+    return null
+  }
+  const youtubeId = youtubeUrl ? getYouTubeId(youtubeUrl) : null
+
   return (
-    <div className="relative h-[300px] w-full overflow-hidden">
-      {/* Background Image */}
-      {backgroundImage ? (
+    <div className="relative h-[500px] w-full overflow-hidden">
+      {/* Background Media */}
+      {youtubeId ? (
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Technique to cover: oversized iframe centered */}
+          <iframe
+            title={`${brand.name} cover video`}
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&modestbranding=1&rel=0&start=0&end=10&enablejsapi=1&playlist=${youtubeId}`}
+            allow="autoplay; fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-full"
+            style={{
+              aspectRatio: '16 / 9',
+              height: 'auto',
+              pointerEvents: 'none',
+              border: '0'
+            }}
+          />
+        </div>
+      ) : backgroundImage ? (
         <Image
           src={backgroundImage}
           alt={`${brand.name} background`}
@@ -112,12 +151,12 @@ export function BrandBackgroundSection({ brandName }: BrandBackgroundSectionProp
       {/* Overlay */}
       <div className="absolute inset-0"
         style={{
-          background: `linear-gradient(0deg, ${colorPalette.primary}CC 0%, ${colorPalette.primary}00 100%)`
+          background: `linear-gradient(0deg, ${colorPalette.primary}88 0%, ${colorPalette.primary}00 100%)`
         }}
       ></div>
       
       {/* Content */}
-      <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-end">
+      <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-between">
         {/* Navigation */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/agent/products" className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
@@ -131,11 +170,6 @@ export function BrandBackgroundSection({ brandName }: BrandBackgroundSectionProp
           <h1 className="text-4xl lg:text-5xl font-bold text-white">
             {brand.name}
           </h1>
-          {brand.description && (
-            <p className="text-xl text-white/90 max-w-2xl">
-              {brand.description}
-            </p>
-          )}
         </div>
       </div>
     </div>

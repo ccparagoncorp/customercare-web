@@ -3,6 +3,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { BrandBackgroundSection } from "@/components/agents/products/BrandBackgroundSection"
 import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { BrandGallery } from "@/components/agents/products/BrandGallery"
+import { BrandDescriptionSection } from "@/components/agents/products/BrandDescriptionSection"
 
 interface BrandPageProps {
   params: {
@@ -24,6 +25,9 @@ export default async function BrandPage({ params }: BrandPageProps) {
           
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-6 py-16 space-y-16">
+          {/* Brand Description Section */}
+          <BrandDescriptionSection brandName={decodedBrandName} />
+
             {/* All Categories in Brand Section */}
             <section className="space-y-16">
               <ModernBrandCategories brandName={decodedBrandName} />

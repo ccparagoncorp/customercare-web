@@ -1,58 +1,54 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowLeft, Package } from "lucide-react"
 import { generateColorPalette } from "@/lib/colorUtils"
-import Link from "next/link"
 
-interface Category {
-  id: string
-  name: string
-  description: string | null
-  images: string[]
-}
-
-interface Brand {
-  id: string
+interface BrandLite {
   name: string
   colorbase: string | null
   link_sampul: string | null
 }
 
-interface CategoryBackgroundSectionProps {
-  brandName: string
-  categoryName: string
+interface CategoryLite {
+  name: string
+  brand: BrandLite
 }
 
-export function CategoryBackgroundSection({ brandName, categoryName }: CategoryBackgroundSectionProps) {
-  const [category, setCategory] = useState<Category | null>(null)
-  const [brand, setBrand] = useState<Brand | null>(null)
+interface Subcategory {
+  id: string
+  name: string
+  description: string | null
+  images: string[]
+  kategoriProduk: CategoryLite
+}
+
+export function SubcategoryBackgroundSection({ brandName, categoryName, subcategoryName }: { brandName: string; categoryName: string; subcategoryName: string }) {
+  const [subcategory, setSubcategory] = useState<Subcategory | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const run = async () => {
       try {
-        // Fetch category by brand and category name
-        const categoryResponse = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`)
-        if (categoryResponse.ok) {
-          const categoryData = await categoryResponse.json()
-          setCategory(categoryData)
-          setBrand(categoryData.brand)
+        const res = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(subcategoryName.toLowerCase().replace(/\s+/g, '-'))}`)
+        if (res.ok) {
+          const data = await res.json()
+          setSubcategory(data)
         } else {
-          setError('Category not found')
+          setError('Subcategory not found')
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'An error occurred')
       } finally {
         setLoading(false)
       }
     }
-
-    fetchData()
-  }, [brandName, categoryName])
+    run()
+  }, [brandName, categoryName, subcategoryName])
 
   if (loading) {
     return (
@@ -72,20 +68,20 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
     )
   }
 
-  if (error || !category) {
+  if (error || !subcategory) {
     return (
       <div className="relative h-96 w-full overflow-hidden bg-gradient-to-br from-red-500 to-pink-600">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-end">
           <div className="flex items-center justify-between mb-8">
-            <Link href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`} className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
+            <Link href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`} className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">Back to {brandName}</span>
+              <span className="text-sm font-medium">Back to {categoryName}</span>
             </Link>
           </div>
           <div className="text-white">
             <Package className="h-16 w-16 mb-4 opacity-80" />
-            <h1 className="text-4xl font-bold mb-2">Category Not Found</h1>
+            <h1 className="text-4xl font-bold mb-2">Subcategory Not Found</h1>
             <p className="text-white/80">{error}</p>
           </div>
         </div>
@@ -93,11 +89,10 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
     )
   }
 
-  // Generate color palette from brand colorbase
-  const colorPalette = generateColorPalette(brand?.colorbase || '#03438f')
+  const colorPalette = generateColorPalette(subcategory.kategoriProduk.brand?.colorbase || '#03438f')
 
-  // Prefer brand YouTube cover if available; fallback to category second image; then gradient
-  const youtubeUrl = brand?.link_sampul || null
+  // Prefer brand YouTube cover if available; fallback to subcategory second image; then gradient
+  const youtubeUrl = subcategory.kategoriProduk.brand?.link_sampul || null
   const getYouTubeId = (url: string) => {
     try {
       const u = new URL(url)
@@ -113,15 +108,15 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
     return null
   }
   const youtubeId = youtubeUrl ? getYouTubeId(youtubeUrl) : null
-  const backgroundImage = category.images && category.images.length > 1 ? category.images[1] : null
+  const backgroundImage = subcategory.images && subcategory.images.length > 1 ? subcategory.images[1] : null
 
   return (
     <div className="relative h-[500px] w-full overflow-hidden">
-      {/* Background Media to match BrandBackgroundSection */}
+      {/* Background Media to match CategoryBackgroundSection */}
       {youtubeId ? (
         <div className="absolute inset-0 overflow-hidden">
           <iframe
-            title={`${category.name} cover video`}
+            title={`${subcategory.name} cover video`}
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&modestbranding=1&rel=0&start=0&end=10&enablejsapi=1&playlist=${youtubeId}`}
             allow="autoplay; fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -130,21 +125,12 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
           />
         </div>
       ) : backgroundImage ? (
-        <Image
-          src={backgroundImage}
-          alt={`${category.name} background`}
-          fill
-          className="object-cover"
-          priority
-        />
+        <Image src={backgroundImage} alt={`${subcategory.name} background`} fill className="object-cover" priority />
       ) : (
-        <div
-          className="absolute inset-0"
-          style={{ background: `linear-gradient(135deg, ${colorPalette.primary} 0%, ${colorPalette.primaryDark} 100%)` }}
-        />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${colorPalette.primary} 0%, ${colorPalette.primaryDark} 100%)` }}></div>
       )}
 
-      {/* Overlay matches brand section */}
+      {/* Overlay matches category/brand section */}
       <div
         className="absolute inset-0"
         style={{ background: `linear-gradient(0deg, ${colorPalette.primary}88 0%, ${colorPalette.primary}00 100%)` }}
@@ -154,19 +140,19 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
       <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-between">
         {/* Navigation */}
         <div className="flex items-center justify-between mb-8">
-          <Link href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`} className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
+          <Link href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`} className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            <span className="text-sm font-medium">Back to {brandName}</span>
+            <span className="text-sm font-medium">Back to {categoryName}</span>
           </Link>
         </div>
-        
-        {/* Category Info */}
+
+        {/* Title */}
         <div className="space-y-4">
-          <h1 className="text-4xl lg:text-5xl font-bold text-white">
-            {category.name}
-          </h1>
+          <h1 className="text-4xl lg:text-5xl font-bold text-white">{subcategory.name}</h1>
         </div>
       </div>
     </div>
   )
 }
+
+

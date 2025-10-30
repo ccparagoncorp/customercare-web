@@ -13,12 +13,16 @@ import { Pagination } from "./Pagination"
 import { LoadingGrid } from "./LoadingGrid"
 import { EmptyState } from "./EmptyState"
 import { Tooltip } from "./Tooltip"
+import { generateColorPalette } from "@/lib/colorUtils"
 
 interface Brand {
   id: string
   name: string
   description: string | null
+  colorbase: string | null
   images: string[]
+  createdAt: Date
+  updatedAt: Date
   kategoriProduks: {
     id: string
     name: string
@@ -164,10 +168,13 @@ export function BrandGrid() {
 
           const totalCategories = brand.kategoriProduks.length
 
+          const colorPalette = generateColorPalette(brand.colorbase ?? '#03438f')
+
           return (
             <Link key={brand.id} href={`/agent/products/brand/${brand.id}`}>
               <Card className="group product-card-hover cursor-pointer border-0 product-gradient-bg stagger-item">
                 <div className="p-6">
+                    
                   {/* Brand Image */}
                   <div className="relative h-32 w-full mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                     {brand.images && brand.images.length > 0 ? (
@@ -182,6 +189,7 @@ export function BrandGrid() {
                         <Package className="h-12 w-12 text-gray-400" />
                       </div>
                     )}
+                    
                     <div className="absolute top-2 right-2">
                       <Tooltip content={`${brand.name} - ${totalProducts} products across ${totalCategories} categories`}>
                         <Badge variant="secondary" className="bg-white/90 text-gray-700">

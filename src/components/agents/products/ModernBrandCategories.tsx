@@ -28,6 +28,7 @@ interface Brand {
   name: string
   colorbase: string | null
   kategoriProduks: Category[]
+  description: string | null
 }
 
 interface ModernBrandCategoriesProps {
@@ -139,9 +140,6 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
           >
             Explore {brand.name} Categories
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover our comprehensive range of product categories, each designed to meet your specific needs and preferences
-          </p>
         </div>
         
         {/* Decorative Line */}
@@ -229,7 +227,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
                   )}
                   
                   {/* Enhanced Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(0deg, ${colorPalette.primary}22 0%, transparent 100%)` }}></div>
                   
                   {/* Current Category Badge */}
                   {isCurrentCategory && (

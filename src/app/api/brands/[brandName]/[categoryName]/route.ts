@@ -29,15 +29,22 @@ export async function GET(
       },
       include: {
         brand: true,
+        // Include subcategories with their products
         subkategoriProduks: {
           include: {
             produks: {
-              select: {
-                id: true,
-                name: true,
-                status: true
+              orderBy: { name: 'asc' },
+              include: {
+                detailProduks: true
               }
             }
+          }
+        },
+        // Also include top-level products that belong directly to the category
+        produks: {
+          orderBy: { name: 'asc' },
+          include: {
+            detailProduks: true
           }
         }
       }
