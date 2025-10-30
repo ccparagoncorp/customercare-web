@@ -39,14 +39,20 @@ interface Category {
 interface ModernSubcategoryGridProps {
   brandName: string
   categoryName: string
+  initialCategory?: Category | null
 }
 
-export function ModernSubcategoryGrid({ brandName, categoryName }: ModernSubcategoryGridProps) {
-  const [category, setCategory] = useState<Category | null>(null)
-  const [loading, setLoading] = useState(true)
+export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory }: ModernSubcategoryGridProps) {
+  const [category, setCategory] = useState<Category | null>(initialCategory ?? null)
+  const [loading, setLoading] = useState(!initialCategory)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (initialCategory) {
+      setCategory(initialCategory)
+      setLoading(false)
+      return
+    }
     const fetchData = async () => {
       try {
         const response = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`)
@@ -63,7 +69,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName }: ModernSubcate
     }
 
     fetchData()
-  }, [brandName, categoryName])
+  }, [brandName, categoryName, initialCategory])
 
   if (loading) {
     return (

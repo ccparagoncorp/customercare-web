@@ -37,7 +37,7 @@ export function CategoryContentWrapper({ brandName, categoryName }: { brandName:
     <div className="max-w-screen-2xl mx-auto px-6 py-16 space-y-16">
       {subcategories.length > 0 ? (
         <section className="space-y-16">
-          <ModernSubcategoryGrid brandName={brandName} categoryName={categoryName} />
+          <ModernSubcategoryGrid brandName={brandName} categoryName={categoryName} initialCategory={category} />
         </section>
       ) : (
         <ProductListWithDetails brandColor={brandColor} products={aggregatedProducts} />
