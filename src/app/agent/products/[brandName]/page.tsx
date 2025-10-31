@@ -4,6 +4,7 @@ import { BrandBackgroundSection } from "@/components/agents/products/BrandBackgr
 import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { BrandGallery } from "@/components/agents/products/BrandGallery"
 import { BrandDescriptionSection } from "@/components/agents/products/BrandDescriptionSection"
+import { BrandContentWrapper } from "@/components/agents/products/BrandContentWrapper"
 
 interface BrandPageProps {
   params: {
@@ -15,6 +16,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
   // Await params and decode the brand name from URL
   const { brandName } = await params
   const decodedBrandName = decodeURIComponent(brandName).replace(/-/g, ' ')
+  
   
   return (
     <ProtectedRoute>
@@ -28,10 +30,8 @@ export default async function BrandPage({ params }: BrandPageProps) {
           {/* Brand Description Section */}
           <BrandDescriptionSection brandName={decodedBrandName} />
 
-            {/* All Categories in Brand Section */}
-            <section className="space-y-16">
-              <ModernBrandCategories brandName={decodedBrandName} />
-            </section>
+            {/* Categories or Products (if no categories) */}
+            <BrandContentWrapper brandName={decodedBrandName} />
             
             {/* Brand Gallery Section */}
             <section className="space-y-16">

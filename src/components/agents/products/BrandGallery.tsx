@@ -61,8 +61,8 @@ export function BrandGallery({ brandName }: BrandGalleryProps) {
   }
 
   // Filter images dengan index > 1 (skip index 0 dan 1)
-  const additionalImages = brand.images && brand.images.length > 2 
-    ? brand.images.slice(2) 
+  const additionalImages = brand.images && brand.images.length > 1 
+    ? brand.images.slice(1) 
     : []
 
   // Jika tidak ada gambar tambahan, tidak render komponen
