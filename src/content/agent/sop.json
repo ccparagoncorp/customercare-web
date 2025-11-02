@@ -1,0 +1,29 @@
+{
+  "page": {
+    "title": "SOP & Workflows",
+    "description": "Pilih kategori SOP untuk melihat daftar Standar Operasional Prosedur"
+  },
+  "kategori": {
+    "back": "Kembali ke Kategori",
+    "notFound": "Kategori tidak ditemukan",
+    "sopCount": {
+      "singular": "SOP",
+      "plural": "SOPs"
+    }
+  },
+  "sop": {
+    "back": "Kembali ke",
+    "notFound": "SOP tidak ditemukan",
+    "jenisCount": {
+      "singular": "Jenis SOP",
+      "plural": "Jenis SOP"
+    }
+  },
+  "jenis": {
+    "detailTitle": "Detail SOP"
+  },
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan"
+  }
+}

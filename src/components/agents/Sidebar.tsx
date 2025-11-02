@@ -17,7 +17,7 @@ const navigationItems = [
   { icon: Home, label: "Home", href: "/agent/dashboard" },
   { icon: BookOpen, label: "Knowledge Base", href: "/agent/knowledge" },
   { icon: Lightbulb, label: "Product Knowledge", href: "/agent/products" },
-  { icon: Settings, label: "SOP & Workflows", href: "/agent/dashboard/sop" },
+  { icon: Settings, label: "SOP & Workflows", href: "/agent/sop" },
   { icon: Clipboard, label: "Quality & Training", href: "/agent/dashboard/training" },
   { icon: Calendar, label: "Scheduling & WFM", href: "/agent/dashboard/scheduling" },
   { icon: Megaphone, label: "Announcements", href: "/agent/dashboard/announcements" },
