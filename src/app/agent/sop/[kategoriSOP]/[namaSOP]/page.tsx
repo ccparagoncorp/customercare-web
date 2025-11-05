@@ -17,8 +17,8 @@ export default async function NamaSOPPage({ params }: NamaSOPPageProps) {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="min-h-screen mt-15 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="min-h-screen mt-12">
+          <div className="max-w-7xl mx-auto px-6 py-8">
             <JenisSOPDetail 
               kategoriSOP={decodedKategoriSOP} 
               namaSOP={decodedNamaSOP} 

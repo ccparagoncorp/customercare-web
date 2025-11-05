@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, FileText, CheckCircle2, ImageIcon } from "lucide-react"
+import { ArrowLeft, FileText, CheckCircle2, ImageIcon, Copy, Check, ChevronDown, ChevronUp, List } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
 
 interface DetailSOP {
@@ -39,6 +39,8 @@ interface JenisSOPDetailProps {
 export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
   const [sop, setSOP] = useState<SOP | null>(null)
   const [loading, setLoading] = useState(true)
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
+  const [copiedStepId, setCopiedStepId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchSOP = async () => {
@@ -58,6 +60,36 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
     }
     fetchSOP()
   }, [kategoriSOP, namaSOP])
+
+  const jenisIds = useMemo(() => (sop ? sop.jenisSOPs.map((j) => j.id) : []), [sop])
+
+  const toggleSection = (id: string) => {
+    setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const setAllSections = (expand: boolean) => {
+    if (!sop) return
+    const next: Record<string, boolean> = {}
+    sop.jenisSOPs.forEach((j) => { next[j.id] = expand })
+    setExpandedSections(next)
+  }
+
+  useEffect(() => {
+    // expand first section by default
+    if (sop && sop.jenisSOPs.length > 0) {
+      setExpandedSections((prev) => ({ [sop.jenisSOPs[0].id]: true, ...prev }))
+    }
+  }, [sop])
+
+  const copyToClipboard = async (text: string, stepKey: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedStepId(stepKey)
+      setTimeout(() => setCopiedStepId(null), 1500)
+    } catch (e) {
+      // noop
+    }
+  }
 
   if (loading) {
     return (
@@ -107,16 +139,30 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
           {sop.description && (
             <p className="text-white/90 text-lg leading-relaxed max-w-4xl">{sop.description}</p>
           )}
+          {/* Meta chips */}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/15 text-white/90 border border-white/20">
+              Kategori: {sop.kategoriSOP.name}
+            </span>
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/15 text-white/90 border border-white/20">
+              Jenis: {sop.jenisSOPs.length}
+            </span>
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/15 text-white/90 border border-white/20">
+              Total Langkah: {sop.jenisSOPs.reduce((acc, j) => acc + j.detailSOPs.length, 0)}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* JenisSOP Sections */}
+      {/* Content */}
       <div className="space-y-8">
-        {sop.jenisSOPs.map((jenis, jenisIndex) => (
-          <section
-            key={jenis.id}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-shadow duration-300"
-          >
+        <div className="space-y-8">
+          {sop.jenisSOPs.map((jenis, jenisIndex) => (
+            <section
+              key={jenis.id}
+              id={`jenis-${jenis.id}`}
+              className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+            >
             {/* JenisSOP Header */}
             <div className="bg-gradient-to-r from-[#0259b7] via-[#017cff] to-[#398dff] px-8 py-8 relative overflow-hidden">
               {/* Decorative pattern */}
@@ -141,12 +187,21 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
                       <p className="text-white/90 leading-relaxed">{jenis.content}</p>
                     )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(jenis.id)}
+                    aria-expanded={!!expandedSections[jenis.id]}
+                    className="ml-auto inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm border border-white/20 transition-colors"
+                  >
+                    {expandedSections[jenis.id] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    {expandedSections[jenis.id] ? "Tutup" : "Buka"}
+                  </button>
                 </div>
               </div>
             </div>
 
             {/* Images Section */}
-            {jenis.images.length > 0 && (
+            {expandedSections[jenis.id] && jenis.images.length > 0 && (
               <div className="px-8 py-8 border-b border-gray-100 bg-gray-50/50">
                 <div className="flex items-center gap-2 mb-6">
                   <ImageIcon className="w-5 h-5 text-[#0259b7]" />
@@ -172,7 +227,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
             )}
 
             {/* DetailSOPs */}
-            {jenis.detailSOPs.length > 0 && (
+            {expandedSections[jenis.id] && jenis.detailSOPs.length > 0 && (
               <div className="px-8 py-8 space-y-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-1 h-8 bg-gradient-to-b from-[#0259b7] to-[#017cff] rounded-full" />
@@ -182,7 +237,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
                   {jenis.detailSOPs.map((detail, detailIndex) => (
                     <div
                       key={detail.id}
-                      className="group relative border-l-4 border-[#0259b7] pl-6 py-4 bg-gradient-to-r from-gray-50 to-white rounded-r-xl hover:shadow-lg transition-all duration-300 hover:border-[#017cff]"
+                      className="group relative border-l-4 border-[#0259b7] pl-6 pr-4 py-4 bg-gradient-to-r from-gray-50 to-white rounded-r-xl hover:shadow-lg transition-all duration-300 hover:border-[#017cff]"
                     >
                       {/* Number indicator */}
                       <div className="absolute -left-3 top-4 w-6 h-6 bg-[#0259b7] rounded-full flex items-center justify-center shadow-lg">
@@ -190,9 +245,20 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
                       </div>
                       
                       <div className="pl-4">
-                        <h4 className="font-bold text-gray-900 mb-2 text-lg group-hover:text-[#0259b7] transition-colors">
-                          {detail.name}
-                        </h4>
+                        <div className="flex items-start justify-between gap-3">
+                          <h4 className="font-bold text-gray-900 mb-2 text-lg group-hover:text-[#0259b7] transition-colors">
+                            {detail.name}
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(detail.value, `${jenis.id}-${detail.id}`)}
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                            aria-label="Copy step"
+                          >
+                            {copiedStepId === `${jenis.id}-${detail.id}` ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                            {copiedStepId === `${jenis.id}-${detail.id}` ? "Tersalin" : "Salin"}
+                          </button>
+                        </div>
                         <div className="prose prose-sm max-w-none">
                           <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                             {detail.value}
@@ -205,7 +271,8 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
               </div>
             )}
           </section>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )

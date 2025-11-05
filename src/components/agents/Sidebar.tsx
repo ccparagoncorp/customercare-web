@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { Home, BookOpen, Lightbulb, Settings, Clipboard, Calendar, Megaphone, Trophy, BarChart3, LogOut } from "lucide-react"
 import dashboardContent from "@/content/agent/dashboard.json"
 import { KnowledgeBaseSubmenu } from "./KnowledgeBaseSubmenu"
+import { QualityTrainingSubmenu } from "./QualityTrainingSubmenu"
 
 interface SidebarProps {
   isOpen?: boolean
@@ -107,6 +108,18 @@ export function Sidebar({ isOpen = false, onToggle }: SidebarProps) {
                 key={item.href}
                 isHovered={isHovered}
                 isActive={isKnowledgeActive}
+              />
+            )
+          }
+
+          // Special handling for Quality & Training with submenu
+          if (item.label === "Quality & Training") {
+            // QualityTrainingSubmenu will calculate its own active state based on quality training list
+            // We don't pass isActive here, let it calculate internally
+            return (
+              <QualityTrainingSubmenu 
+                key={item.href}
+                isHovered={isHovered}
               />
             )
           }
