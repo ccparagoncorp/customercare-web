@@ -183,10 +183,19 @@ export default function QualityTrainingPage() {
         showIcons: false,
       }
     }
-    else if (name.includes('tips') && (name.includes('tricks') || name.includes('trick')) && (name.includes('customer') || name.includes('cs'))) {
+    else if (
+      name.includes('tips') && (name.includes('tricks') || name.includes('trick')) && (name.includes('customer') || name.includes('cs'))
+    ) {
       return {
         type: 'tips-tricks-customer-services',
         layout: 'card-grid', // Display as cards in grid
+        showIcons: false,
+      }
+    }
+    else if (name.includes('all-materi-training') || name.includes('all materi training')) {
+      return {
+        type: 'all-materi-training',
+        layout: 'slides-grid',
         showIcons: false,
       }
     }
@@ -252,6 +261,32 @@ export default function QualityTrainingPage() {
         )}
       </div>
     )
+  }
+
+  // Function to convert slide/share links to embeddable URL (Google Slides basic support)
+  const getSlideEmbedUrl = (url: string): string => {
+    try {
+      const u = url.trim()
+      // Pattern 1: https://docs.google.com/presentation/d/{id}/edit...
+      const m1 = u.match(/https?:\/\/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/)
+      if (m1 && m1[1]) {
+        return `https://docs.google.com/presentation/d/${m1[1]}/embed?start=false&loop=false&delayms=3000&rm=minimal`
+      }
+      // Pattern 2: https://docs.google.com/presentation/d/e/{id}/pub?... or /embed
+      const m2 = u.match(/https?:\/\/docs\.google\.com\/presentation\/d\/e\/([a-zA-Z0-9_-]+)/)
+      if (m2 && m2[1]) {
+        return `https://docs.google.com/presentation/d/e/${m2[1]}/embed?start=false&loop=false&delayms=3000&rm=minimal`
+      }
+      // Google Drive preview links
+      const mDrive = u.match(/https?:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/)
+      if (mDrive && mDrive[1]) {
+        return `https://drive.google.com/file/d/${mDrive[1]}/preview`
+      }
+      // Fallback: return original (browser may still embed)
+      return u
+    } catch {
+      return url
+    }
   }
 
   if (loading) {
@@ -455,7 +490,10 @@ export default function QualityTrainingPage() {
             if (designConfig.type === 'tips-tricks-customer-services') {
               return "bg-[#d6e5ff] p-4 pt-24"
             }
-            return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] p-4 pt-24"
+            if (designConfig.type === 'all-materi-training') {
+              return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] px-0 py-4 pt-24"
+            }
+            return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] p-4 pb-12 pt-24"
           }
 
           // Determine section content classes based on design config
@@ -465,6 +503,9 @@ export default function QualityTrainingPage() {
             }
             if (designConfig.type === 'sop-pelaporan-eskos') {
               return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] p-4 pb-0"
+            }
+            if (designConfig.type === 'all-materi-training') {
+              return "p-0"
             }
             if (designConfig.type === 'tips-tricks-customer-services') {
               return "bg-[#d6e5ff] p-8 pb-32"
@@ -511,23 +552,25 @@ export default function QualityTrainingPage() {
                     )
                   }
 
-                  // Tips & Tricks Customer Services - Card grid layout
+                  // Tips & Tricks Customer Services - Centered cards using flex
                   if (designConfig.type === 'tips-tricks-customer-services' && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
                     return (
-                      <div className="flex flex-wrap justify-center gap-4 max-w-full">
+                      <div className="flex flex-wrap justify-center gap-6">
                         {jenis.detailQualityTrainings.map((detail) => (
                           <div
                             key={detail.id}
                             className="bg-gradient-to-b from-[#041965] to-[#51abae] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200 hover:border-[#041965] transform hover:-translate-y-1 w-full md:w-[calc(50%-1rem)] lg:w-[calc(20%-1.25rem)] max-w-sm"
                           >
                             <div className="flex flex-col items-center justify-center gap-3 mb-4">
-                              <Image src={detail.logos[0]} alt={detail.name} width={200} height={200} />
-                              <h3 className="text-xl text-center font-bold text-white mb-4 line-clamp-2">
+                              {detail.logos && detail.logos[0] && (
+                                <Image src={detail.logos[0]} alt={detail.name} width={200} height={200} />
+                              )}
+                              <h3 className="text-xl text-center font-bold text-white mb-2 line-clamp-2">
                                 {detail.name}
                               </h3>
                             </div>
                             {detail.description && (
-                              <p className="text-white text-md font-medium leading-relaxed mb-4 whitespace-pre-line">
+                              <p className="text-white text-sm leading-relaxed mb-4 whitespace-pre-line">
                                 {detail.description}
                               </p>
                             )}
@@ -542,49 +585,68 @@ export default function QualityTrainingPage() {
                                 <span>Open Slide</span>
                               </a>
                             )}
-                            {/* SubdetailQualityTrainings */}
-                            {detail.subdetailQualityTrainings && detail.subdetailQualityTrainings.length > 0 && (
-                              <div className="mt-4">
-                                <button
-                                  onClick={() => toggleDetails(detail.id)}
-                                  className="w-full flex items-center justify-between p-2 bg-gradient-to-r from-[#f59e0b]/10 to-[#d97706]/10 text-[#064379] rounded-lg hover:from-[#f59e0b]/20 hover:to-[#d97706]/20 transition-all duration-200 text-sm font-medium"
-                                >
-                                  <span>View Subdetails</span>
-                                  <div className="flex items-center gap-2">
-                                    {expandedDetails.has(detail.id) ? (
-                                      <ChevronUp className="h-4 w-4" />
-                                    ) : (
-                                      <ChevronDown className="h-4 w-4" />
-                                    )}
-                                  </div>
-                                </button>
-                                {expandedDetails.has(detail.id) && (
-                                  <div className="mt-4 space-y-3">
-                                    {detail.subdetailQualityTrainings.map((subdetail) => (
-                                      <div key={subdetail.id} className="bg-gradient-to-r from-[#fef3c7] to-[#fde68a] rounded-lg p-3 border-l-4 border-[#f59e0b]">
-                                        <div className="flex items-start gap-3">
-                                          {subdetail.logos && subdetail.logos.length > 0 && subdetail.logos[0] && (
-                                            <div className="flex-shrink-0">
-                                              {renderImage(subdetail, 'w-20 h-20')}
-                                            </div>
-                                          )}
-                                          <div className="flex-1">
-                                            <p className="text-sm text-[#064379] font-medium mb-1">{subdetail.name}</p>
-                                            {subdetail.description && (
-                                              <p className="text-[#064379]/80 text-xs leading-relaxed whitespace-pre-line">
-                                                {subdetail.description}
-                                              </p>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            )}
                           </div>
                         ))}
+                      </div>
+                    )
+                  }
+
+                  // All Materi Training - Slides only, 2-column grid with pair coloring
+                  if ((designConfig.type === 'all-materi-training') && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
+                    const slideDetails = jenis.detailQualityTrainings.filter(d => !!d.linkslide)
+                    const pairs: Array<typeof slideDetails> = [] as any
+                    for (let i = 0; i < slideDetails.length; i += 2) {
+                      pairs.push(slideDetails.slice(i, i + 2))
+                    }
+                    const pairThemes = [
+                      { wrapper: 'from-[#064379] to-[#0d0d0e]', badge: 'from-[#f59e0b] to-[#d97706]' },
+                      { wrapper: 'from-[#51abae] to-[#041965]', badge: 'from-[#6366f1] to-[#4338ca]' },
+                    ]
+                    return (
+                      <div className="w-full">
+                        {pairs.map((pair, pairIndex) => {
+                          const theme = pairThemes[pairIndex % pairThemes.length]
+                          return (
+                            <div key={pairIndex} className={`w-full bg-gradient-to-r ${theme.wrapper}`}>
+                              <div className="p-16 px-48">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {pair.map((d) => (
+                                <div>
+                                  <div key={d.id} className={`rounded-2xl border border-white/20 shadow-lg overflow-hidden bg-gradient-to-b ${theme.wrapper}`}>
+                                    <h4 className="text-white font-bold text-3xl justify-center text-center my-4">{d.name}</h4>
+
+                                    {/* Responsive 16:9 iframe using padding-bottom hack for broader support */}
+                                    <div className="relative w-full pb-[56.25%]">
+                                      <iframe
+                                        src={getSlideEmbedUrl(d.linkslide as string)}
+                                        className="absolute inset-0 w-full h-full border-0 rounded-b-2xl p-4 bg-white"
+                                        allow="autoplay; fullscreen"
+                                        allowFullScreen
+                                        loading="lazy"
+                                      />
+                                      <div className="p-4 flex items-center justify-between absolute top-2 right-2">
+                                        <a
+                                          href={d.linkslide as string}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white text-white text-xs bg-[#064379d2] hover:bg-[#025ab783] transition-colors"
+                                        >
+                                          <ExternalLink className="h-3 w-3 " /> <span className="text-sm font-bold">Open</span>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              ))}
+                              {pair.length === 1 && (
+                                <div className="hidden md:block"></div>
+                              )}
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
                     )
                   }

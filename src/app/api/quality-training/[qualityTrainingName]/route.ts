@@ -13,12 +13,15 @@ function createSlug(title: string): string {
 
 export async function GET(
   request: Request,
-  { params }: { params: { qualityTrainingName: string } }
+  ctx: { params: Promise<{ qualityTrainingName: string }> } | { params: { qualityTrainingName: string } }
 ) {
   const prisma = createPrismaClient()
   
   try {
-    const qualityTrainingName = decodeURIComponent(params.qualityTrainingName)
+    // Support Next.js versions where params is a Promise
+    // @ts-expect-error - handle both sync and async params shapes
+    const resolved = 'then' in ctx.params ? await ctx.params : ctx.params
+    const qualityTrainingName = decodeURIComponent(resolved.qualityTrainingName)
     
     // Find quality training by matching slug
     const allQualityTrainings = await prisma.qualityTraining.findMany({
