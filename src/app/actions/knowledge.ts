@@ -128,7 +128,7 @@ export async function getKnowledgeById(id: string) {
   }
 }
 
-export async function getKnowledgesByCategory(category: string) {
+export async function getKnowledgesByCategory(_category: string) {
   try {
     // Note: Knowledge model doesn't have a category field
     // This function is kept for backward compatibility but returns all knowledges
