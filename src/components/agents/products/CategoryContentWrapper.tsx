@@ -13,6 +13,8 @@ interface Product {
 interface Subcategory {
   id: string
   name: string
+  description: string | null
+  images: string[]
   produks: Product[]
 }
 
