@@ -4,11 +4,13 @@ import { useEffect, useState } from "react"
 import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
 
+type ProductStatus = "NEW" | "REVAMP" | "DISCONTINUE" | "ACTIVE"
+
 interface Product {
   id: string
   name: string
   description: string | null
-  status: string
+  status: ProductStatus
   images: string[]
   detailProduks: Array<{
     id: string
