@@ -8,7 +8,6 @@ export async function createProduk(formData: FormData) {
   const validatedFields = createProdukSchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
-    sku: formData.get("sku"),
     price: formData.get("price"),
     stock: formData.get("stock"),
     subkategoriProdukId: formData.get("subkategoriProdukId"),
@@ -20,16 +19,15 @@ export async function createProduk(formData: FormData) {
     }
   }
 
-  const { name, description, sku, price, stock, subkategoriProdukId } = validatedFields.data
+  const { name, description, price, subkategoriProdukId } = validatedFields.data
 
   try {
     const produk = await prisma.produk.create({
       data: {
         name,
         description: description || null,
-        sku: sku || null,
-        price: price ? Number(price) : null,
-        stock: stock ? Number(stock) : 0,
+        harga: price ? Number(price) : null,
+        images: [],
         subkategoriProdukId,
       },
       include: {
@@ -62,7 +60,6 @@ export async function updateProduk(id: string, formData: FormData) {
   const validatedFields = updateProdukSchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
-    sku: formData.get("sku"),
     price: formData.get("price"),
     stock: formData.get("stock"),
     subkategoriProdukId: formData.get("subkategoriProdukId"),
@@ -74,7 +71,7 @@ export async function updateProduk(id: string, formData: FormData) {
     }
   }
 
-  const { name, description, sku, price, stock, subkategoriProdukId } = validatedFields.data
+  const { name, description, price, subkategoriProdukId } = validatedFields.data
 
   try {
     const produk = await prisma.produk.update({
@@ -82,9 +79,7 @@ export async function updateProduk(id: string, formData: FormData) {
       data: {
         name,
         description: description || null,
-        sku: sku || null,
-        price: price ? Number(price) : null,
-        stock: stock ? Number(stock) : 0,
+        harga: price ? Number(price) : null,
         subkategoriProdukId,
       },
       include: {

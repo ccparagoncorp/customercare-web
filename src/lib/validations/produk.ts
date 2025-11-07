@@ -39,7 +39,6 @@ export type UpdateSubkategoriProdukInput = z.infer<typeof updateSubkategoriProdu
 export const createProdukSchema = z.object({
   name: z.string().min(1, "Nama produk harus diisi").max(200, "Nama produk maksimal 200 karakter"),
   description: z.string().optional(),
-  sku: z.string().optional(),
   price: z.coerce.number().positive("Harga harus lebih dari 0").optional(),
   stock: z.coerce.number().int("Stok harus berupa angka bulat").min(0, "Stok tidak boleh negatif").optional(),
   subkategoriProdukId: z.string().min(1, "Subkategori produk harus dipilih"),
