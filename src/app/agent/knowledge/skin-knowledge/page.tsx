@@ -57,46 +57,6 @@ export default function SkinKnowledgePage() {
   // Get all detail knowledges to display as separate sections
   const allDetailKnowledges = knowledge?.detailKnowledges || []
 
-  // Function to get design configuration based on detailKnowledge name
-  const getDesignConfig = (detailName: string) => {
-    const name = detailName.toLowerCase()
-    
-    if (name.includes('struktur') || name.includes('structure')) {
-      return {
-        type: 'structure',
-        showImage: true,
-        showDescription: true,
-        showProducts: true,
-        layout: 'two-column' // left detailed, right summary
-      }
-    } else if (name.includes('fungsi') || name.includes('function')) {
-      return {
-        type: 'function',
-        showImage: true,
-        showDescription: true,
-        showProducts: false,
-        layout: 'vertical'
-      }
-    } else if (name.includes('jenis') || name.includes('type') || name.includes('skintone')) {
-      return {
-        type: 'types',
-        showImage: true,
-        showDescription: true,
-        showProducts: true,
-        layout: 'table' // table format for skin types
-      }
-    }
-    
-    // Default design
-    return {
-      type: 'default',
-      showImage: true,
-      showDescription: true,
-      showProducts: true,
-      layout: 'horizontal'
-    }
-  }
-
   // Function to format description with numbered lists
   const formatDescription = (description: string) => {
     const lines = description.split('\n')
