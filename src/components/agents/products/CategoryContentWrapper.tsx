@@ -4,10 +4,21 @@ import { useEffect, useState } from "react"
 import { ModernSubcategoryGrid } from "@/components/agents/products/ModernSubcategoryGrid"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
 
+type ProductStatus = "NEW" | "REVAMP" | "DISCONTINUE" | "ACTIVE"
+
 interface Product {
   id: string
   name: string
-  status: string
+  description: string | null
+  status: ProductStatus
+  images: string[]
+  detailProduks: Array<{
+    id: string
+    name: string
+    detail: string
+    images: string[]
+  }>
+  harga?: string | number | null
 }
 
 interface Subcategory {
