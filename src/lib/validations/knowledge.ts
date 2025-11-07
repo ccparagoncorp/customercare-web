@@ -4,9 +4,6 @@ import { z } from "zod"
 export const createKnowledgeSchema = z.object({
   title: z.string().min(1, "Judul harus diisi").max(200, "Judul maksimal 200 karakter"),
   description: z.string().optional(),
-  content: z.string().optional(),
-  category: z.string().optional(),
-  tags: z.array(z.string()).optional(),
 })
 
 export const updateKnowledgeSchema = createKnowledgeSchema.partial()

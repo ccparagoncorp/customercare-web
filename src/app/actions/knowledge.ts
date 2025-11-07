@@ -8,9 +8,6 @@ export async function createKnowledge(formData: FormData) {
   const validatedFields = createKnowledgeSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-    content: formData.get("content"),
-    category: formData.get("category"),
-    tags: formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [],
   })
 
   if (!validatedFields.success) {
@@ -19,16 +16,14 @@ export async function createKnowledge(formData: FormData) {
     }
   }
 
-  const { title, description, content, category, tags } = validatedFields.data
+  const { title, description } = validatedFields.data
 
   try {
     const knowledge = await prisma.knowledge.create({
       data: {
         title,
         description: description || null,
-        content: content || null,
-        category: category || null,
-        tags: tags || [],
+        logos: [],
       },
       include: {
         detailKnowledges: true,
@@ -51,9 +46,6 @@ export async function updateKnowledge(id: string, formData: FormData) {
   const validatedFields = updateKnowledgeSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-    content: formData.get("content"),
-    category: formData.get("category"),
-    tags: formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [],
   })
 
   if (!validatedFields.success) {
@@ -62,7 +54,7 @@ export async function updateKnowledge(id: string, formData: FormData) {
     }
   }
 
-  const { title, description, content, category, tags } = validatedFields.data
+  const { title, description } = validatedFields.data
 
   try {
     const knowledge = await prisma.knowledge.update({
@@ -70,9 +62,6 @@ export async function updateKnowledge(id: string, formData: FormData) {
       data: {
         title,
         description: description || null,
-        content: content || null,
-        category: category || null,
-        tags: tags || [],
       },
       include: {
         detailKnowledges: true,
@@ -141,8 +130,9 @@ export async function getKnowledgeById(id: string) {
 
 export async function getKnowledgesByCategory(category: string) {
   try {
+    // Note: Knowledge model doesn't have a category field
+    // This function is kept for backward compatibility but returns all knowledges
     const knowledges = await prisma.knowledge.findMany({
-      where: { category },
       include: {
         detailKnowledges: true,
       },
