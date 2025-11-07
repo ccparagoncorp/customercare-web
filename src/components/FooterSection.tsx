@@ -52,9 +52,14 @@ export default function FooterSection({ className = '' }: FooterSectionProps) {
                   </Link>
                   {/* TikTok */}
                   <Link href={layoutContent.footer.social[1].url} aria-label="TikTok" className="group w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#03438f] transition-colors duration-300 cursor-pointer">
-                    <svg className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M13 2h3.1A6.9 6.9 0 0023 8.9V12a9.5 9.5 0 01-6.1-2v7.1A5.9 5.9 0 1111 11.2V14a3.1 3.1 0 103.1-3.1V2z"/>
-                    </svg>
+                  <svg
+                    className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-300"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M12.003 2c.157 0 .314 0 .47.01a5.99 5.99 0 004.51 4.47v2.18a8.18 8.18 0 01-2.56-.87v6.14a5.62 5.62 0 11-5.62-5.63c.19 0 .37.01.55.03v2.9a2.73 2.73 0 102.73 2.73V2zm0 0"/>
+                  </svg>
+
                   </Link>
                 </div>
               </div>
@@ -100,14 +105,27 @@ export default function FooterSection({ className = '' }: FooterSectionProps) {
               <div>
                 <h4 className="text-white font-bold text-base sm:text-lg mb-4 sm:mb-6">Contact Info</h4>
                 <div className="space-y-3 sm:space-y-4">
+
                   {/* Phone */}
                   <div className="flex items-center gap-2 sm:gap-3 group">
                     <div className="p-2 sm:p-3 w-8 h-8 sm:w-10 sm:h-10 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-[#03438f] transition-colors duration-300">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                      <svg
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-white"
+                        viewBox="0 0 32 32"
+                        fill="currentColor"
+                      >
+                        <path d="M16.001 3.2c-7.064 0-12.8 5.736-12.8 12.8 0 2.256.592 4.448 1.728 6.4L3.2 28.8l6.592-1.68A12.71 12.71 0 0 0 16 28.8c7.064 0 12.8-5.736 12.8-12.8s-5.736-12.8-12.8-12.8zm0 23.2c-1.92 0-3.776-.512-5.408-1.504l-.384-.224-3.904.992 1.024-3.808-.256-.416A9.53 9.53 0 0 1 6.4 16c0-5.28 4.32-9.6 9.6-9.6s9.6 4.32 9.6 9.6-4.32 9.6-9.6 9.6zm5.44-7.36c-.304-.16-1.792-.896-2.064-.992-.272-.128-.48-.192-.688.128-.208.32-.8.992-.992 1.184-.176.192-.368.224-.688.08-.304-.16-1.28-.48-2.432-1.536-.896-.8-1.504-1.76-1.68-2.08-.176-.304-.016-.48.128-.64.144-.144.304-.368.448-.56.16-.192.208-.32.304-.528.096-.208.048-.384-.016-.528-.064-.144-.688-1.664-.944-2.272-.248-.592-.496-.512-.688-.512-.176-.016-.384-.016-.592-.016s-.544.08-.832.384c-.288.304-1.088 1.056-1.088 2.592 0 1.536 1.12 3.024 1.28 3.232.16.208 2.208 3.36 5.36 4.704.752.32 1.344.512 1.808.656.76.24 1.456.208 2.016.128.624-.096 1.792-.736 2.048-1.44.256-.704.256-1.312.176-1.44-.08-.128-.272-.208-.576-.368z"/>
                       </svg>
                     </div>
-                    <span className="text-gray-300 group-hover:text-white transition-colors duration-300 text-sm sm:text-base">{layoutContent.footer.contact.phone}</span>
+                    <span className="text-gray-300 group-hover:text-white transition-colors duration-300 text-sm sm:text-base">{layoutContent.footer.contact.wa}</span>
+                  </div>
+
+                  {/* Call Center */}
+                  <div className="flex items-center gap-2 sm:gap-3 group">
+                    <div className="p-2 sm:p-3 w-8 h-8 sm:w-10 sm:h-10 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-[#03438f] transition-colors duration-300">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24"> <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/> </svg>
+                    </div>
+                    <span className="text-gray-300 group-hover:text-white transition-colors duration-300 text-sm sm:text-base">{layoutContent.footer.contact.callCenter}</span>
                   </div>
 
                   {/* Email */}

@@ -45,22 +45,23 @@
     "social": [
       {
         "name": "Instagram",
-        "url": "https://instagram.com/paragoncorp"
+        "url": "https://www.instagram.com/customercareparagon/"
       },
       {
         "name": "TikTok", 
-        "url": "https://tiktok.com/@paragoncorp"
+        "url": "https://www.tiktok.com/@customercareparagoncorp"
       }
     ],
     "links": {
       "quick": ["Home", "About", "Services", "Contact", "FAQ"]
     },
     "contact": {
-      "phone": "+62 21 1234 5678",
-      "email": "support@paragoncorp.com",
+      "wa": "+62 877 0112 3000",
+      "callCenter": "08041401123",
+      "email": "customercare@paracorpgroup.com",
       "addressLines": [
-        "Jl. Paragon Business Center",
-        "Jakarta 12345, Indonesia"
+        "Jl. Swadharma Raya Kampung Baru IV No. 1",
+        "Jakarta 12250, Indonesia"
       ]
     },
     "copyright": "© 2024 Customer Care Paragon Corp. All rights reserved."
