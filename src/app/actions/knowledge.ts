@@ -128,6 +128,7 @@ export async function getKnowledgeById(id: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getKnowledgesByCategory(_category: string) {
   try {
     // Note: Knowledge model doesn't have a category field

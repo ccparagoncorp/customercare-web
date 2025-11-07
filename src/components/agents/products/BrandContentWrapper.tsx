@@ -7,7 +7,16 @@ import { ProductListWithDetails } from "@/components/agents/products/ProductList
 interface Product {
   id: string
   name: string
+  description: string | null
   status: string
+  images: string[]
+  detailProduks: Array<{
+    id: string
+    name: string
+    detail: string
+    images: string[]
+  }>
+  harga?: string | number | null
 }
 
 interface BrandWithNested {
