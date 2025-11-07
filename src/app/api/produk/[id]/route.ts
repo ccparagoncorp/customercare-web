@@ -3,10 +3,11 @@ import { getProdukById, updateProduk, deleteProduk } from "@/app/actions/produk"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const produk = await getProdukById(params.id)
+    const { id } = await params
+    const produk = await getProdukById(id)
     
     if (!produk) {
       return NextResponse.json(
@@ -27,11 +28,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const formData = await request.formData()
-    const result = await updateProduk(params.id, formData)
+    const result = await updateProduk(id, formData)
 
     if (result.success) {
       return NextResponse.json(result.data)
@@ -52,10 +54,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const result = await deleteProduk(params.id)
+    const { id } = await params
+    const result = await deleteProduk(id)
 
     if (result.success) {
       return NextResponse.json({ success: true })

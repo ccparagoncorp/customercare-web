@@ -3,14 +3,15 @@ import { createPrismaClient } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   const prisma = createPrismaClient()
   
   try {
+    const { productId } = await params
     const product = await prisma.produk.findUnique({
       where: {
-        id: params.productId
+        id: productId
       },
       include: {
         detailProduks: {

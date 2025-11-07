@@ -3,7 +3,7 @@ import { createPrismaClient } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { kategoriSOP: string } }
+  { params }: { params: Promise<{ kategoriSOP: string }> }
 ) {
   const prisma = createPrismaClient()
 
