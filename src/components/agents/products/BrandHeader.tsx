@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, ArrowLeft, Star, Award, TrendingUp } from "lucide-react"
+import { Package, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 interface Brand {
@@ -109,14 +109,6 @@ export function BrandHeader({ brandName }: BrandHeaderProps) {
       </div>
     )
   }
-
-  const totalProducts = brand.kategoriProduks.reduce((total, category) => {
-    return total + category.subkategoriProduks.reduce((subTotal, subcategory) => {
-      return subTotal + subcategory.produks.length
-    }, 0)
-  }, 0)
-
-  const totalCategories = brand.kategoriProduks.length
 
   return (
     <div className="relative overflow-hidden">

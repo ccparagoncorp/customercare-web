@@ -4,13 +4,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Marquee from 'react-fast-marquee';
 import homeContent from '@/content/home.json';
-import { ScrollAnimation, RotateAnimation } from '@/components/animations';
+import { ScrollAnimation } from '@/components/animations';
+
+interface Brand {
+  logo: string;
+  alt: string;
+  link: string;
+}
 
 interface BrandsMarqueeProps {
   className?: string;
 }
 
-const brands = homeContent.brands.items;
+const brands = homeContent.brands.items as Brand[];
 
 export default function BrandsMarquee({ className = '' }: BrandsMarqueeProps) {
   return (
@@ -56,7 +62,7 @@ export default function BrandsMarquee({ className = '' }: BrandsMarqueeProps) {
             gradient={false}
             pauseOnHover={true}
           >
-            {brands.map((brand: any, index: number) => (
+            {brands.map((brand, index) => (
               <div key={index} className="mx-3 sm:mx-4 md:mx-6 group">
                 <Link href={brand.link} target="_blank" className="block cursor-pointer">
                   <div className="bg-white backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 w-48 sm:w-60 md:w-72 h-36 sm:h-44 md:h-56 flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-500">

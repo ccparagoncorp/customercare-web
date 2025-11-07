@@ -20,15 +20,6 @@ interface Subcategory {
   }[]
 }
 
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  images: string[]
-  status: string
-  kapasitas: string | null
-}
-
 interface Category {
   id: string
   name: string

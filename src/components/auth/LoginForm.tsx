@@ -7,7 +7,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, Eye, EyeOff, Lock, User, Key, ArrowRight } from "lucide-react"
+import { Loader2, Lock, User, Key, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "./AuthProvider"
 import authContent from "@/content/auth.json"
@@ -23,7 +23,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()

@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
-import { ChevronDown, ChevronUp, Filter, Search, SortAsc } from "lucide-react"
+import { ChevronDown, ChevronUp, Search } from "lucide-react"
 import { generateColorPalette } from "@/lib/colorUtils"
 import { formatCurrency } from "@/lib/utils"
 
@@ -23,10 +23,6 @@ interface Produk {
   images: string[]
   detailProduks: DetailProduk[]
   harga?: string | number | null
-}
-
-interface BrandLite {
-  colorbase: string | null
 }
 
 interface ProductListWithDetailsProps {
@@ -71,9 +67,6 @@ export function ProductListWithDetails({ brandColor = "#03438f", products }: Pro
       return next
     })
   }
-
-  const formatPrice = (value: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value)
 
   return (
     <section className="space-y-8">

@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/db"
 import { createBrandSchema, updateBrandSchema } from "@/lib/validations/produk"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 
 export async function createBrand(formData: FormData) {
   const validatedFields = createBrandSchema.safeParse({

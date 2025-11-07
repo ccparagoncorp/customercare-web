@@ -1,7 +1,6 @@
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { BrandBackgroundSection } from "@/components/agents/products/BrandBackgroundSection"
-import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { BrandGallery } from "@/components/agents/products/BrandGallery"
 import { BrandDescriptionSection } from "@/components/agents/products/BrandDescriptionSection"
 import { BrandContentWrapper } from "@/components/agents/products/BrandContentWrapper"

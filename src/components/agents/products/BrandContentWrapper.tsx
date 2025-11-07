@@ -4,6 +4,12 @@ import { useEffect, useState } from "react"
 import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
 
+interface Product {
+  id: string
+  name: string
+  status: string
+}
+
 interface BrandWithNested {
   name: string
   colorbase?: string | null
@@ -11,9 +17,9 @@ interface BrandWithNested {
     name: string
     subkategoriProduks: Array<{
       name: string
-      produks: any[]
+      produks: Product[]
     }>
-    produks: any[]
+    produks: Product[]
   }>
 }
 

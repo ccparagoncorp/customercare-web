@@ -4,8 +4,31 @@ import { useEffect, useState } from "react"
 import { ModernSubcategoryGrid } from "@/components/agents/products/ModernSubcategoryGrid"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
 
+interface Product {
+  id: string
+  name: string
+  status: string
+}
+
+interface Subcategory {
+  id: string
+  name: string
+  produks: Product[]
+}
+
+interface Category {
+  id: string
+  name: string
+  description: string | null
+  subkategoriProduks: Subcategory[]
+  produks: Product[]
+  brand?: {
+    colorbase: string | null
+  }
+}
+
 export function CategoryContentWrapper({ brandName, categoryName }: { brandName: string; categoryName: string }) {
-  const [category, setCategory] = useState<any | null>(null)
+  const [category, setCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,7 +54,7 @@ export function CategoryContentWrapper({ brandName, categoryName }: { brandName:
   // If no subcategories, use products directly under the category.
   const aggregatedProducts = (subcategories.length === 0)
     ? (category.produks || [])
-    : subcategories.flatMap((s: any) => s.produks || [])
+    : subcategories.flatMap((s) => s.produks || [])
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 py-16 space-y-16">

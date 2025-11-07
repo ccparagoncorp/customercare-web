@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, FileText, CheckCircle2, ImageIcon, Copy, Check, ChevronDown, ChevronUp, List } from "lucide-react"
+import { ArrowLeft, FileText, CheckCircle2, ImageIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
 
 interface DetailSOP {
@@ -61,17 +61,8 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
     fetchSOP()
   }, [kategoriSOP, namaSOP])
 
-  const jenisIds = useMemo(() => (sop ? sop.jenisSOPs.map((j) => j.id) : []), [sop])
-
   const toggleSection = (id: string) => {
     setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
-
-  const setAllSections = (expand: boolean) => {
-    if (!sop) return
-    const next: Record<string, boolean> = {}
-    sop.jenisSOPs.forEach((j) => { next[j.id] = expand })
-    setExpandedSections(next)
   }
 
   useEffect(() => {
@@ -86,7 +77,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
       await navigator.clipboard.writeText(text)
       setCopiedStepId(stepKey)
       setTimeout(() => setCopiedStepId(null), 1500)
-    } catch (e) {
+    } catch {
       // noop
     }
   }

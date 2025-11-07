@@ -33,8 +33,8 @@ export function Breadcrumb({ brandName, brandId, categoryId, subcategoryId, prod
                  // Fetch brand by ID - convert to name-based lookup
                  const brandResponse = await fetch(`/api/brands`)
                  if (brandResponse.ok) {
-                   const brandsData = await brandResponse.json()
-                   const brandData = brandsData.find((b: any) => b.id === brandId)
+                   const brandsData: Brand[] = await brandResponse.json()
+                   const brandData = brandsData.find((b) => b.id === brandId)
                    if (brandData) {
                      setBrand(brandData)
                    }

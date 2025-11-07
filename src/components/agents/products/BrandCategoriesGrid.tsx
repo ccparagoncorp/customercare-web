@@ -103,7 +103,7 @@ export function BrandCategoriesGrid({ brandName, currentCategoryId }: BrandCateg
           <div className="text-gray-500 mb-6">
             <Package className="h-16 w-16 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">No categories available</h3>
-            <p className="text-sm">This brand doesn't have any categories yet</p>
+            <p className="text-sm">This brand doesn&apos;t have any categories yet</p>
           </div>
         </div>
       </div>

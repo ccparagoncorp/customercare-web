@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, ArrowRight, Sparkles, Zap } from "lucide-react"
-import productsContent from "@/content/products.json"
+import { Package } from "lucide-react"
 
 interface Category {
   id: string
@@ -27,6 +26,7 @@ interface Brand {
   id: string
   name: string
   description: string | null
+  kategoriProduks?: Category[]
 }
 
 interface CategoryGridProps {
@@ -36,7 +36,6 @@ interface CategoryGridProps {
 
 export function CategoryGrid({ brandName, brandId }: CategoryGridProps) {
   const [categories, setCategories] = useState<Category[]>([])
-  const [brand, setBrand] = useState<Brand | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -48,18 +47,16 @@ export function CategoryGrid({ brandName, brandId }: CategoryGridProps) {
           const brandResponse = await fetch(`/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`)
           if (brandResponse.ok) {
             const brandData = await brandResponse.json()
-            setBrand(brandData)
             setCategories(brandData.kategoriProduks)
           }
         } else if (brandId) {
           // Fetch brand info by ID - convert to name-based lookup
           const brandResponse = await fetch(`/api/brands`)
           if (brandResponse.ok) {
-            const brandsData = await brandResponse.json()
-            const brandData = brandsData.find((b: any) => b.id === brandId)
+            const brandsData: Brand[] = await brandResponse.json()
+            const brandData = brandsData.find((b) => b.id === brandId)
             if (brandData) {
-              setBrand(brandData)
-              setCategories(brandData.kategoriProduks)
+              setCategories(brandData.kategoriProduks || [])
             }
           }
         }
@@ -120,7 +117,7 @@ export function CategoryGrid({ brandName, brandId }: CategoryGridProps) {
           <div className="text-gray-500 mb-6">
             <Package className="h-16 w-16 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">No categories available</h3>
-            <p className="text-sm">This brand doesn't have any product categories yet</p>
+            <p className="text-sm">This brand doesn&apos;t have any product categories yet</p>
           </div>
         </div>
       </div>
@@ -129,11 +126,7 @@ export function CategoryGrid({ brandName, brandId }: CategoryGridProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {categories.map((category, index) => {
-        const totalProducts = category.subkategoriProduks.reduce((total, subkategori) => {
-          return total + subkategori.produks.length
-        }, 0)
-
+      {categories.map((category) => {
         return (
           <Link 
             key={category.id} 

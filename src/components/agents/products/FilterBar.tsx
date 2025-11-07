@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Filter, ChevronDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Filter } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface FilterBarProps {

@@ -97,7 +97,7 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
 
       {/* SOP Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {kategori.sops.map((sop, index) => (
+        {kategori.sops.map((sop) => (
           <Link
             key={sop.id}
             href={`/agent/sop/${slugify(kategori.name)}/${slugify(sop.name)}`}

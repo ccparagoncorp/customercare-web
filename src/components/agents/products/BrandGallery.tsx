@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package } from "lucide-react"
 
 interface Brand {
   id: string

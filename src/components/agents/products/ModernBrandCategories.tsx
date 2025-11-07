@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, Layers, ArrowRight, Eye, TrendingUp, Star, Zap, Users } from "lucide-react"
+import { Package, Layers, ArrowRight, Eye, Star } from "lucide-react"
 import { generateColorPalette } from "@/lib/colorUtils"
 
 interface Category {
@@ -117,7 +117,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
           <div className="text-gray-500 mb-8">
             <Package className="h-20 w-20 mx-auto mb-6" />
             <h3 className="text-2xl font-bold mb-3">No categories available</h3>
-            <p className="text-gray-600">This brand doesn't have any categories yet</p>
+            <p className="text-gray-600">This brand doesn&apos;t have any categories yet</p>
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
 
       {/* Enhanced Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {brand.kategoriProduks?.map((category, index) => {
+        {brand.kategoriProduks?.map((category) => {
           const totalProducts = category.subkategoriProduks?.reduce((total, subcategory) => {
             return total + (subcategory.produks?.length || 0)
           }, 0) || 0

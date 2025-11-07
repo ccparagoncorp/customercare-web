@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import faqContent from '@/content/faq.json';
-import { ScrollAnimation, StaggerAnimation } from '@/components/animations';
+import { StaggerAnimation } from '@/components/animations';
 
 interface FAQFilterTabsProps {
   onCategoryChange: (category: string) => void;

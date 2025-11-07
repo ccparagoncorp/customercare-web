@@ -7,7 +7,44 @@ function toTitle(slug: string): string {
     .join(' ')
 }
 
-export async function getKnowledgeBySlug(slug: string) {
+interface ProdukJenisDetailKnowledge {
+  id: string
+  name: string
+  description: string | null
+  logos: string[]
+}
+
+interface JenisDetailKnowledge {
+  id: string
+  name: string
+  description: string | null
+  logos: string[]
+  produkJenisDetailKnowledges: ProdukJenisDetailKnowledge[]
+}
+
+interface DetailKnowledge {
+  id: string
+  name: string
+  description: string | null
+  logos: string[]
+  jenisDetailKnowledges: JenisDetailKnowledge[]
+}
+
+interface KnowledgeResult {
+  id: string
+  title: string
+  description: string | null
+  createdAt: Date
+  updatedAt: Date
+  createdBy: string | null
+  updatedBy: string | null
+  logos: string[]
+  updateNotes: string | null
+  detailKnowledges: DetailKnowledge[]
+  _status?: number
+}
+
+export async function getKnowledgeBySlug(slug: string): Promise<KnowledgeResult> {
   const prisma = createPrismaClient()
   
   try {
@@ -54,20 +91,21 @@ export async function getKnowledgeBySlug(slug: string) {
 
     // Title matching not found; fallback by best-effort
     throw new Error('NOT_FOUND')
-  } catch (error: any) {
-    const isDbIssue = error?.message?.includes("Can't reach database server") || error?.name?.includes('Prisma')
+  } catch (error: unknown) {
+    const errorObj = error as { message?: string; name?: string }
+    const isDbIssue = errorObj?.message?.includes("Can't reach database server") || errorObj?.name?.includes('Prisma')
     if (isDbIssue || !process.env.DATABASE_URL) {
       return {
         id: 'fallback',
         title: toTitle(slug),
         description: 'Content unavailable (database not reachable). This is a temporary fallback.',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: null as any,
-        updatedBy: null as any,
-        logos: [] as string[],
-        updateNotes: undefined as any,
-        detailKnowledges: [] as any[],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: null,
+        updatedBy: null,
+        logos: [],
+        updateNotes: null,
+        detailKnowledges: [],
         _status: 503,
       }
     }

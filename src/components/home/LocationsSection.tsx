@@ -15,7 +15,13 @@ interface LocationsSectionProps {
   className?: string;
 }
 
-const locations: LocationProps[] = (homeContent.locations.items as any).map((l: any) => ({
+interface LocationItem {
+  title: string;
+  address: string;
+  mapUrl: string;
+}
+
+const locations: LocationProps[] = (homeContent.locations.items as LocationItem[]).map((l) => ({
   title: l.title,
   address: l.address,
   mapUrl: l.mapUrl,

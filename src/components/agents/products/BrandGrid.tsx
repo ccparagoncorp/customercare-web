@@ -5,7 +5,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowRight, Package, Star } from "lucide-react"
 import { SearchBar } from "./SearchBar"
 import { FilterBar } from "./FilterBar"
@@ -13,7 +12,6 @@ import { Pagination } from "./Pagination"
 import { LoadingGrid } from "./LoadingGrid"
 import { EmptyState } from "./EmptyState"
 import { Tooltip } from "./Tooltip"
-import { generateColorPalette } from "@/lib/colorUtils"
 
 interface Brand {
   id: string
@@ -159,7 +157,7 @@ export function BrandGrid() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBrands
           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-          .map((brand, index) => {
+          .map((brand) => {
           const totalProducts = brand.kategoriProduks.reduce((total, kategori) => {
             return total + kategori.subkategoriProduks.reduce((subTotal, subkategori) => {
               return subTotal + subkategori.produks.length
@@ -167,8 +165,6 @@ export function BrandGrid() {
           }, 0)
 
           const totalCategories = brand.kategoriProduks.length
-
-          const colorPalette = generateColorPalette(brand.colorbase ?? '#03438f')
 
           return (
             <Link key={brand.id} href={`/agent/products/brand/${brand.id}`}>

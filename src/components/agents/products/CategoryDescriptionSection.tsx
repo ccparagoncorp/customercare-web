@@ -8,8 +8,17 @@ interface CategoryDescriptionSectionProps {
   categoryName: string
 }
 
+interface Category {
+  id: string
+  name: string
+  description: string | null
+  brand?: {
+    colorbase: string | null
+  }
+}
+
 export function CategoryDescriptionSection({ brandName, categoryName }: CategoryDescriptionSectionProps) {
-  const [category, setCategory] = useState<any | null>(null)
+  const [category, setCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

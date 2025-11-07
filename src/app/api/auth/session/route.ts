@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       maxAge: typeof maxAge === 'number' ? maxAge : 60 * 60 * 24, // 1 day
     })
     return res
-  } catch (e) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Invalid request' }, { status: 400 })
   }
 }

@@ -9,8 +9,19 @@ interface SubcategoryDescriptionSectionProps {
   subcategoryName: string
 }
 
+interface Subcategory {
+  id: string
+  name: string
+  description: string | null
+  kategoriProduk?: {
+    brand?: {
+      colorbase: string | null
+    }
+  }
+}
+
 export function SubcategoryDescriptionSection({ brandName, categoryName, subcategoryName }: SubcategoryDescriptionSectionProps) {
-  const [subcategory, setSubcategory] = useState<any | null>(null)
+  const [subcategory, setSubcategory] = useState<Subcategory | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

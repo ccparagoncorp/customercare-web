@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import homeContent from '@/content/home.json';
-import { ScrollAnimation, StaggerAnimation, RotateAnimation } from '@/components/animations';
+import { ScrollAnimation, StaggerAnimation } from '@/components/animations';
 
 interface AchievementProps {
   image: string;
@@ -16,7 +16,7 @@ interface AchievementsSectionProps {
   className?: string;
 }
 
-const achievements: AchievementProps[] = homeContent.achievements.items as any;
+const achievements: AchievementProps[] = homeContent.achievements.items as AchievementProps[];
 
 export default function AchievementsSection({ className = '' }: AchievementsSectionProps) {
   return (

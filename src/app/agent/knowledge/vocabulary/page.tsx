@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, User, Edit3, FileText, ChevronRight, ChevronDown, BookOpen, Tag, ChevronUp, Search } from "lucide-react"
+import { Edit3, FileText, ChevronDown, BookOpen, ChevronUp, Search } from "lucide-react"
 import vocabularyContent from "@/content/agent/knowledge/vocabulary.json"
 
 interface Knowledge {
@@ -265,7 +265,7 @@ export default function VocabularyKnowledgePage() {
                  Tidak ditemukan vocabulary
                </h3>
                <p className="text-[#b2fcff]/80 text-lg">
-                 Tidak ada vocabulary yang cocok dengan pencarian "{searchTerm}"
+                 Tidak ada vocabulary yang cocok dengan pencarian &quot;{searchTerm}&quot;
                </p>
                <button
                  onClick={() => setSearchTerm("")}

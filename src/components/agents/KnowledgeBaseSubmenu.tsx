@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Knowledge {
   id: string
@@ -30,7 +30,7 @@ export function KnowledgeBaseSubmenu({ isHovered, isActive }: KnowledgeBaseSubme
     if (isExpanded && knowledges.length === 0) {
       fetchKnowledges()
     }
-  }, [isExpanded])
+  }, [isExpanded, knowledges.length])
 
   // Close submenu when sidebar is not hovered
   useEffect(() => {

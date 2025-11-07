@@ -1,12 +1,11 @@
 "use client"
 
-import { AlertTriangle, Trophy, Medal, ChevronDown, Calendar } from "lucide-react"
-import Image from "next/image"
+import { AlertTriangle, Medal, ChevronDown, Calendar } from "lucide-react"
 import dashboardContent from "@/content/agent/dashboard.json"
 import { useAuth } from "@/components/auth/AuthProvider"
 
 export function Content() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   return (
     <div className="space-y-6 mt-14 p-6">
       {/* High Priority Case Alert */}

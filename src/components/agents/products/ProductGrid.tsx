@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ArrowRight, Package, Star, ShoppingBag, Info } from "lucide-react"
+import { ArrowRight, Package, Star, ShoppingBag } from "lucide-react"
 
 interface Product {
   id: string
@@ -118,7 +118,7 @@ export function ProductGrid({ brandName, brandId, categoryId, subcategoryId }: P
           <div className="text-gray-500 mb-4">
             <ShoppingBag className="h-12 w-12 mx-auto mb-2" />
             <p className="text-lg font-semibold">No products available</p>
-            <p className="text-sm">This subcategory doesn't have any products yet</p>
+            <p className="text-sm">This subcategory doesn&apos;t have any products yet</p>
           </div>
         </div>
       </div>

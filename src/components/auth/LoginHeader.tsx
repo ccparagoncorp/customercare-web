@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
 import { useState } from "react"
 import layoutContent from "@/content/layout.json"
 import authContent from "@/content/auth.json"

@@ -83,7 +83,7 @@ export default function AboutSection({ className = '' }: AboutSectionProps) {
                 };
 
                 // Color mapping - menggunakan warna biru konsisten
-                const getColorClasses = (color: string) => {
+                const getColorClasses = () => {
                   return 'bg-blue-500/20 border-blue-400/30 text-blue-300';
                 };
 
@@ -91,7 +91,7 @@ export default function AboutSection({ className = '' }: AboutSectionProps) {
                   <ScrollAnimation key={index} direction="up" delay={index * 0.1}>
                     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 h-[180px] sm:h-[200px] md:h-[220px] flex flex-col">
                       {/* Icon */}
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 ${getColorClasses(item.color)}`}>
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 ${getColorClasses()}`}>
                         {getIcon(item.icon)}
                       </div>
                       

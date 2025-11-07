@@ -3,8 +3,23 @@
 import { useEffect, useState } from "react"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
 
+interface Product {
+  id: string
+  name: string
+  description: string | null
+  status: string
+  images: string[]
+  detailProduks: Array<{
+    id: string
+    name: string
+    detail: string
+    images: string[]
+  }>
+  harga?: string | number | null
+}
+
 export function SubcategoryProductListWrapper({ brandName, categoryName, subcategoryName }: { brandName: string; categoryName: string; subcategoryName: string }) {
-  const [products, setProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [brandColor, setBrandColor] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 

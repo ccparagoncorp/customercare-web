@@ -50,7 +50,7 @@ export default function FeedbackWidget() {
       } else {
         throw new Error('Failed to submit feedback');
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
       setFeedbackMessage(layoutContent.feedback.modal.messages.error);
     }

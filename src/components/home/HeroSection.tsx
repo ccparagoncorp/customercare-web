@@ -1,5 +1,5 @@
 import homeContent from '@/content/home.json';
-import { SimpleFadeIn, FloatingParticles, ParallaxScroll } from '@/components/animations';
+import { SimpleFadeIn, FloatingParticles } from '@/components/animations';
 
 interface HeroSectionProps {
   className?: string;

@@ -10,7 +10,7 @@ interface FAQItemProps {
   className?: string;
 }
 
-export default function FAQItem({ id, category, question, answer, className = '' }: FAQItemProps) {
+export default function FAQItem({ question, answer, className = '' }: FAQItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = () => {

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import layoutContent from '@/content/layout.json';
-import { ScrollAnimation, StaggerAnimation } from '@/components/animations';
+import { StaggerAnimation } from '@/components/animations';
 
 interface FooterSectionProps {
   className?: string;

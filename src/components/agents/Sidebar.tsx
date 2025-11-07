@@ -4,8 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Home, BookOpen, Lightbulb, Settings, Clipboard, Calendar, Megaphone, Trophy, BarChart3, LogOut } from "lucide-react"
-import dashboardContent from "@/content/agent/dashboard.json"
+import { Home, BookOpen, Lightbulb, Settings, Clipboard, Calendar, Megaphone, Trophy, BarChart3 } from "lucide-react"
 import { KnowledgeBaseSubmenu } from "./KnowledgeBaseSubmenu"
 import { QualityTrainingSubmenu } from "./QualityTrainingSubmenu"
 
@@ -26,6 +25,7 @@ const navigationItems = [
   { icon: BarChart3, label: "Improvements", href: "/agent/dashboard/improvements" },
 ]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Sidebar({ isOpen = false, onToggle }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false)
   const pathname = usePathname()
@@ -51,15 +51,6 @@ export function Sidebar({ isOpen = false, onToggle }: SidebarProps) {
     const file = suffix ? `${base}white.png` : `${base}.png`
     // handle special chars like & automatically by leaving as-is
     return `/sidebar/${file}`
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth-token')
-    localStorage.removeItem('user-email')
-    localStorage.removeItem('user-name')
-    localStorage.removeItem('user-role')
-    localStorage.removeItem('agent-category')
-    window.location.href = '/login'
   }
 
   return (

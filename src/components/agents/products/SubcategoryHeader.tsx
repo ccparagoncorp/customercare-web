@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, ArrowLeft, Layers, Star, TrendingUp } from "lucide-react"
+import { Package, ArrowLeft, Layers, Star } from "lucide-react"
 import Link from "next/link"
 import { generateColorPalette } from "@/lib/colorUtils"
 

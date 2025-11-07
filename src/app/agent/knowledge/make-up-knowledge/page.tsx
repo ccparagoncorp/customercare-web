@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, User, Edit3, FileText, BookOpen, Tag, ChevronUp, ChevronDown, Search, Image as ImageIcon } from "lucide-react"
+import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
 import makeupContent from "@/content/agent/knowledge/makeup.json"
 
@@ -44,15 +44,6 @@ interface ProdukJenisDetailKnowledge {
   description?: string
   logos: string[]
   image?: string
-}
-
-interface MakeupTipDetail {
-  id: string
-  name: string
-  description?: string
-  detail?: string
-  image?: string
-  logos: string[]
 }
 
 export default function MakeUpKnowledgePage() {
@@ -493,7 +484,7 @@ export default function MakeUpKnowledgePage() {
                                       {/* Products List - Only show when expanded */}
                                       {expandedProducts.has(jenis.id) && (
                                         <div className="mt-6 space-y-4">
-                                          {jenis.produkJenisDetailKnowledges.map((produk, produkIndex) => (
+                                          {jenis.produkJenisDetailKnowledges.map((produk) => (
                                             <div key={produk.id} className="bg-gradient-to-r from-[#f8fafc] to-[#e8f4fd] rounded-lg p-6 border-l-4 border-[#064379] shadow-sm hover:shadow-md transition-shadow">
                                               <div className="flex items-start gap-4">
                                                 <div className="flex-1">
@@ -587,7 +578,7 @@ export default function MakeUpKnowledgePage() {
                                       <div>
                                         <h4 className="text-lg font-bold text-[#064379] mb-4">Detail:</h4>
                                         <div className="space-y-2">
-                                          {jenis.produkJenisDetailKnowledges.map((produk, index) => (
+                                          {jenis.produkJenisDetailKnowledges.map((produk) => (
                                             <div key={produk.id} className="bg-[#f8fafc] rounded-lg p-3 border-l-4 border-[#064379]">
                                               <p className="text-sm text-[#064379] font-medium">{produk.name}</p>
                                               {produk.description && (
@@ -621,7 +612,7 @@ export default function MakeUpKnowledgePage() {
                                         {/* Products List - Only show when expanded */}
                                         {expandedProducts.has(jenis.id) && (
                                           <div className="mt-6 space-y-4">
-                                            {jenis.produkJenisDetailKnowledges.map((produk, produkIndex) => (
+                                            {jenis.produkJenisDetailKnowledges.map((produk) => (
                                               <div key={produk.id} className="bg-gradient-to-r from-[#f8fafc] to-[#e8f4fd] rounded-lg p-4 border-l-4 border-[#064379] shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex items-start gap-4">
                                                   <div className="flex-1">
@@ -696,7 +687,7 @@ export default function MakeUpKnowledgePage() {
                                         {/* Products List - Only show when expanded */}
                                         {expandedProducts.has(jenis.id) && (
                                           <div className="mt-6 space-y-4">
-                                            {jenis.produkJenisDetailKnowledges.map((produk, produkIndex) => (
+                                            {jenis.produkJenisDetailKnowledges.map((produk) => (
                                               <div key={produk.id} className="bg-gradient-to-r from-[#f8fafc] to-[#e8f4fd] rounded-lg p-4 border-l-4 border-[#064379] shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex items-start gap-4">
                                                   <div className="flex-1">
@@ -793,7 +784,7 @@ export default function MakeUpKnowledgePage() {
               <div className="p-8">
                 {lastJenis.produkJenisDetailKnowledges && lastJenis.produkJenisDetailKnowledges.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
-                    {lastJenis.produkJenisDetailKnowledges.map((produk, index) => (
+                    {lastJenis.produkJenisDetailKnowledges.map((produk) => (
                       <div key={produk.id} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         {/* Image Section */}
                         <div className="w-full mb-6">

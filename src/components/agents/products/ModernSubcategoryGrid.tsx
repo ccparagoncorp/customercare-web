@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { generateColorPalette } from "@/lib/colorUtils"
-import { Package, Layers, ArrowRight, Star, TrendingUp, Eye } from "lucide-react"
+import { Package, Layers, ArrowRight, Star, Eye } from "lucide-react"
 
 interface Subcategory {
   id: string
@@ -17,15 +17,6 @@ interface Subcategory {
     name: string
     status: string
   }[]
-}
-
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  images: string[]
-  status: string
-  kapasitas: string | null
 }
 
 interface Category {

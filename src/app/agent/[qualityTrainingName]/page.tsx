@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Calendar, User, Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon, ExternalLink, Check, X, ChevronRight, ClipboardList } from "lucide-react"
+import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon, ExternalLink, Check, X, ChevronRight, ClipboardList } from "lucide-react"
 
 interface QualityTraining {
   id: string
@@ -69,7 +69,6 @@ function createSlug(name: string): string {
 
 export default function QualityTrainingPage() {
   const params = useParams()
-  const router = useRouter()
   const qualityTrainingName = params.qualityTrainingName as string
   const [qualityTraining, setQualityTraining] = useState<QualityTraining | null>(null)
   const [loading, setLoading] = useState(true)
@@ -78,15 +77,32 @@ export default function QualityTrainingPage() {
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   // Sort jenisQualityTrainings by createdAt
-  const sortedJenisQualityTrainings = qualityTraining?.jenisQualityTrainings
-    ? [...qualityTraining.jenisQualityTrainings].sort((a, b) => 
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      )
-    : []
+  const sortedJenisQualityTrainings = useMemo(() => {
+    return qualityTraining?.jenisQualityTrainings
+      ? [...qualityTraining.jenisQualityTrainings].sort((a, b) => 
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
+      : []
+  }, [qualityTraining?.jenisQualityTrainings])
+
+  const fetchQualityTraining = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/quality-training/${encodeURIComponent(qualityTrainingName)}`)
+      if (response.ok) {
+        const data = await response.json()
+        setQualityTraining(data)
+      }
+    } catch (error) {
+      console.error("Error fetching quality training:", error)
+    } finally {
+      setLoading(false)
+    }
+  }, [qualityTrainingName])
 
   useEffect(() => {
     fetchQualityTraining()
-  }, [qualityTrainingName])
+  }, [fetchQualityTraining])
 
   // Handle hash navigation and scroll to section
   useEffect(() => {
@@ -109,21 +125,6 @@ export default function QualityTrainingPage() {
       }
     }
   }, [qualityTraining, sortedJenisQualityTrainings])
-
-  const fetchQualityTraining = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/quality-training/${encodeURIComponent(qualityTrainingName)}`)
-      if (response.ok) {
-        const data = await response.json()
-        setQualityTraining(data)
-      }
-    } catch (error) {
-      console.error("Error fetching quality training:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const toggleDetails = (detailId: string) => {
     setExpandedDetails(prev => {
@@ -462,7 +463,7 @@ export default function QualityTrainingPage() {
 
       {/* Sections - Each JenisQualityTraining as a section */}
       <div className="mt-24 space-y-0">
-        {sortedJenisQualityTrainings.map((jenis, index) => {
+        {sortedJenisQualityTrainings.map((jenis) => {
           const sectionId = createSlug(jenis.name)
           const designConfig = getJenisDesignConfig(jenis.name)
           
@@ -594,7 +595,7 @@ export default function QualityTrainingPage() {
                   // All Materi Training - Slides only, 2-column grid with pair coloring
                   if ((designConfig.type === 'all-materi-training') && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
                     const slideDetails = jenis.detailQualityTrainings.filter(d => !!d.linkslide)
-                    const pairs: Array<typeof slideDetails> = [] as any
+                    const pairs: DetailQualityTraining[][] = []
                     for (let i = 0; i < slideDetails.length; i += 2) {
                       pairs.push(slideDetails.slice(i, i + 2))
                     }
@@ -611,8 +612,8 @@ export default function QualityTrainingPage() {
                               <div className="p-16 px-48">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               {pair.map((d) => (
-                                <div>
-                                  <div key={d.id} className={`rounded-2xl border border-white/20 shadow-lg overflow-hidden bg-gradient-to-b ${theme.wrapper}`}>
+                                <div key={d.id}>
+                                  <div className={`rounded-2xl border border-white/20 shadow-lg overflow-hidden bg-gradient-to-b ${theme.wrapper}`}>
                                     <h4 className="text-white font-bold text-3xl justify-center text-center my-4">{d.name}</h4>
 
                                     {/* Responsive 16:9 iframe using padding-bottom hack for broader support */}

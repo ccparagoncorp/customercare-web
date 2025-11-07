@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, User, Edit3, FileText, BookOpen, Tag, ChevronUp, ChevronDown, Search, Image as ImageIcon } from "lucide-react"
+import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
 import skinContent from "@/content/agent/knowledge/skin.json"
 
@@ -50,7 +50,6 @@ interface ProdukJenisDetailKnowledge {
 export default function SkinKnowledgePage() {
   const [knowledge, setKnowledge] = useState<Knowledge | null>(null)
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set())
 
   const content = skinContent['skin-knowledge']
@@ -222,34 +221,8 @@ export default function SkinKnowledgePage() {
     }
   }
 
-  // Filter function for search
-  const filteredDetailKnowledges = allDetailKnowledges.filter((detail) => {
-    if (!searchTerm.trim()) return true
-    const searchLower = searchTerm.toLowerCase()
-    
-    // Search in main detail
-    if (
-      detail.name.toLowerCase().includes(searchLower) ||
-      (detail.description && detail.description.toLowerCase().includes(searchLower)) ||
-      (detail.introText && detail.introText.toLowerCase().includes(searchLower))
-    ) {
-      return true
-    }
-    
-    // Search in jenis detail knowledges
-    if (detail.jenisDetailKnowledges && detail.jenisDetailKnowledges.length > 0) {
-      return detail.jenisDetailKnowledges.some((jenis) => 
-        jenis.name.toLowerCase().includes(searchLower) ||
-        (jenis.description && jenis.description.toLowerCase().includes(searchLower)) ||
-        (jenis.produkJenisDetailKnowledges && jenis.produkJenisDetailKnowledges.some((produk) =>
-          produk.name.toLowerCase().includes(searchLower) ||
-          (produk.description && produk.description.toLowerCase().includes(searchLower))
-        ))
-      )
-    }
-    
-    return false
-  })
+  // Filter function (currently no search functionality, return all)
+  const filteredDetailKnowledges = allDetailKnowledges
 
   if (loading) {
     return (
@@ -429,12 +402,7 @@ export default function SkinKnowledgePage() {
           {filteredDetailKnowledges.length > 0 ? (
             filteredDetailKnowledges
               .filter((_, index) => index < filteredDetailKnowledges.length - 1) // Exclude last item
-              .map((detail, detailIndex) => {
-                // Determine specific layout based on detail ID or name
-                const isFirstSection = detail.id === "1" || detail.name.toLowerCase().includes("skin knowledge")
-                const isTypesSection = detail.id === "2" || detail.name.toLowerCase().includes("jenis kulit")
-                const isSpecialSection = detailIndex >= 1 && detailIndex < filteredDetailKnowledges.length - 2
-                
+              .map((detail) => {
                 return (
                   <div key={detail.id} className="rounded-xl shadow-lg overflow-hidden">
                     {/* Section Banner Header */}

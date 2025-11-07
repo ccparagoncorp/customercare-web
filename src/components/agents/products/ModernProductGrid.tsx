@@ -117,7 +117,7 @@ export function ModernProductGrid({ brandName, categoryName, subcategoryName }: 
           <div className="text-gray-500 mb-6">
             <Package className="h-16 w-16 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">No products available</h3>
-            <p className="text-sm">This subcategory doesn't have any products yet</p>
+            <p className="text-sm">This subcategory doesn&apos;t have any products yet</p>
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { CategoryBackgroundSection } from "@/components/agents/products/CategoryBackgroundSection"
-import { ModernSubcategoryGrid } from "@/components/agents/products/ModernSubcategoryGrid"
 import { CategoryContentWrapper } from "@/components/agents/products/CategoryContentWrapper"
 import { CategoryDescriptionSection } from "@/components/agents/products/CategoryDescriptionSection"
 

@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       } catch {}
       return { success: true }
-    } catch (error) {
+    } catch {
       return { success: false, error: "Login failed" }
     }
   }
