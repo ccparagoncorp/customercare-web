@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
-import { Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   const prisma = createPrismaClient()
@@ -21,7 +20,8 @@ export async function GET(request: NextRequest) {
     const sourceKey = searchParams.get('sourceKey')
 
     // Build where clause based on scope
-    type TracerUpdateWhere = Prisma.TracerUpdateWhereInput
+    // Using Record type since Prisma.TracerUpdateWhereInput may not be available if Prisma client isn't regenerated
+    type TracerUpdateWhere = Record<string, unknown>
     let where: TracerUpdateWhere = {}
 
     // Scope-based queries (hierarchical)
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
       // Build OR condition for all related entities
       // Use sourceTable and sourceKey since brandId, categoryId, etc. may not exist in database yet
-      const orConditions: TracerUpdateWhere[] = []
+      const orConditions: Array<Record<string, unknown>> = []
       
       // Track brand by sourceTable
       orConditions.push({
@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
       })
       const detailProductIds = detailProducts.map(d => d.id)
 
-      const orConditions: TracerUpdateWhere[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // Track category by sourceTable
         {
           AND: [
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
       })
       const detailProductIds = detailProducts.map(d => d.id)
 
-      const orConditions: TracerUpdateWhere[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // Track subcategory by sourceTable
         {
           AND: [
@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
       const produkJenisDetailKnowledgeIds = produkJenisDetailKnowledges.map(p => p.id)
 
       // Build OR condition: track by sourceTable/sourceKey for knowledge and nested entities
-      const orConditions: TracerUpdateWhere[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // Track knowledge by sourceTable
         {
           AND: [
@@ -336,7 +336,7 @@ export async function GET(request: NextRequest) {
       const detailSOPIds = detailSOPs.map(d => d.id)
 
       // Build OR condition: track by sourceTable/sourceKey for SOP and nested entities
-      const orConditions: TracerUpdateWhere[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // Track SOP by sourceTable
         {
           AND: [
@@ -400,7 +400,7 @@ export async function GET(request: NextRequest) {
       const subdetailQualityTrainingIds = subdetailQualityTrainings.map(s => s.id)
 
       // Build OR condition: track by sourceTable/sourceKey for quality training and nested entities
-      const orConditions: TracerUpdateWhere[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // Track quality training by sourceTable
         {
           AND: [
@@ -456,8 +456,35 @@ export async function GET(request: NextRequest) {
 
     // Fetch tracer updates
     // Note: We only use sourceTable and sourceKey to avoid issues with fields that don't exist in database
-    const tracerUpdates = await prisma.tracerUpdate.findMany({
-      where,
+    // Using type assertion with unknown first as recommended by TypeScript
+    const tracerUpdates = await (prisma.tracerUpdate.findMany as unknown as (
+      args: {
+        where?: Record<string, unknown>
+        orderBy?: { changedAt: 'asc' | 'desc' }
+        select?: {
+          id: boolean
+          sourceTable: boolean
+          sourceKey: boolean
+          fieldName: boolean
+          oldValue: boolean
+          newValue: boolean
+          actionType: boolean
+          changedAt: boolean
+          changedBy: boolean
+        }
+      }
+    ) => Promise<Array<{
+      id: string
+      sourceTable: string
+      sourceKey: string
+      fieldName: string
+      oldValue: string | null
+      newValue: string | null
+      actionType: string
+      changedAt: Date | string
+      changedBy: string | null
+    }>>)({
+      where: where,
       orderBy: {
         changedAt: 'desc',
       },
@@ -483,11 +510,11 @@ export async function GET(request: NextRequest) {
     const enhancedUpdates = await Promise.all(
       tracerUpdates.map(async (update) => {
         try {
-          const sourceKey = update.sourceKey
+          const sourceKey = String(update.sourceKey)
           let updateNotes: string | null = null
-          let displayFieldName = update.fieldName
-          let displayOldValue = update.oldValue
-          let displayNewValue = update.newValue
+          let displayFieldName = String(update.fieldName)
+          let displayOldValue: string | null = update.oldValue ? String(update.oldValue) : null
+          let displayNewValue: string | null = update.newValue ? String(update.newValue) : null
 
           // Helper function to get record name based on table and ID
           const getRecordName = async (tableName: string, id: string): Promise<string | null> => {
@@ -618,7 +645,8 @@ export async function GET(request: NextRequest) {
           }
 
           // If fieldName is "id" or ends with "Id" (foreign key), replace ID values with record names
-          const fieldNameLower = update.fieldName.toLowerCase()
+          const fieldName = String(update.fieldName)
+          const fieldNameLower = fieldName.toLowerCase()
           if (fieldNameLower === 'id' || fieldNameLower.endsWith('id')) {
             // Determine which table to query based on fieldName
             let targetTable = update.sourceTable
@@ -663,28 +691,33 @@ export async function GET(request: NextRequest) {
               displayFieldName = 'Name'
             } else {
               // Convert "brandId" to "Brand", "categoryId" to "Category", etc.
-              displayFieldName = update.fieldName.replace(/[iI]d$/, '').replace(/([A-Z])/g, ' $1').trim()
+              displayFieldName = fieldName.replace(/[iI]d$/, '').replace(/([A-Z])/g, ' $1').trim()
               if (!displayFieldName) {
-                displayFieldName = update.fieldName
+                displayFieldName = fieldName
               }
             }
             
             // Get names for old and new values using the target table
             if (update.oldValue) {
-              const oldName = await getRecordName(targetTable, update.oldValue)
-              displayOldValue = oldName || update.oldValue
+              const oldValueStr = String(update.oldValue)
+              const oldName = await getRecordName(targetTable, oldValueStr)
+              displayOldValue = oldName || oldValueStr
             }
             if (update.newValue) {
-              const newName = await getRecordName(targetTable, update.newValue)
-              displayNewValue = newName || update.newValue
+              const newValueStr = String(update.newValue)
+              const newName = await getRecordName(targetTable, newValueStr)
+              displayNewValue = newName || newValueStr
             }
           }
 
           // Get updateNotes from source table
-          switch (update.sourceTable) {
+          const sourceTableStr = String(update.sourceTable)
+          const sourceKeyStr = String(sourceKey)
+          
+          switch (sourceTableStr) {
             case 'brands': {
               const brand = await prisma.brand.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = brand?.updateNotes || null
@@ -692,7 +725,7 @@ export async function GET(request: NextRequest) {
             }
             case 'kategori_produks': {
               const category = await prisma.kategoriProduk.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = category?.updateNotes || null
@@ -700,7 +733,7 @@ export async function GET(request: NextRequest) {
             }
             case 'subkategori_produks': {
               const subcategory = await prisma.subkategoriProduk.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = subcategory?.updateNotes || null
@@ -708,7 +741,7 @@ export async function GET(request: NextRequest) {
             }
             case 'produks': {
               const product = await prisma.produk.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = product?.updateNotes || null
@@ -716,7 +749,7 @@ export async function GET(request: NextRequest) {
             }
             case 'knowledges': {
               const knowledge = await prisma.knowledge.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = knowledge?.updateNotes || null
@@ -728,7 +761,7 @@ export async function GET(request: NextRequest) {
             }
             case 'jenis_sops': {
               const jenisSOP = await prisma.jenisSOP.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = jenisSOP?.updateNotes || null
@@ -736,7 +769,7 @@ export async function GET(request: NextRequest) {
             }
             case 'quality_trainings': {
               const qualityTraining = await prisma.qualityTraining.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = qualityTraining?.updateNotes || null
@@ -744,7 +777,7 @@ export async function GET(request: NextRequest) {
             }
             case 'jenis_quality_trainings': {
               const jenisQualityTraining = await prisma.jenisQualityTraining.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = jenisQualityTraining?.updateNotes || null
@@ -752,7 +785,7 @@ export async function GET(request: NextRequest) {
             }
             case 'detail_quality_trainings': {
               const detailQualityTraining = await prisma.detailQualityTraining.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = detailQualityTraining?.updateNotes || null
@@ -760,7 +793,7 @@ export async function GET(request: NextRequest) {
             }
             case 'subdetail_quality_trainings': {
               const subdetailQualityTraining = await prisma.subdetailQualityTraining.findUnique({
-                where: { id: sourceKey },
+                where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
               updateNotes = subdetailQualityTraining?.updateNotes || null
@@ -769,8 +802,8 @@ export async function GET(request: NextRequest) {
           }
 
           // If this update is about updateNotes field, use the newValue as updateNotes
-          if (update.fieldName === 'updateNotes' && update.newValue) {
-            updateNotes = update.newValue
+          if (fieldName === 'updateNotes' && update.newValue) {
+            updateNotes = String(update.newValue)
           }
 
           return {
