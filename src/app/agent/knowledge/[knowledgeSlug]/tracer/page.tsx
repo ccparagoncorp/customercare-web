@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
-import { Layout } from "@/components/agents"
+import { Layout } from "@/components/agents/dashboard"
 import { KnowledgeTracerContent } from "@/components/agents/KnowledgeTracerContent"
 
 interface KnowledgeTracerPageProps {
