@@ -45,25 +45,26 @@ export async function GET(
     })
 
     // Fetch products directly from brand (brandId is set, categoryId and subkategoriProdukId are null)
-    // Note: Using brand relation to filter, then filter in application to ensure categoryId and subkategoriProdukId are null
-    // This is needed because Prisma client may not recognize brandId, categoryId, subkategoriProdukId fields yet
+    // Note: Using type assertion because Prisma client may not recognize brandId, categoryId, subkategoriProdukId fields yet
+    // These fields exist in the schema but Prisma client needs to be regenerated
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const allBrandProducts = brand ? await prisma.produk.findMany({
       where: {
-        brand: {
-          id: brand.id
-        }
-      },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        brandId: brand.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        categoryId: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        subkategoriProdukId: null
+      } as any,
       orderBy: { name: 'asc' },
       include: {
         detailProduks: true
       }
     }) : []
     
-    // Filter products where categoryId and subkategoriProdukId are null (direct products from brand)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const directProductsQuery = allBrandProducts.filter((product: any) => 
-      !product.categoryId && !product.subkategoriProdukId
-    )
+    // Use the filtered products directly
+    const directProductsQuery = allBrandProducts
 
     if (!brand) {
       return NextResponse.json(
