@@ -47,16 +47,15 @@ export async function GET(
     // Fetch products directly from brand (brandId is set, categoryId and subkategoriProdukId are null)
     // Note: Using type assertion because Prisma client may not recognize brandId, categoryId, subkategoriProdukId fields yet
     // These fields exist in the schema but Prisma client needs to be regenerated
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause = {
+      brandId: brand?.id,
+      categoryId: null,
+      subkategoriProdukId: null
+    } as Record<string, unknown>
+    
     const allBrandProducts = brand ? await prisma.produk.findMany({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        brandId: brand.id,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        categoryId: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subkategoriProdukId: null
-      } as any,
+      // Type assertion needed because Prisma client may not recognize these fields yet
+      where: whereClause as Parameters<typeof prisma.produk.findMany>[0] extends { where?: infer W } ? W : never,
       orderBy: { name: 'asc' },
       include: {
         detailProduks: true
