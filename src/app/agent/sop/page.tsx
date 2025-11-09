@@ -1,6 +1,7 @@
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { KategoriSOPList } from "@/components/agents/sop/KategoriSOPList"
+import { TracerButton } from "@/components/agents/TracerButton"
 import sopContent from "@/content/agent/sop.json"
 
 export default function SOPPage() {
@@ -15,6 +16,9 @@ export default function SOPPage() {
                 <p className="text-xl text-[#ffde59]">
                   {sopContent.page.description}
                 </p>
+              </div>
+              <div className="flex justify-center mt-6">
+                <TracerButton href="/agent/sop/tracer" className="bg-white text-blue-600 hover:bg-gray-100" />
               </div>
             </div>
           </div>

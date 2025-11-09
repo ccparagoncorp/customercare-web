@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, Star, ArrowLeft, Info, Calendar, Tag } from "lucide-react"
+import { Package, Star, ArrowLeft, Info, Calendar, Tag, History } from "lucide-react"
 import Link from "next/link"
 import { generateColorPalette } from "@/lib/colorUtils"
 
@@ -125,6 +125,17 @@ export function ProductDetail({ brandName, categoryName, subcategoryName, produc
     }
   }
 
+  const getTracerUrl = () => {
+    const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
+    let url = `/agent/products/${slugify(brandName)}/${slugify(categoryName)}`
+    if (subcategoryName) {
+      url += `/${slugify(subcategoryName)}/${slugify(productName)}/tracer`
+    } else {
+      url += `/${slugify(productName)}/tracer`
+    }
+    return url
+  }
+
   return (
     <div className="space-y-8">
       {/* Navigation */}
@@ -137,6 +148,23 @@ export function ProductDetail({ brandName, categoryName, subcategoryName, produc
           <span className="text-sm font-medium">
             Back to {subcategoryName || categoryName}
           </span>
+        </Link>
+        <Link 
+          href={getTracerUrl()}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg"
+          style={{
+            backgroundColor: colorPalette.primary,
+            color: 'white',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = colorPalette.primaryDark
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = colorPalette.primary
+          }}
+        >
+          <History className="w-4 h-4" />
+          <span className="text-sm font-medium">Tracer Updates</span>
         </Link>
       </div>
 

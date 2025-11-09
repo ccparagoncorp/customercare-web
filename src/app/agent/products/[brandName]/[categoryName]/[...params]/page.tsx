@@ -16,6 +16,46 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const decodedBrandName = decodeURIComponent(brandName).replace(/-/g, ' ')
   const decodedCategoryName = decodeURIComponent(categoryName).replace(/-/g, ' ')
   
+  // Check if this is a tracer page request
+  const isTracerPage = routeParams.length > 0 && routeParams[routeParams.length - 1] === 'tracer'
+  
+  if (isTracerPage) {
+    // Handle tracer page - remove 'tracer' from params
+    const tracerParams = routeParams.slice(0, -1)
+    let subcategoryName: string | undefined
+    let productName: string
+    
+    if (tracerParams.length === 2) {
+      // [subcategoryName, productName]
+      subcategoryName = decodeURIComponent(tracerParams[0]).replace(/-/g, ' ')
+      productName = decodeURIComponent(tracerParams[1]).replace(/-/g, ' ')
+    } else if (tracerParams.length === 1) {
+      // [productName] - direct from category
+      productName = decodeURIComponent(tracerParams[0]).replace(/-/g, ' ')
+    } else {
+      throw new Error('Invalid route parameters for tracer')
+    }
+    
+    const { ProductTracerContent } = await import("@/components/agents/products/ProductTracerContent")
+    
+    return (
+      <ProtectedRoute>
+        <Layout>
+          <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-6 py-16">
+              <ProductTracerContent 
+                brandName={decodedBrandName} 
+                categoryName={decodedCategoryName}
+                subcategoryName={subcategoryName}
+                productName={productName}
+              />
+            </div>
+          </div>
+        </Layout>
+      </ProtectedRoute>
+    )
+  }
+  
   // Determine if we have subcategory or direct product
   let subcategoryName: string | undefined
   let productName: string

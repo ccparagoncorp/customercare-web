@@ -110,7 +110,12 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
     )
   }
 
-  if (!brand || !brand.kategoriProduks || brand.kategoriProduks.length === 0) {
+  // Filter out categories that are NULL, empty, or "-"
+  const validCategories = (brand?.kategoriProduks || []).filter(
+    (cat) => cat.name && cat.name.trim() !== '' && cat.name.trim() !== '-'
+  )
+
+  if (!brand || validCategories.length === 0) {
     return (
       <div className="text-center py-20">
         <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-16 max-w-lg mx-auto border border-gray-200">
@@ -158,13 +163,17 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
             <div className="flex items-center space-x-8 text-sm text-gray-600">
               <div className="flex items-center">
                 <Layers className="h-5 w-5 mr-2" style={{ color: colorPalette.primary }} />
-                <span className="font-semibold">{brand.kategoriProduks?.length || 0} Categories</span>
+                <span className="font-semibold">{validCategories.length} Categories</span>
               </div>
               <div className="flex items-center">
                 <Package className="h-5 w-5 mr-2" style={{ color: colorPalette.primaryLight }} />
                 <span className="font-semibold">
-                  {brand.kategoriProduks?.reduce((total, category) => {
-                    return total + (category.subkategoriProduks?.reduce((subTotal, subcategory) => {
+                  {validCategories.reduce((total, category) => {
+                    // Filter out invalid subcategories
+                    const validSubcategories = (category.subkategoriProduks || []).filter(
+                      (sub) => sub.name && sub.name.trim() !== '' && sub.name.trim() !== '-'
+                    )
+                    return total + (validSubcategories.reduce((subTotal, subcategory) => {
                       return subTotal + (subcategory.produks?.length || 0)
                     }, 0) || 0)
                   }, 0) || 0} Products
@@ -177,10 +186,14 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
 
       {/* Enhanced Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {brand.kategoriProduks?.map((category) => {
-          const totalProducts = category.subkategoriProduks?.reduce((total, subcategory) => {
+        {validCategories.map((category) => {
+          // Filter out invalid subcategories when counting products
+          const validSubcategories = (category.subkategoriProduks || []).filter(
+            (sub) => sub.name && sub.name.trim() !== '' && sub.name.trim() !== '-'
+          )
+          const totalProducts = validSubcategories.reduce((total, subcategory) => {
             return total + (subcategory.produks?.length || 0)
-          }, 0) || 0
+          }, 0)
 
           const isCurrentCategory = currentCategoryName === category.name
 

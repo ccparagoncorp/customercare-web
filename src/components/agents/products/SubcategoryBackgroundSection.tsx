@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ArrowLeft, Package } from "lucide-react"
+import { ArrowLeft, Package, History } from "lucide-react"
 import { generateColorPalette } from "@/lib/colorUtils"
 
 interface BrandLite {
@@ -138,17 +138,40 @@ export function SubcategoryBackgroundSection({ brandName, categoryName, subcateg
 
       {/* Content */}
       <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-between">
-        {/* Navigation */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Top Navigation */}
+        <div className="flex items-center justify-between">
+          {/* Back Button - Top Left */}
           <Link href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`} className="flex items-center text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-full">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            <span className="text-sm font-medium">Back to {categoryName}</span>
+            <span className="text-sm font-medium hidden sm:inline">Back to {categoryName}</span>
+            <span className="text-sm font-medium sm:hidden">Back</span>
+          </Link>
+          
+          {/* Tracer Button - Top Right */}
+          <Link 
+            href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(subcategoryName.toLowerCase().replace(/\s+/g, '-'))}/tracer`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm"
+            style={{
+              backgroundColor: `${colorPalette.primary}DD`,
+              color: 'white',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${colorPalette.primaryDark}DD`
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = `${colorPalette.primary}DD`
+            }}
+          >
+            <History className="w-4 h-4" />
+            <span className="text-sm font-medium">Tracer Updates</span>
           </Link>
         </div>
-
-        {/* Title */}
-        <div className="space-y-4">
-          <h1 className="text-4xl lg:text-5xl font-bold text-white">{subcategory.name}</h1>
+        
+        {/* Subcategory Name - Bottom Left */}
+        <div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+            {subcategory.name}
+          </h1>
         </div>
       </div>
     </div>

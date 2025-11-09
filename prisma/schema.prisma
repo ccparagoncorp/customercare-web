@@ -28,6 +28,7 @@ model Brand {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   kategoriProduks KategoriProduk[]
+  produks         Produk[]
 
   @@map("brands")
 }
@@ -75,6 +76,7 @@ model Produk {
   harga               Decimal?          @db.Decimal(12, 2)
   status              ProductStatus     @default(ACTIVE)
   images              String[]
+  brandId             String?           // opsional - relasi langsung ke brand
   categoryId          String?           // opsional
   subkategoriProdukId String?           // opsional
   createdBy           String?
@@ -83,6 +85,7 @@ model Produk {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   detailProduks       DetailProduk[]
+  brand               Brand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
   kategoriProduk      KategoriProduk?   @relation("KategoriProdukToProduk", fields: [categoryId], references: [id], onDelete: Cascade)
   subkategoriProduk   SubkategoriProduk? @relation(fields: [subkategoriProdukId], references: [id], onDelete: Cascade)
 
@@ -312,4 +315,35 @@ model SubdetailQualityTraining {
   detailQualityTraining    DetailQualityTraining  @relation(fields: [detailQualityTrainingId], references: [id], onDelete: Cascade)
 
   @@map("subdetail_quality_trainings")
+}
+
+model TracerUpdate {
+  id                String   @id @default(cuid())
+  sourceTable       String   @map("source_table")
+  sourceKey         String   @map("source_key")
+  fieldName         String   @map("field_name")
+  oldValue          String?  @db.Text @map("old_value")
+  newValue          String?  @db.Text @map("new_value")
+  actionType        String   @map("action_type") // INSERT, UPDATE, DELETE
+  changedAt         DateTime @default(now()) @map("changed_at")
+  changedBy         String?  @map("changed_by")
+  // Related IDs untuk query yang lebih efisien
+  brandId           String?  @map("brand_id")
+  categoryId        String?  @map("category_id")
+  subcategoryId     String?  @map("subcategory_id")
+  knowledgeId       String?  @map("knowledge_id")
+  sopId             String?  @map("sop_id")
+  qualityTrainingId String?  @map("quality_training_id")
+
+  @@index([sourceTable])
+  @@index([sourceKey])
+  @@index([actionType])
+  @@index([changedAt])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([knowledgeId])
+  @@index([sopId])
+  @@index([qualityTrainingId])
+  @@map("tracer_updates")
 }

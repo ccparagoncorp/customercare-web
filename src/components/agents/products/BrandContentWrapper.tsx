@@ -24,6 +24,7 @@ interface Product {
 interface BrandWithNested {
   name: string
   colorbase?: string | null
+  produks?: Product[] // Products directly from brand (without category)
   kategoriProduks: Array<{
     name: string
     subkategoriProduks: Array<{
@@ -55,22 +56,27 @@ export function BrandContentWrapper({ brandName }: { brandName: string }) {
 
   if (loading || !brand) return null
 
-  const categories = brand.kategoriProduks || []
+  // Filter out categories that are NULL, empty, or "-"
+  const categories = (brand.kategoriProduks || []).filter(
+    (cat) => cat.name && cat.name.trim() !== '' && cat.name.trim() !== '-'
+  )
   const brandColor = brand.colorbase || null
 
-  // If brand has no categories, show product list (aggregated across subcategories and direct category products if any existed)
-  const aggregatedProducts = categories.flatMap((c) => {
-    const fromSub = (c.subkategoriProduks || []).flatMap((s) => s.produks || [])
-    const fromCat = c.produks || []
-    return [...fromCat, ...fromSub]
-  })
+  // If brand has no valid categories, show products directly from brand
+  if (categories.length === 0) {
+    // Get products directly from brand (brandId is set, categoryId is null)
+    const directProducts = brand.produks || []
+    return <ProductListWithDetails brandColor={brandColor} products={directProducts} />
+  }
 
-  return categories.length > 0 ? (
+  // If brand has categories, show category grid (don't show direct products)
+  // Products will be shown through categories/subcategories
+
+  // Otherwise show categories
+  return (
     <section className="space-y-16">
       <ModernBrandCategories brandName={brandName} />
     </section>
-  ) : (
-    <ProductListWithDetails brandColor={brandColor} products={aggregatedProducts} />
   )
 }
 

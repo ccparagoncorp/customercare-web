@@ -112,10 +112,15 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
   // Resolve palette from brand colorbase if present
   const palette = generateColorPalette(category.brand?.colorbase || "#03438f")
 
-  // If there are subcategories, show them
-  if (category.subkategoriProduks && category.subkategoriProduks.length > 0) {
-    const subcategoryCount = category.subkategoriProduks.length
-    const totalProductsAcrossSubcats = category.subkategoriProduks.reduce((total, s) => total + ((s.produks?.length) || 0), 0)
+  // Filter out subcategories that are NULL, empty, or "-"
+  const validSubcategories = (category.subkategoriProduks || []).filter(
+    (sub) => sub.name && sub.name.trim() !== '' && sub.name.trim() !== '-'
+  )
+
+  // If there are valid subcategories, show them
+  if (validSubcategories.length > 0) {
+    const subcategoryCount = validSubcategories.length
+    const totalProductsAcrossSubcats = validSubcategories.reduce((total, s) => total + ((s.produks?.length) || 0), 0)
     return (
       <div className="space-y-16">
         {/* Header - mirror brand categories header */}
@@ -157,7 +162,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
         </div>
         {/* Grid (match brand grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {category.subkategoriProduks.map((subcategory) => {
+          {validSubcategories.map((subcategory) => {
             const totalProducts = subcategory.produks?.length || 0
 
             return (

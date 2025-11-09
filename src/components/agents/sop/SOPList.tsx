@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ChevronRight, ArrowLeft, FileText, ListChecks } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
+import { TracerButton } from "../TracerButton"
 
 interface SOP {
   id: string
@@ -78,13 +79,16 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
       {/* Header Section */}
       <div className="bg-gradient-to-r from-[#0259b7] to-[#017cff] rounded-3xl px-8 py-10 shadow-xl">
         {/* Back Button */}
-        <Link
-          href="/agent/sop"
-          className="inline-flex items-center text-white/90 hover:text-white mb-6 transition-colors group"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-medium">{sopContent.kategori.back}</span>
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/agent/sop"
+            className="inline-flex items-center text-white/90 hover:text-white transition-colors group"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium">{sopContent.kategori.back}</span>
+          </Link>
+          <TracerButton href={`/agent/sop/${slugify(kategoriSOP)}/tracer`} className="bg-white text-blue-600 hover:bg-gray-100" />
+        </div>
         
         {/* Title & Description */}
         <div>

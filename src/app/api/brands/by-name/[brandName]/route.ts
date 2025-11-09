@@ -31,11 +31,34 @@ export async function GET(
                   }
                 }
               }
+            },
+            produks: {
+              select: {
+                id: true,
+                name: true,
+                status: true
+              }
             }
           }
         }
       }
     })
+
+    // Fetch products directly from brand (brandId is set, categoryId and subkategoriProdukId are null)
+    let directProducts: any[] = []
+    if (brand) {
+      directProducts = await prisma.produk.findMany({
+        where: {
+          brandId: brand.id,
+          categoryId: null,
+          subkategoriProdukId: null
+        },
+        orderBy: { name: 'asc' },
+        include: {
+          detailProduks: true
+        }
+      })
+    }
 
     if (!brand) {
       return NextResponse.json(
@@ -44,7 +67,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(brand)
+    // Add direct products to brand object
+    const brandWithProducts = {
+      ...brand,
+      produks: directProducts
+    }
+
+    return NextResponse.json(brandWithProducts)
   } catch (error) {
     console.error('Error fetching brand by name:', error)
     return NextResponse.json(

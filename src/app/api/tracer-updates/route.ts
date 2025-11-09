@@ -1,0 +1,821 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createPrismaClient } from '@/lib/db'
+
+export async function GET(request: NextRequest) {
+  const prisma = createPrismaClient()
+  
+  try {
+    const { searchParams } = new URL(request.url)
+    
+    // Scope-based parameters (preferred method)
+    const brandId = searchParams.get('brandId')
+    const categoryId = searchParams.get('categoryId')
+    const subcategoryId = searchParams.get('subcategoryId')
+    const knowledgeId = searchParams.get('knowledgeId')
+    const sopId = searchParams.get('sopId')
+    const qualityTrainingId = searchParams.get('qualityTrainingId')
+    
+    // Legacy parameters (for backward compatibility)
+    const sourceTable = searchParams.get('sourceTable')
+    const sourceKey = searchParams.get('sourceKey')
+
+    // Build where clause based on scope
+    let where: any = {}
+
+    // Scope-based queries (hierarchical)
+    if (brandId) {
+      // Brand scope: get all updates related to this brand
+      // This includes: brand, all categories, all subcategories, all products, all detail products
+      // First, get all related IDs
+      const categories = await prisma.kategoriProduk.findMany({
+        where: { brandId: brandId },
+        select: { id: true }
+      })
+      const categoryIds = categories.map(c => c.id)
+      
+      const subcategories = await prisma.subkategoriProduk.findMany({
+        where: {
+          kategoriProduk: {
+            brandId: brandId
+          }
+        },
+        select: { id: true }
+      })
+      const subcategoryIds = subcategories.map(s => s.id)
+      
+      // Get all products related to this brand (via brandId, categoryId, or subcategoryId)
+      const products = await prisma.produk.findMany({
+        where: {
+          OR: [
+            { brandId: brandId },
+            { categoryId: { in: categoryIds } },
+            { subkategoriProdukId: { in: subcategoryIds } }
+          ]
+        },
+        select: { id: true }
+      })
+      const productIds = products.map(p => p.id)
+      
+      // Get all detail products for these products
+      const detailProducts = await prisma.detailProduk.findMany({
+        where: {
+          produkId: { in: productIds }
+        },
+        select: { id: true }
+      })
+      const detailProductIds = detailProducts.map(d => d.id)
+
+      // Build OR condition for all related entities
+      // Use sourceTable and sourceKey since brandId, categoryId, etc. may not exist in database yet
+      const orConditions: any[] = []
+      
+      // Track brand by sourceTable
+      orConditions.push({
+        AND: [
+          { sourceTable: 'brands' },
+          { sourceKey: brandId }
+        ]
+      })
+      
+      // Track categories by sourceTable
+      if (categoryIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'kategori_produks' },
+            { sourceKey: { in: categoryIds } }
+          ]
+        })
+      }
+      
+      // Track subcategories by sourceTable
+      if (subcategoryIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'subkategori_produks' },
+            { sourceKey: { in: subcategoryIds } }
+          ]
+        })
+      }
+      
+      // Track products by sourceTable
+      if (productIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'produks' },
+            { sourceKey: { in: productIds } }
+          ]
+        })
+      }
+      
+      // Track detail products by sourceTable
+      if (detailProductIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_produks' },
+            { sourceKey: { in: detailProductIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (categoryId) {
+      // Category scope: get all updates related to this category
+      // This includes: category, all subcategories, all products, all detail products
+      const subcategories = await prisma.subkategoriProduk.findMany({
+        where: { kategoriProdukId: categoryId },
+        select: { id: true }
+      })
+      const subcategoryIds = subcategories.map(s => s.id)
+      
+      // Get all products related to this category (via categoryId or subcategoryId)
+      const products = await prisma.produk.findMany({
+        where: {
+          OR: [
+            { categoryId: categoryId },
+            { subkategoriProdukId: { in: subcategoryIds } }
+          ]
+        },
+        select: { id: true }
+      })
+      const productIds = products.map(p => p.id)
+      
+      // Get all detail products for these products
+      const detailProducts = await prisma.detailProduk.findMany({
+        where: {
+          produkId: { in: productIds }
+        },
+        select: { id: true }
+      })
+      const detailProductIds = detailProducts.map(d => d.id)
+
+      const orConditions: any[] = [
+        // Track category by sourceTable
+        {
+          AND: [
+            { sourceTable: 'kategori_produks' },
+            { sourceKey: categoryId }
+          ]
+        }
+      ]
+      
+      // Track subcategories by sourceTable
+      if (subcategoryIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'subkategori_produks' },
+            { sourceKey: { in: subcategoryIds } }
+          ]
+        })
+      }
+      
+      // Track products by sourceTable
+      if (productIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'produks' },
+            { sourceKey: { in: productIds } }
+          ]
+        })
+      }
+      
+      // Track detail products by sourceTable
+      if (detailProductIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_produks' },
+            { sourceKey: { in: detailProductIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (subcategoryId) {
+      // Subcategory scope: get all updates related to this subcategory
+      // This includes: subcategory, all products, all detail products
+      // Get all products related to this subcategory
+      const products = await prisma.produk.findMany({
+        where: { subkategoriProdukId: subcategoryId },
+        select: { id: true }
+      })
+      const productIds = products.map(p => p.id)
+      
+      // Get all detail products for these products
+      const detailProducts = await prisma.detailProduk.findMany({
+        where: {
+          produkId: { in: productIds }
+        },
+        select: { id: true }
+      })
+      const detailProductIds = detailProducts.map(d => d.id)
+
+      const orConditions: any[] = [
+        // Track subcategory by sourceTable
+        {
+          AND: [
+            { sourceTable: 'subkategori_produks' },
+            { sourceKey: subcategoryId }
+          ]
+        }
+      ]
+      
+      // Track products by sourceTable
+      if (productIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'produks' },
+            { sourceKey: { in: productIds } }
+          ]
+        })
+      }
+      
+      // Track detail products by sourceTable
+      if (detailProductIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_produks' },
+            { sourceKey: { in: detailProductIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (knowledgeId) {
+      // Knowledge scope: get all updates related to this knowledge
+      // This includes: knowledge, all detail knowledges, all jenis detail knowledges, all produk jenis detail knowledges
+      // First, get all related IDs
+      const detailKnowledges = await prisma.detailKnowledge.findMany({
+        where: { knowledgeId: knowledgeId },
+        select: { id: true }
+      })
+      const detailKnowledgeIds = detailKnowledges.map(d => d.id)
+      
+      const jenisDetailKnowledges = await prisma.jenisDetailKnowledge.findMany({
+        where: {
+          detailKnowledge: {
+            knowledgeId: knowledgeId
+          }
+        },
+        select: { id: true }
+      })
+      const jenisDetailKnowledgeIds = jenisDetailKnowledges.map(j => j.id)
+      
+      const produkJenisDetailKnowledges = await prisma.produkJenisDetailKnowledge.findMany({
+        where: {
+          jenisDetailKnowledge: {
+            detailKnowledge: {
+              knowledgeId: knowledgeId
+            }
+          }
+        },
+        select: { id: true }
+      })
+      const produkJenisDetailKnowledgeIds = produkJenisDetailKnowledges.map(p => p.id)
+
+      // Build OR condition: track by sourceTable/sourceKey for knowledge and nested entities
+      const orConditions: any[] = [
+        // Track knowledge by sourceTable
+        {
+          AND: [
+            { sourceTable: 'knowledges' },
+            { sourceKey: knowledgeId }
+          ]
+        }
+      ]
+      
+      // Track detail knowledges by sourceTable
+      if (detailKnowledgeIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_knowledges' },
+            { sourceKey: { in: detailKnowledgeIds } }
+          ]
+        })
+      }
+      
+      // Track jenis detail knowledges by sourceTable
+      if (jenisDetailKnowledgeIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'jenis_detail_knowledges' },
+            { sourceKey: { in: jenisDetailKnowledgeIds } }
+          ]
+        })
+      }
+      
+      // Track produk jenis detail knowledges by sourceTable
+      if (produkJenisDetailKnowledgeIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'produk_jenis_detail_knowledges' },
+            { sourceKey: { in: produkJenisDetailKnowledgeIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (sopId) {
+      // SOP scope: get all updates related to this SOP
+      // This includes: SOP, all jenis SOPs, all detail SOPs
+      // First, get all related IDs
+      const jenisSOPs = await prisma.jenisSOP.findMany({
+        where: { sopId: sopId },
+        select: { id: true }
+      })
+      const jenisSOPIds = jenisSOPs.map(j => j.id)
+      
+      const detailSOPs = await prisma.detailSOP.findMany({
+        where: {
+          jenisSOP: {
+            sopId: sopId
+          }
+        },
+        select: { id: true }
+      })
+      const detailSOPIds = detailSOPs.map(d => d.id)
+
+      // Build OR condition: track by sourceTable/sourceKey for SOP and nested entities
+      const orConditions: any[] = [
+        // Track SOP by sourceTable
+        {
+          AND: [
+            { sourceTable: 'sops' },
+            { sourceKey: sopId }
+          ]
+        }
+      ]
+      
+      // Track jenis SOPs by sourceTable
+      if (jenisSOPIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'jenis_sops' },
+            { sourceKey: { in: jenisSOPIds } }
+          ]
+        })
+      }
+      
+      // Track detail SOPs by sourceTable
+      if (detailSOPIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_sops' },
+            { sourceKey: { in: detailSOPIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (qualityTrainingId) {
+      // QualityTraining scope: get all updates related to this quality training
+      // This includes: quality training, all jenis quality trainings, all detail quality trainings, all subdetail quality trainings
+      // First, get all related IDs
+      const jenisQualityTrainings = await prisma.jenisQualityTraining.findMany({
+        where: { qualityTrainingId: qualityTrainingId },
+        select: { id: true }
+      })
+      const jenisQualityTrainingIds = jenisQualityTrainings.map(j => j.id)
+      
+      const detailQualityTrainings = await prisma.detailQualityTraining.findMany({
+        where: {
+          jenisQualityTraining: {
+            qualityTrainingId: qualityTrainingId
+          }
+        },
+        select: { id: true }
+      })
+      const detailQualityTrainingIds = detailQualityTrainings.map(d => d.id)
+      
+      const subdetailQualityTrainings = await prisma.subdetailQualityTraining.findMany({
+        where: {
+          detailQualityTraining: {
+            jenisQualityTraining: {
+              qualityTrainingId: qualityTrainingId
+            }
+          }
+        },
+        select: { id: true }
+      })
+      const subdetailQualityTrainingIds = subdetailQualityTrainings.map(s => s.id)
+
+      // Build OR condition: track by sourceTable/sourceKey for quality training and nested entities
+      const orConditions: any[] = [
+        // Track quality training by sourceTable
+        {
+          AND: [
+            { sourceTable: 'quality_trainings' },
+            { sourceKey: qualityTrainingId }
+          ]
+        }
+      ]
+      
+      // Track jenis quality trainings by sourceTable
+      if (jenisQualityTrainingIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'jenis_quality_trainings' },
+            { sourceKey: { in: jenisQualityTrainingIds } }
+          ]
+        })
+      }
+      
+      // Track detail quality trainings by sourceTable
+      if (detailQualityTrainingIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'detail_quality_trainings' },
+            { sourceKey: { in: detailQualityTrainingIds } }
+          ]
+        })
+      }
+      
+      // Track subdetail quality trainings by sourceTable
+      if (subdetailQualityTrainingIds.length > 0) {
+        orConditions.push({
+          AND: [
+            { sourceTable: 'subdetail_quality_trainings' },
+            { sourceKey: { in: subdetailQualityTrainingIds } }
+          ]
+        })
+      }
+
+      where = { OR: orConditions }
+    } else if (sourceTable) {
+      // Legacy: use sourceTable and sourceKey
+      where = { sourceTable: sourceTable }
+      if (sourceKey) {
+        where.sourceKey = sourceKey
+      }
+    } else {
+      return NextResponse.json(
+        { error: 'At least one scope parameter (brandId, categoryId, subcategoryId, knowledgeId, sopId, qualityTrainingId) or sourceTable is required' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch tracer updates
+    // Note: We only use sourceTable and sourceKey to avoid issues with fields that don't exist in database
+    const tracerUpdates = await prisma.tracerUpdate.findMany({
+      where,
+      orderBy: {
+        changedAt: 'desc',
+      },
+      select: {
+        id: true,
+        sourceTable: true,
+        sourceKey: true,
+        fieldName: true,
+        oldValue: true,
+        newValue: true,
+        actionType: true,
+        changedAt: true,
+        changedBy: true,
+        // Explicitly select only fields that exist in database
+        // Do not select brandId, categoryId, etc. as they may not exist yet
+      },
+    })
+
+    // Enhance tracer updates with updateNotes from source tables
+    // If fieldName is "updateNotes", we already have it in newValue/oldValue
+    // If fieldName is "id", replace oldValue/newValue with record names
+    // Otherwise, try to get current updateNotes from source table
+    const enhancedUpdates = await Promise.all(
+      tracerUpdates.map(async (update) => {
+        try {
+          const sourceKey = update.sourceKey
+          let updateNotes: string | null = null
+          let displayFieldName = update.fieldName
+          let displayOldValue = update.oldValue
+          let displayNewValue = update.newValue
+
+          // Helper function to get record name based on table and ID
+          const getRecordName = async (tableName: string, id: string): Promise<string | null> => {
+            try {
+              switch (tableName) {
+                case 'brands': {
+                  const brand = await prisma.brand.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return brand?.name || null
+                }
+                case 'kategori_produks': {
+                  const category = await prisma.kategoriProduk.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return category?.name || null
+                }
+                case 'subkategori_produks': {
+                  const subcategory = await prisma.subkategoriProduk.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return subcategory?.name || null
+                }
+                case 'produks': {
+                  const product = await prisma.produk.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return product?.name || null
+                }
+                case 'knowledges': {
+                  const knowledge = await prisma.knowledge.findUnique({
+                    where: { id },
+                    select: { title: true },
+                  })
+                  return knowledge?.title || null
+                }
+                case 'sops': {
+                  const sop = await (prisma as any).sOP.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return sop?.name || null
+                }
+                case 'jenis_sops': {
+                  const jenisSOP = await prisma.jenisSOP.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return jenisSOP?.name || null
+                }
+                case 'kategori_sops': {
+                  const kategoriSOP = await prisma.kategoriSOP.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return kategoriSOP?.name || null
+                }
+                case 'quality_trainings': {
+                  const qualityTraining = await prisma.qualityTraining.findUnique({
+                    where: { id },
+                    select: { title: true },
+                  })
+                  return qualityTraining?.title || null
+                }
+                case 'jenis_quality_trainings': {
+                  const jenisQualityTraining = await prisma.jenisQualityTraining.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return jenisQualityTraining?.name || null
+                }
+                case 'detail_quality_trainings': {
+                  const detailQualityTraining = await prisma.detailQualityTraining.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return detailQualityTraining?.name || null
+                }
+                case 'subdetail_quality_trainings': {
+                  const subdetailQualityTraining = await prisma.subdetailQualityTraining.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return subdetailQualityTraining?.name || null
+                }
+                case 'detail_knowledges': {
+                  const detailKnowledge = await prisma.detailKnowledge.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return detailKnowledge?.name || null
+                }
+                case 'jenis_detail_knowledges': {
+                  const jenisDetailKnowledge = await prisma.jenisDetailKnowledge.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return jenisDetailKnowledge?.name || null
+                }
+                case 'produk_jenis_detail_knowledges': {
+                  const produkJenisDetailKnowledge = await prisma.produkJenisDetailKnowledge.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return produkJenisDetailKnowledge?.name || null
+                }
+                case 'detail_produks': {
+                  const detailProduk = await prisma.detailProduk.findUnique({
+                    where: { id },
+                    select: { name: true },
+                  })
+                  return detailProduk?.name || null
+                }
+                default:
+                  return null
+              }
+            } catch (err) {
+              console.warn(`Could not get record name for ${tableName}:${id}`, err)
+              return null
+            }
+          }
+
+          // If fieldName is "id" or ends with "Id" (foreign key), replace ID values with record names
+          const fieldNameLower = update.fieldName.toLowerCase()
+          if (fieldNameLower === 'id' || fieldNameLower.endsWith('id')) {
+            // Determine which table to query based on fieldName
+            let targetTable = update.sourceTable
+            
+            // Map field names to their corresponding table names
+            if (fieldNameLower === 'brandid') {
+              targetTable = 'brands'
+            } else if (fieldNameLower === 'categoryid' || fieldNameLower === 'kategoriprodukid') {
+              targetTable = 'kategori_produks'
+            } else if (fieldNameLower === 'subcategoryid' || fieldNameLower === 'subkategoriprodukid') {
+              targetTable = 'subkategori_produks'
+            } else if (fieldNameLower === 'productid' || fieldNameLower === 'produkid') {
+              targetTable = 'produks'
+            } else if (fieldNameLower === 'knowledgeid') {
+              targetTable = 'knowledges'
+            } else if (fieldNameLower === 'sopid') {
+              targetTable = 'sops'
+            } else if (fieldNameLower === 'kategorisopid') {
+              targetTable = 'kategori_sops'
+            } else if (fieldNameLower === 'jenisopid' || fieldNameLower === 'jenissopid') {
+              targetTable = 'jenis_sops'
+            } else if (fieldNameLower === 'qualitytrainingid') {
+              targetTable = 'quality_trainings'
+            } else if (fieldNameLower === 'jenisqualitytrainingid') {
+              targetTable = 'jenis_quality_trainings'
+            } else if (fieldNameLower === 'detailqualitytrainingid') {
+              targetTable = 'detail_quality_trainings'
+            } else if (fieldNameLower === 'subdetailqualitytrainingid') {
+              targetTable = 'subdetail_quality_trainings'
+            } else if (fieldNameLower === 'detailknowledgeid') {
+              targetTable = 'detail_knowledges'
+            } else if (fieldNameLower === 'jenisdetailknowledgeid') {
+              targetTable = 'jenis_detail_knowledges'
+            } else if (fieldNameLower === 'produkjenisdetailknowledgeid') {
+              targetTable = 'produk_jenis_detail_knowledges'
+            } else if (fieldNameLower === 'detailprodukid') {
+              targetTable = 'detail_produks'
+            }
+            
+            // Change field name display (remove "Id" suffix and capitalize)
+            if (fieldNameLower === 'id') {
+              displayFieldName = 'Name'
+            } else {
+              // Convert "brandId" to "Brand", "categoryId" to "Category", etc.
+              displayFieldName = update.fieldName.replace(/[iI]d$/, '').replace(/([A-Z])/g, ' $1').trim()
+              if (!displayFieldName) {
+                displayFieldName = update.fieldName
+              }
+            }
+            
+            // Get names for old and new values using the target table
+            if (update.oldValue) {
+              const oldName = await getRecordName(targetTable, update.oldValue)
+              displayOldValue = oldName || update.oldValue
+            }
+            if (update.newValue) {
+              const newName = await getRecordName(targetTable, update.newValue)
+              displayNewValue = newName || update.newValue
+            }
+          }
+
+          // Get updateNotes from source table
+          switch (update.sourceTable) {
+            case 'brands': {
+              const brand = await prisma.brand.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = brand?.updateNotes || null
+              break
+            }
+            case 'kategori_produks': {
+              const category = await prisma.kategoriProduk.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = category?.updateNotes || null
+              break
+            }
+            case 'subkategori_produks': {
+              const subcategory = await prisma.subkategoriProduk.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = subcategory?.updateNotes || null
+              break
+            }
+            case 'produks': {
+              const product = await prisma.produk.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = product?.updateNotes || null
+              break
+            }
+            case 'knowledges': {
+              const knowledge = await prisma.knowledge.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = knowledge?.updateNotes || null
+              break
+            }
+            case 'sops': {
+              // SOP doesn't have updateNotes field
+              break
+            }
+            case 'jenis_sops': {
+              const jenisSOP = await prisma.jenisSOP.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = jenisSOP?.updateNotes || null
+              break
+            }
+            case 'quality_trainings': {
+              const qualityTraining = await prisma.qualityTraining.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = qualityTraining?.updateNotes || null
+              break
+            }
+            case 'jenis_quality_trainings': {
+              const jenisQualityTraining = await prisma.jenisQualityTraining.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = jenisQualityTraining?.updateNotes || null
+              break
+            }
+            case 'detail_quality_trainings': {
+              const detailQualityTraining = await prisma.detailQualityTraining.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = detailQualityTraining?.updateNotes || null
+              break
+            }
+            case 'subdetail_quality_trainings': {
+              const subdetailQualityTraining = await prisma.subdetailQualityTraining.findUnique({
+                where: { id: sourceKey },
+                select: { updateNotes: true },
+              })
+              updateNotes = subdetailQualityTraining?.updateNotes || null
+              break
+            }
+          }
+
+          // If this update is about updateNotes field, use the newValue as updateNotes
+          if (update.fieldName === 'updateNotes' && update.newValue) {
+            updateNotes = update.newValue
+          }
+
+          return {
+            ...update,
+            fieldName: displayFieldName,
+            oldValue: displayOldValue,
+            newValue: displayNewValue,
+            updateNotes: updateNotes || null,
+          }
+        } catch (err) {
+          // If we can't enhance the update, just return it as is
+          console.warn(`Could not enhance update for ${update.sourceTable}:${update.sourceKey}`, err)
+          return update
+        }
+      })
+    )
+
+    return NextResponse.json(enhancedUpdates)
+  } catch (error) {
+    // Check if it's a database connectivity issue or column doesn't exist
+    const errorObj = error as { message?: string; name?: string }
+    const errorMessage = errorObj?.message || ''
+    const isDbConnectivityIssue = 
+      errorMessage.includes("Can't reach database server") ||
+      errorMessage.includes('Invalid `prisma') ||
+      errorMessage.includes('does not exist') ||
+      errorMessage.includes('column') ||
+      errorObj?.name?.includes('Prisma') ||
+      errorObj?.name === 'PrismaClientInitializationError'
+
+    if (isDbConnectivityIssue || !process.env.DATABASE_URL) {
+      // Return empty array with 503 status when DB is unreachable or column doesn't exist
+      // This allows the UI to still render gracefully
+      console.warn('Database issue (connectivity or missing column), returning empty tracer updates:', errorMessage)
+      return NextResponse.json([], { status: 503 })
+    }
+
+    console.error('Error fetching tracer updates:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch tracer updates' },
+      { status: 500 }
+    )
+  } finally {
+    // Always disconnect Prisma client
+    try {
+      await prisma.$disconnect()
+    } catch (disconnectError) {
+      // Ignore disconnect errors
+      console.warn('Error disconnecting Prisma client:', disconnectError)
+    }
+  }
+}
+

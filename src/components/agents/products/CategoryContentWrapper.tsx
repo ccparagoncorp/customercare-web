@@ -61,23 +61,29 @@ export function CategoryContentWrapper({ brandName, categoryName }: { brandName:
 
   if (loading || !category) return null
 
-  const subcategories = category.subkategoriProduks || []
+  // Filter out subcategories that are NULL, empty, or "-"
+  const validSubcategories = (category.subkategoriProduks || []).filter(
+    (sub) => sub.name && sub.name.trim() !== '' && sub.name.trim() !== '-'
+  )
   const brandColor = category.brand?.colorbase || null
 
-  // If no subcategories, use products directly under the category.
-  const aggregatedProducts = (subcategories.length === 0)
-    ? (category.produks || [])
-    : subcategories.flatMap((s) => s.produks || [])
+  // If no valid subcategories, show products directly from category
+  if (validSubcategories.length === 0) {
+    // Get products directly from category (categoryId is set, subkategoriProdukId is null)
+    const directProducts = category.produks || []
+    return (
+      <div className="max-w-screen-2xl mx-auto px-6 py-16 space-y-16">
+        <ProductListWithDetails brandColor={brandColor} products={directProducts} />
+      </div>
+    )
+  }
 
+  // Otherwise show subcategories
   return (
     <div className="max-w-screen-2xl mx-auto px-6 py-16 space-y-16">
-      {subcategories.length > 0 ? (
-        <section className="space-y-16">
-          <ModernSubcategoryGrid brandName={brandName} categoryName={categoryName} initialCategory={category} />
-        </section>
-      ) : (
-        <ProductListWithDetails brandColor={brandColor} products={aggregatedProducts} />
-      )}
+      <section className="space-y-16">
+        <ModernSubcategoryGrid brandName={brandName} categoryName={categoryName} initialCategory={category} />
+      </section>
     </div>
   )
 }

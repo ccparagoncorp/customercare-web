@@ -41,7 +41,11 @@ export async function GET(
           }
         },
         // Also include top-level products that belong directly to the category
+        // (categoryId is set, subkategoriProdukId is null)
         produks: {
+          where: {
+            subkategoriProdukId: null
+          },
           orderBy: { name: 'asc' },
           include: {
             detailProduks: true
