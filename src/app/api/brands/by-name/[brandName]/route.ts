@@ -45,34 +45,17 @@ export async function GET(
     })
 
     // Fetch products directly from brand (brandId is set, categoryId and subkategoriProdukId are null)
-    interface ProductWithDetails {
-      id: string
-      name: string
-      description: string | null
-      status: string
-      images: string[]
-      detailProduks: Array<{
-        id: string
-        name: string
-        detail: string
-        images: string[]
-      }>
-    }
-    
-    let directProducts: ProductWithDetails[] = []
-    if (brand) {
-      directProducts = await prisma.produk.findMany({
-        where: {
-          brandId: brand.id,
-          categoryId: null,
-          subkategoriProdukId: null
-        },
-        orderBy: { name: 'asc' },
-        include: {
-          detailProduks: true
-        }
-      }) as ProductWithDetails[]
-    }
+    const directProductsQuery = brand ? await prisma.produk.findMany({
+      where: {
+        brandId: brand.id,
+        categoryId: null,
+        subkategoriProdukId: null
+      },
+      orderBy: { name: 'asc' },
+      include: {
+        detailProduks: true
+      }
+    }) : []
 
     if (!brand) {
       return NextResponse.json(
@@ -84,7 +67,7 @@ export async function GET(
     // Add direct products to brand object
     const brandWithProducts = {
       ...brand,
-      produks: directProducts
+      produks: directProductsQuery
     }
 
     return NextResponse.json(brandWithProducts)
