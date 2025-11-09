@@ -41,8 +41,6 @@ export function KnowledgeTracerContent({ knowledgeSlug }: KnowledgeTracerContent
     return <div className="text-center py-12 text-red-500">Knowledge not found</div>
   }
 
-  const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">

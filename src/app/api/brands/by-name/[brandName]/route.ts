@@ -45,7 +45,21 @@ export async function GET(
     })
 
     // Fetch products directly from brand (brandId is set, categoryId and subkategoriProdukId are null)
-    let directProducts: any[] = []
+    interface ProductWithDetails {
+      id: string
+      name: string
+      description: string | null
+      status: string
+      images: string[]
+      detailProduks: Array<{
+        id: string
+        name: string
+        detail: string
+        images: string[]
+      }>
+    }
+    
+    let directProducts: ProductWithDetails[] = []
     if (brand) {
       directProducts = await prisma.produk.findMany({
         where: {
@@ -57,7 +71,7 @@ export async function GET(
         include: {
           detailProduks: true
         }
-      })
+      }) as ProductWithDetails[]
     }
 
     if (!brand) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   const prisma = createPrismaClient()
@@ -20,7 +21,8 @@ export async function GET(request: NextRequest) {
     const sourceKey = searchParams.get('sourceKey')
 
     // Build where clause based on scope
-    let where: any = {}
+    type TracerUpdateWhere = Prisma.TracerUpdateWhereInput
+    let where: TracerUpdateWhere = {}
 
     // Scope-based queries (hierarchical)
     if (brandId) {
@@ -67,7 +69,7 @@ export async function GET(request: NextRequest) {
 
       // Build OR condition for all related entities
       // Use sourceTable and sourceKey since brandId, categoryId, etc. may not exist in database yet
-      const orConditions: any[] = []
+      const orConditions: TracerUpdateWhere[] = []
       
       // Track brand by sourceTable
       orConditions.push({
@@ -148,7 +150,7 @@ export async function GET(request: NextRequest) {
       })
       const detailProductIds = detailProducts.map(d => d.id)
 
-      const orConditions: any[] = [
+      const orConditions: TracerUpdateWhere[] = [
         // Track category by sourceTable
         {
           AND: [
@@ -208,7 +210,7 @@ export async function GET(request: NextRequest) {
       })
       const detailProductIds = detailProducts.map(d => d.id)
 
-      const orConditions: any[] = [
+      const orConditions: TracerUpdateWhere[] = [
         // Track subcategory by sourceTable
         {
           AND: [
@@ -272,7 +274,7 @@ export async function GET(request: NextRequest) {
       const produkJenisDetailKnowledgeIds = produkJenisDetailKnowledges.map(p => p.id)
 
       // Build OR condition: track by sourceTable/sourceKey for knowledge and nested entities
-      const orConditions: any[] = [
+      const orConditions: TracerUpdateWhere[] = [
         // Track knowledge by sourceTable
         {
           AND: [
@@ -334,7 +336,7 @@ export async function GET(request: NextRequest) {
       const detailSOPIds = detailSOPs.map(d => d.id)
 
       // Build OR condition: track by sourceTable/sourceKey for SOP and nested entities
-      const orConditions: any[] = [
+      const orConditions: TracerUpdateWhere[] = [
         // Track SOP by sourceTable
         {
           AND: [
@@ -398,7 +400,7 @@ export async function GET(request: NextRequest) {
       const subdetailQualityTrainingIds = subdetailQualityTrainings.map(s => s.id)
 
       // Build OR condition: track by sourceTable/sourceKey for quality training and nested entities
-      const orConditions: any[] = [
+      const orConditions: TracerUpdateWhere[] = [
         // Track quality training by sourceTable
         {
           AND: [
@@ -527,7 +529,10 @@ export async function GET(request: NextRequest) {
                   return knowledge?.title || null
                 }
                 case 'sops': {
-                  const sop = await (prisma as any).sOP.findUnique({
+                  // Prisma generates SOP model as sOP (lowercase s, uppercase OP)
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const prismaClient = prisma as any
+                  const sop = await prismaClient.sOP.findUnique({
                     where: { id },
                     select: { name: true },
                   })
