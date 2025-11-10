@@ -247,36 +247,36 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
     const recordName = notification.recordName
     const parentInfo = notification.parentInfo
 
-    // If we don't have record name, return general page for the module
+    // If we don't have record name, return general tracer page for the module
     if (!recordName) {
       if (sourceTable === 'brands' || sourceTable.startsWith('kategori_produks') || sourceTable.startsWith('subkategori_produks') || sourceTable.startsWith('produks') || sourceTable.startsWith('detail_produks')) {
-        return '/agent/products' // General products page
+        return '/agent/products/tracer' // General products tracer page
       } else if (sourceTable.startsWith('sops') || sourceTable.startsWith('kategori_sops') || sourceTable.startsWith('jenis_sops') || sourceTable.startsWith('detail_sops')) {
-        return '/agent/sop' // General SOP page
+        return '/agent/sop/tracer' // General SOP tracer page
       } else if (sourceTable.startsWith('knowledges') || sourceTable.startsWith('detail_knowledges') || sourceTable.startsWith('jenis_detail_knowledges') || sourceTable.startsWith('produk_jenis_detail_knowledges')) {
-        return '/agent/knowledge' // General knowledge page
+        return '/agent/knowledge/tracer' // General knowledge tracer page
       } else if (sourceTable.startsWith('quality_trainings') || sourceTable.startsWith('jenis_quality_trainings') || sourceTable.startsWith('detail_quality_trainings') || sourceTable.startsWith('subdetail_quality_trainings')) {
-        return '/agent/quality-training' // General quality training page
+        return '/agent/quality-training/tracer' // General quality training tracer page
       }
       return '#'
     }
 
     const slug = slugify(recordName)
 
-    // Map source tables to their respective routes (before /tracer)
-    // Always return the page before tracer if we have record name
+    // Map source tables to their respective tracer routes
+    // Always return the tracer page path
     switch (sourceTable) {
       case 'brands':
-        return `/agent/products/${slug}`
+        return `/agent/products/${slug}/tracer`
       
       case 'kategori_produks': {
         // For category, we need brand name
         if (parentInfo?.brandName) {
           const brandSlug = slugify(parentInfo.brandName)
-          return `/agent/products/${brandSlug}/${slug}`
+          return `/agent/products/${brandSlug}/${slug}/tracer`
         }
         // If no brand name but we have recordName, try to use it anyway
-        return `/agent/products/${slug}`
+        return `/agent/products/${slug}/tracer`
       }
       
       case 'subkategori_produks': {
@@ -284,53 +284,51 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
         if (parentInfo?.brandName && parentInfo?.categoryName) {
           const brandSlug = slugify(parentInfo.brandName)
           const categorySlug = slugify(parentInfo.categoryName)
-          return `/agent/products/${brandSlug}/${categorySlug}/${slug}`
+          return `/agent/products/${brandSlug}/${categorySlug}/${slug}/tracer`
         }
         // If no parent info, we can't create proper link
         // But at least try to use the subcategory name
         if (parentInfo?.categoryName) {
           const categorySlug = slugify(parentInfo.categoryName)
-          return `/agent/products/${categorySlug}/${slug}`
+          return `/agent/products/${categorySlug}/${slug}/tracer`
         }
         // Last resort: use subcategory name only
-        return `/agent/products/${slug}`
+        return `/agent/products/${slug}/tracer`
       }
       
       case 'produks':
       case 'detail_produks': {
-        // For products, we need full path (brand/category/subcategory/product)
-        // URL structure: /agent/products/[brandName]/[categoryName]/[subcategoryName]/[productName]
-        // or: /agent/products/[brandName]/[categoryName]/[productName]
+        // For products, link to parent (subcategory/category/brand) tracer page
+        // Don't include product name in path since there's no /[productName] page
         if (parentInfo?.brandName && parentInfo?.categoryName) {
           const brandSlug = slugify(parentInfo.brandName)
           const categorySlug = slugify(parentInfo.categoryName)
           if (parentInfo.subcategoryName) {
-            // Product with subcategory: /brand/category/subcategory/product
+            // Product with subcategory: /brand/category/subcategory/tracer
             const subcategorySlug = slugify(parentInfo.subcategoryName)
-            return `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}/${slug}`
+            return `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}/tracer`
           } else {
-            // Product with category only: /brand/category/product
-            return `/agent/products/${brandSlug}/${categorySlug}/${slug}`
+            // Product with category only: /brand/category/tracer
+            return `/agent/products/${brandSlug}/${categorySlug}/tracer`
           }
         }
-        // If no parent info, we can't create proper link
-        // But at least try to use available info
+        // If only brand info available
         if (parentInfo?.brandName) {
           const brandSlug = slugify(parentInfo.brandName)
-          return `/agent/products/${brandSlug}/${slug}`
+          return `/agent/products/${brandSlug}/tracer`
         }
-        // Last resort: use product name only
-        return `/agent/products/${slug}`
+        // Last resort: general products tracer page
+        return '/agent/products/tracer'
       }
       
       case 'knowledges':
       case 'detail_knowledges':
       case 'jenis_detail_knowledges':
       case 'produk_jenis_detail_knowledges':
-        return `/agent/knowledge/${slug}`
+        return `/agent/knowledge/${slug}/tracer`
       
       case 'kategori_sops':
-        return `/agent/sop/${slug}`
+        return `/agent/sop/${slug}/tracer`
       
       case 'sops':
       case 'jenis_sops':
@@ -338,17 +336,17 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
         // For SOP, we need kategoriSOP name
         if (parentInfo?.kategoriSOP) {
           const kategoriSlug = slugify(parentInfo.kategoriSOP)
-          return `/agent/sop/${kategoriSlug}/${slug}`
+          return `/agent/sop/${kategoriSlug}/${slug}/tracer`
         }
-        // If no kategoriSOP, return general SOP page
-        return '/agent/sop'
+        // If no kategoriSOP, return general SOP tracer page
+        return '/agent/sop/tracer'
       }
       
       case 'quality_trainings':
       case 'jenis_quality_trainings':
       case 'detail_quality_trainings':
       case 'subdetail_quality_trainings':
-        return `/agent/quality-training/${slug}`
+        return `/agent/quality-training/${slug}/tracer`
       
       default:
         return '#'
