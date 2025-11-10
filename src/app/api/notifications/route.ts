@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch recent tracer updates as notifications (only the ones we're showing)
     // Using type assertion because Prisma client may not be regenerated
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prismaClient = prisma as any
     const tracerUpdates = await (prismaClient.tracerUpdate.findMany as unknown as (
       args: {
