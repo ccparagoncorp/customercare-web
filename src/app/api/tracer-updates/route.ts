@@ -516,7 +516,8 @@ export async function GET(request: NextRequest) {
         switch (sourceTableStr) {
           case 'detail_produks': {
             // Get product info
-            const detailProduk = await prisma.detailProduk.findUnique({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const detailProduk = await (prismaClient.detailProduk.findUnique as any)({
               where: { id: sourceKeyStr },
               select: { 
                 produk: {
@@ -589,7 +590,8 @@ export async function GET(request: NextRequest) {
           
           case 'produks': {
             // Get product's related info
-            const produk = await prisma.produk.findUnique({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const produk = await (prismaClient.produk.findUnique as any)({
               where: { id: sourceKeyStr },
               select: {
                 subkategoriProduk: {
@@ -1015,7 +1017,8 @@ export async function GET(request: NextRequest) {
                   return subcategory?.name || null
                 }
                 case 'produks': {
-                  const product = await prisma.produk.findUnique({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const product = await (prismaClient.produk.findUnique as any)({
                     where: { id },
                     select: { name: true },
                   })
@@ -1102,7 +1105,8 @@ export async function GET(request: NextRequest) {
                   return produkJenisDetailKnowledge?.name || null
                 }
                 case 'detail_produks': {
-                  const detailProduk = await prisma.detailProduk.findUnique({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const detailProduk = await (prismaClient.detailProduk.findUnique as any)({
                     where: { id },
                     select: { name: true },
                   })
@@ -1213,7 +1217,8 @@ export async function GET(request: NextRequest) {
               break
             }
             case 'produks': {
-              const product = await prisma.produk.findUnique({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const product = await (prismaClient.produk.findUnique as any)({
                 where: { id: sourceKeyStr },
                 select: { updateNotes: true },
               })
