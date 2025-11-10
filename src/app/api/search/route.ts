@@ -3,6 +3,8 @@ import { createPrismaClient } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   const prisma = createPrismaClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const prismaClient = prisma as any
 
   try {
     const { searchParams } = new URL(request.url)
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     // Search KategoriProduk
     try {
-      const categories = await prisma.kategoriProduk.findMany({
+      const categories = await prismaClient.kategoriProduk.findMany({
         where: {
           OR: [
             { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -80,7 +82,7 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      categories.forEach((category) => {
+      categories.forEach((category: { id: string; name: string; description: string | null; brand: { name: string } }) => {
         const brandSlug = category.brand.name.toLowerCase().trim().replace(/\s+/g, '-')
         const categorySlug = category.name.toLowerCase().trim().replace(/\s+/g, '-')
         results.push({
@@ -101,7 +103,7 @@ export async function GET(request: NextRequest) {
 
     // Search SubkategoriProduk
     try {
-      const subcategories = await prisma.subkategoriProduk.findMany({
+      const subcategories = await prismaClient.subkategoriProduk.findMany({
         where: {
           OR: [
             { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -122,7 +124,7 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      subcategories.forEach((subcategory) => {
+      subcategories.forEach((subcategory: { id: string; name: string; description: string | null; kategoriProduk: { name: string; brand: { name: string } } }) => {
         const brandSlug = subcategory.kategoriProduk.brand.name.toLowerCase().trim().replace(/\s+/g, '-')
         const categorySlug = subcategory.kategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
         const subcategorySlug = subcategory.name.toLowerCase().trim().replace(/\s+/g, '-')
@@ -145,7 +147,7 @@ export async function GET(request: NextRequest) {
 
     // Search Produk
     try {
-      const products = await prisma.produk.findMany({
+      const products = await prismaClient.produk.findMany({
         where: {
           OR: [
             { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -173,7 +175,7 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      products.forEach((product) => {
+      products.forEach((product: { id: string; name: string; description: string | null; kapasitas: string | null; status: string | null; brand?: { name: string } | null; kategoriProduk?: { name: string } | null; subkategoriProduk?: { name: string } | null }) => {
         let link = '/agent/products'
         if (product.brand) {
           const brandSlug = product.brand.name.toLowerCase().trim().replace(/\s+/g, '-')
@@ -213,7 +215,7 @@ export async function GET(request: NextRequest) {
 
     // Search DetailProduk
     try {
-      const detailProducts = await prisma.detailProduk.findMany({
+      const detailProducts = await prismaClient.detailProduk.findMany({
         where: {
           OR: [
             { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -244,7 +246,7 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      detailProducts.forEach((detailProduct) => {
+      detailProducts.forEach((detailProduct: { id: string; name: string; detail: string; produk: { id: string; name: string; brand?: { name: string } | null; kategoriProduk?: { name: string } | null; subkategoriProduk?: { name: string } | null } }) => {
         const product = detailProduct.produk
         let link = '/agent/products'
         if (product.brand) {
