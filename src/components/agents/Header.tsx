@@ -1,18 +1,134 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Search, Bell, User, ChevronDown, LogOut } from "lucide-react"
 import { useAuth } from "../auth/AuthProvider"
+import { NotificationDropdown } from "./NotificationDropdown"
 import dashboardContent from "@/content/agent/dashboard.json"
 
 export function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [notificationOpen, setNotificationOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const { user, logout } = useAuth()
+  const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // Fetch unread notification count
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      // Fetch recent notifications (last 100)
+      const response = await fetch('/api/notifications?limit=100')
+      if (response.ok) {
+        const data = await response.json()
+        const notifications = data.notifications || []
+        
+        // Get read notification IDs from localStorage
+        // Use try-catch in case localStorage is not available
+        let readIds: string[] = []
+        try {
+          const readIdsStr = localStorage.getItem('readNotifications')
+          if (readIdsStr) {
+            readIds = JSON.parse(readIdsStr) as string[]
+          }
+        } catch (e) {
+          console.warn('Error reading from localStorage:', e)
+          readIds = []
+        }
+        
+        // Count only unread notifications from the recent ones
+        // Use Set for faster lookup
+        const readIdsSet = new Set(readIds)
+        const unreadNotifications = notifications.filter(
+          (notif: { id: string }) => !readIdsSet.has(notif.id)
+        )
+        
+        const newUnreadCount = unreadNotifications.length
+        setUnreadCount(newUnreadCount)
+        
+        // Debug logging (can be removed later)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Unread count updated:', {
+            totalNotifications: notifications.length,
+            readIds: readIds.length,
+            unreadCount: newUnreadCount
+          })
+        }
+      } else {
+        // If API fails, set to 0
+        setUnreadCount(0)
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error)
+      // Set to 0 on error to avoid showing stale count
+      setUnreadCount(0)
+    }
+  }, [])
+
+  // Listen for storage events to update unread count when notifications are marked as read
+  useEffect(() => {
+    // Listen for custom event when notifications are marked as read
+    const handleNotificationsUpdated = () => {
+      // Add delay to ensure localStorage is updated first
+      setTimeout(() => {
+        fetchUnreadCount()
+      }, 300)
+    }
+    
+    // Listen for storage events (in case localStorage changes from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only react to changes to readNotifications
+      if (e.key === 'readNotifications') {
+        setTimeout(() => {
+          fetchUnreadCount()
+        }, 100)
+      }
+    }
+    
+    window.addEventListener('notifications-updated', handleNotificationsUpdated)
+    window.addEventListener('storage', handleStorageChange)
+    
+    return () => {
+      window.removeEventListener('notifications-updated', handleNotificationsUpdated)
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [fetchUnreadCount])
 
   const handleLogout = async () => {
     await logout()
     window.location.href = '/login'
   }
+
+  // Set up polling for unread count
+  useEffect(() => {
+    // Fetch immediately
+    fetchUnreadCount()
+
+    // Then poll every 30 seconds
+    notificationIntervalRef.current = setInterval(fetchUnreadCount, 30000)
+
+    return () => {
+      if (notificationIntervalRef.current) {
+        clearInterval(notificationIntervalRef.current)
+      }
+    }
+  }, [fetchUnreadCount])
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationOpen) {
+        setNotificationOpen(false)
+      }
+    }
+
+    if (notificationOpen) {
+      document.addEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [notificationOpen])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200 px-6 py-2">
@@ -37,10 +153,39 @@ export function Header() {
         <div className="flex items-center space-x-4">
           {/* Notifications */}
           <div className="relative">
-            <Bell className="h-6 w-6 text-gray-600 cursor-pointer hover:text-[#03438f]" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {dashboardContent.header.notifications.count}
-            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setNotificationOpen(!notificationOpen)
+              }}
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <Bell className="h-6 w-6 text-gray-600 hover:text-[#03438f]" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[20px] h-5 flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+            {notificationOpen && (
+              <NotificationDropdown
+                isOpen={notificationOpen}
+                onClose={() => {
+                  setNotificationOpen(false)
+                  // Refresh unread count when dropdown closes
+                  setTimeout(() => {
+                    fetchUnreadCount()
+                  }, 200)
+                }}
+                onNotificationsRead={() => {
+                  // Refresh unread count when notifications are marked as read
+                  // Use setTimeout to ensure localStorage is updated first
+                  setTimeout(() => {
+                    fetchUnreadCount()
+                  }, 400)
+                }}
+              />
+            )}
           </div>
 
           {/* User Menu */}

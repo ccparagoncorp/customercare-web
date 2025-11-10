@@ -87,7 +87,7 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
             <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
             <span className="font-medium">{sopContent.kategori.back}</span>
           </Link>
-          <TracerButton href={`/agent/sop/${slugify(kategoriSOP)}/tracer`} className="bg-white text-blue-600 hover:bg-gray-100" />
+          <TracerButton href={`/agent/sop/${slugify(kategoriSOP)}/tracer`} className="" />
         </div>
         
         {/* Title & Description */}

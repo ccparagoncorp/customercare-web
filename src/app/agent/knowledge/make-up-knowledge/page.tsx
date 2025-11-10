@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon } from "lucide-react"
+import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon, History } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import makeupContent from "@/content/agent/knowledge/makeup.json"
 
 interface Knowledge {
@@ -291,12 +292,30 @@ export default function MakeUpKnowledgePage() {
     )
   }
 
+  // Helper function to create slug from title
+  const createSlug = (title: string) => {
+    return title.toLowerCase().trim().replace(/\s+/g, '-')
+  }
+
+  const knowledgeSlug = createSlug(knowledge.title)
+
   return (
     <div className="min-h-screen my-16 rounded-3xl">
       {/* Header Section */}
       <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center">
-          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{content.title}</h1>
+        <div className="text-center relative">
+          {/* Tracer Button - Top Right */}
+          <div className="absolute top-0 right-0">
+            <Link 
+              href={`/agent/knowledge/${knowledgeSlug}/tracer`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm bg-[#ffde59]/20 hover:bg-[#ffde59]/30 border border-[#ffde59]/30 text-[#ffde59]"
+            >
+              <History className="w-4 h-4" />
+              <span className="text-sm font-medium">Tracer Updates</span>
+            </Link>
+          </div>
+          
+          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{knowledge.title || content.title}</h1>
         </div>
       </div>
       

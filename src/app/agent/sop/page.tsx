@@ -18,7 +18,7 @@ export default function SOPPage() {
                 </p>
               </div>
               <div className="flex justify-center mt-6">
-                <TracerButton href="/agent/sop/tracer" className="bg-white text-blue-600 hover:bg-gray-100" />
+                <TracerButton href="/agent/sop/tracer" className="" />
               </div>
             </div>
           </div>

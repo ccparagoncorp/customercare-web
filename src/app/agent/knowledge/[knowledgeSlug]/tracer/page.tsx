@@ -11,15 +11,15 @@ export default async function KnowledgeTracerPage({ params }: KnowledgeTracerPag
   const decodedKnowledgeSlug = decodeURIComponent(knowledgeSlug)
 
   return (
-    <ProtectedRoute>
-      <Layout>
-        <div className="min-h-screen bg-gray-50">
+    // <ProtectedRoute>
+      // {/* <Layout> */}
+        <div className="min-h-scree">
           <div className="max-w-7xl mx-auto px-6 py-16">
             <KnowledgeTracerContent knowledgeSlug={decodedKnowledgeSlug} />
           </div>
         </div>
-      </Layout>
-    </ProtectedRoute>
+      // {/* </Layout> */}
+    // </ProtectedRoute>
   )
 }
 
