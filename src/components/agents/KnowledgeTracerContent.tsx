@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { TracerUpdateDisplay } from "./TracerUpdateDisplay"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { apiFetch } from "@/lib/api-client"
 
 interface Knowledge {
   id: string
@@ -21,11 +22,14 @@ export function KnowledgeTracerContent({ knowledgeSlug }: KnowledgeTracerContent
   useEffect(() => {
     const fetchKnowledge = async () => {
       try {
-        const res = await fetch(`/api/knowledge/${knowledgeSlug}`)
-        if (res.ok) {
-          const data = await res.json()
+        const { data, error } = await apiFetch<Knowledge>(`/api/knowledge/${knowledgeSlug}`)
+        if (data) {
           setKnowledge(data)
+        } else if (error) {
+          console.warn('Error fetching knowledge:', error)
         }
+      } catch (err) {
+        console.error('Unexpected error:', err)
       } finally {
         setLoading(false)
       }

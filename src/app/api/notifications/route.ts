@@ -374,6 +374,25 @@ export async function GET(request: NextRequest) {
       totalCount: notifications.length,
     })
   } catch (error) {
+    // Check if it's a database connectivity issue
+    const errorObj = error as { message?: string; name?: string }
+    const errorMessage = errorObj?.message || ''
+    const isDbConnectivityIssue = 
+      errorMessage.includes("Can't reach database server") ||
+      errorMessage.includes('Invalid `prisma') ||
+      errorMessage.includes('does not exist') ||
+      errorMessage.includes('column') ||
+      errorObj?.name?.includes('Prisma') ||
+      errorObj?.name === 'PrismaClientInitializationError'
+
+    if (isDbConnectivityIssue || !process.env.DATABASE_URL) {
+      console.warn('Database connectivity issue, returning empty notifications:', errorMessage)
+      return NextResponse.json(
+        { notifications: [], unreadCount: 0, totalCount: 0 },
+        { status: 503 }
+      )
+    }
+
     console.error('Error fetching notifications:', error)
     return NextResponse.json(
       { error: 'Failed to fetch notifications', notifications: [], unreadCount: 0, totalCount: 0 },

@@ -7,6 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "postinstall": "prisma generate",
     "debug:sheets": "node scripts/debug-sheets.js",
     "test:feedback": "node scripts/test-feedback.js",
     "db:generate": "prisma generate",

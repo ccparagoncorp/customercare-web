@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { ModernBrandCategories } from "@/components/agents/products/ModernBrandCategories"
 import { ProductListWithDetails } from "@/components/agents/products/ProductListWithDetails"
+import { apiFetch } from "@/lib/api-client"
 
 type ProductStatus = "NEW" | "REVAMP" | "DISCONTINUE" | "ACTIVE"
 
@@ -42,11 +43,16 @@ export function BrandContentWrapper({ brandName }: { brandName: string }) {
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await fetch(`/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`)
-        if (res.ok) {
-          const data = await res.json()
+        const { data, error } = await apiFetch<BrandWithNested>(
+          `/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`
+        )
+        if (data) {
           setBrand(data)
+        } else if (error) {
+          console.warn('Error fetching brand:', error)
         }
+      } catch (err) {
+        console.error('Unexpected error:', err)
       } finally {
         setLoading(false)
       }

@@ -38,15 +38,26 @@ export function BrandHeader({ brandName }: BrandHeaderProps) {
   useEffect(() => {
     const fetchBrand = async () => {
       try {
+        setLoading(true)
+        setError(null)
         const response = await fetch(`/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`)
+        
         if (response.ok) {
           const data = await response.json()
           setBrand(data)
-        } else {
+        } else if (response.status === 503) {
+          // Service unavailable - database connection issue
+          setError('Database connection unavailable. Please try again later.')
+          console.warn('Database connection issue when fetching brand')
+        } else if (response.status === 404) {
           setError('Brand not found')
+        } else {
+          const errorData = await response.json().catch(() => ({}))
+          setError(errorData.error || 'Failed to fetch brand')
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        console.error('Error fetching brand:', err)
+        setError(err instanceof Error ? err.message : 'An error occurred while fetching brand')
       } finally {
         setLoading(false)
       }
