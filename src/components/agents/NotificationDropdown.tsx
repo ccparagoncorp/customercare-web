@@ -27,7 +27,6 @@ interface NotificationDropdownProps {
 
 export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: NotificationDropdownProps) {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [readIds, setReadIds] = useState<Set<string>>(new Set())
   const readIdsRef = useRef<Set<string>>(new Set())
@@ -58,9 +57,6 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
         }))
         
         setNotifications(notificationsWithReadStatus)
-        
-        // Unread count is from API (total count of tracer_update rows)
-        setUnreadCount(data.unreadCount || 0)
       }
     } catch (error) {
       console.error('Error fetching notifications:', error)
@@ -102,9 +98,6 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
               : notif
           )
         )
-
-        // Update unread count in dropdown
-        setUnreadCount(prev => Math.max(0, prev - notificationIds.length))
 
         // Notify parent component (Header) to refresh unread count
         // Use setTimeout to ensure localStorage is written and state is updated
@@ -489,9 +482,6 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
                         : notif
                     )
                   )
-                  
-                  // Update unread count in dropdown
-                  setUnreadCount(0)
                   
                   // Call markAsRead (which will also update localStorage, but we already did it)
                   await markAsRead(allUnreadIds)

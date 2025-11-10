@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     const searchTerm = query.trim()
-    const searchPattern = `%${searchTerm}%`
+    // const searchPattern = `%${searchTerm}%`
 
     // Search results array
     const results: Array<{

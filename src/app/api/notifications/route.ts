@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
 
     // Fetch recent tracer updates as notifications (only the ones we're showing)
-    const tracerUpdates = await (prisma.tracerUpdate.findMany as unknown as (
+    // Using type assertion because Prisma client may not be regenerated
+    const prismaClient = prisma as any
+    const tracerUpdates = await (prismaClient.tracerUpdate.findMany as unknown as (
       args: {
         where?: Record<string, unknown>
         orderBy?: { changedAt: 'desc' }

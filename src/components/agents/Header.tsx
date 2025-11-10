@@ -121,7 +121,7 @@ export function Header() {
 
   // Close notification dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (notificationOpen) {
         setNotificationOpen(false)
       }

@@ -1,5 +1,3 @@
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
-import { Layout } from "@/components/agents/dashboard"
 import { KnowledgeTracerContent } from "@/components/agents/KnowledgeTracerContent"
 
 interface KnowledgeTracerPageProps {
@@ -13,7 +11,7 @@ export default async function KnowledgeTracerPage({ params }: KnowledgeTracerPag
   return (
     // <ProtectedRoute>
       // {/* <Layout> */}
-        <div className="min-h-scree">
+        <div className="min-h-screen">
           <div className="max-w-7xl mx-auto px-6 py-16">
             <KnowledgeTracerContent knowledgeSlug={decodedKnowledgeSlug} />
           </div>

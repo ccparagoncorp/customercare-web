@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { useRouter } from "next/navigation"
 import { Search, ArrowRight, FileText, Package, BookOpen, GraduationCap, Users, FolderOpen, Loader2 } from "lucide-react"
 import Link from "next/link"
 
@@ -21,7 +20,6 @@ interface SearchDropdownProps {
 }
 
 export function SearchDropdown({ query, isOpen, onClose }: SearchDropdownProps) {
-  const router = useRouter()
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(false)
   const [total, setTotal] = useState(0)
@@ -196,19 +194,31 @@ export function SearchDropdown({ query, isOpen, onClose }: SearchDropdownProps) 
                       <span className={`px-2 py-0.5 rounded text-xs font-bold border ${getTypeColor(result.type)}`}>
                         {result.type}
                       </span>
-                      {result.metadata && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500 truncate">
-                          {result.metadata.brand && (
-                            <span className="truncate">Brand: {String(result.metadata.brand)}</span>
-                          )}
-                          {result.metadata.category && (
-                            <span className="truncate">• {String(result.metadata.category)}</span>
-                          )}
-                          {result.metadata.kategoriSOP && (
-                            <span className="truncate">• {String(result.metadata.kategoriSOP)}</span>
-                          )}
-                        </div>
-                      )}
+                      {result.metadata && (() => {
+                        const brand = result.metadata.brand ? String(result.metadata.brand) : null
+                        const category = result.metadata.category ? String(result.metadata.category) : null
+                        const kategoriSOP = result.metadata.kategoriSOP ? String(result.metadata.kategoriSOP) : null
+                        
+                        if (!brand && !category && !kategoriSOP) return null
+                        
+                        return (
+                          <div className="flex items-center gap-1 text-xs text-gray-500 truncate">
+                            {brand && <span className="truncate">Brand: {brand}</span>}
+                            {category && (
+                              <>
+                                {brand && <span>•</span>}
+                                <span className="truncate">{category}</span>
+                              </>
+                            )}
+                            {kategoriSOP && (
+                              <>
+                                {brand && <span>•</span>}
+                                <span className="truncate">{kategoriSOP}</span>
+                              </>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </div>
                     <h3 className="text-sm font-semibold text-gray-900 mb-0.5 truncate">{result.title}</h3>
                     {result.description && (
