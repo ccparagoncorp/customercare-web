@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 
             // Get record name and parent info for link generation
             let recordName: string | null = null
-            let parentInfo: { brandName?: string; categoryName?: string; subcategoryName?: string; kategoriSOP?: string } | null = null
+            let parentInfo: { brandName?: string; categoryName?: string; subcategoryName?: string; kategoriSOP?: string; sopName?: string } | null = null
             try {
               const sourceTableStr = String(update.sourceTable)
               const sourceKeyStr = String(update.sourceKey)
@@ -313,7 +313,10 @@ export async function GET(request: NextRequest) {
                   })
                   recordName = jenisSOP?.name || null
                   if (jenisSOP?.sop?.kategoriSOP) {
-                    parentInfo = { kategoriSOP: jenisSOP.sop.kategoriSOP.name }
+                    parentInfo = {
+                      kategoriSOP: jenisSOP.sop.kategoriSOP.name,
+                      sopName: jenisSOP.sop.name || recordName || undefined
+                    }
                   }
                   break
                 }
@@ -338,7 +341,10 @@ export async function GET(request: NextRequest) {
                   })
                   recordName = detailSOP?.jenisSOP?.name || null
                   if (detailSOP?.jenisSOP?.sop?.kategoriSOP) {
-                    parentInfo = { kategoriSOP: detailSOP.jenisSOP.sop.kategoriSOP.name }
+                    parentInfo = {
+                      kategoriSOP: detailSOP.jenisSOP.sop.kategoriSOP.name,
+                      sopName: detailSOP.jenisSOP.sop.name || recordName || undefined
+                    }
                   }
                   break
                 }

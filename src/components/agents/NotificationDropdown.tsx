@@ -12,7 +12,13 @@ interface Notification {
   sourceTable: string
   sourceKey: string
   recordName: string | null // Name of the record for link generation
-  parentInfo: { brandName?: string; categoryName?: string; subcategoryName?: string; kategoriSOP?: string } | null // Parent info for link generation
+  parentInfo: {
+    brandName?: string
+    categoryName?: string
+    subcategoryName?: string
+    kategoriSOP?: string
+    sopName?: string
+  } | null // Parent info for link generation
   fieldName: string
   changedBy: string | null
   changedAt: string
@@ -330,15 +336,28 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
       case 'kategori_sops':
         return `/agent/sop/${slug}/tracer`
       
-      case 'sops':
+      case 'sops': {
+        if (parentInfo?.kategoriSOP && recordName) {
+          const kategoriSlug = slugify(parentInfo.kategoriSOP)
+          const sopSlug = slugify(recordName)
+          return `/agent/sop/${kategoriSlug}/${sopSlug}/tracer`
+        }
+        if (parentInfo?.kategoriSOP) {
+          return `/agent/sop/${slugify(parentInfo.kategoriSOP)}/tracer`
+        }
+        return '/agent/sop/tracer'
+      }
+
       case 'jenis_sops':
       case 'detail_sops': {
-        // For SOP, we need kategoriSOP name
-        if (parentInfo?.kategoriSOP) {
+        if (parentInfo?.kategoriSOP && parentInfo?.sopName) {
           const kategoriSlug = slugify(parentInfo.kategoriSOP)
-          return `/agent/sop/${kategoriSlug}/${slug}/tracer`
+          const parentSopSlug = slugify(parentInfo.sopName)
+          return `/agent/sop/${kategoriSlug}/${parentSopSlug}/tracer`
         }
-        // If no kategoriSOP, return general SOP tracer page
+        if (parentInfo?.kategoriSOP) {
+          return `/agent/sop/${slugify(parentInfo.kategoriSOP)}/tracer`
+        }
         return '/agent/sop/tracer'
       }
       
