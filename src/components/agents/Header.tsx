@@ -1,17 +1,23 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { Search, Bell, User, ChevronDown, LogOut } from "lucide-react"
 import { useAuth } from "../auth/AuthProvider"
 import { NotificationDropdown } from "./NotificationDropdown"
+import { SearchDropdown } from "./SearchDropdown"
 import dashboardContent from "@/content/agent/dashboard.json"
 
 export function Header() {
+  const router = useRouter()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notificationOpen, setNotificationOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
   const { user, logout } = useAuth()
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   
   // Fetch unread notification count
   const fetchUnreadCount = useCallback(async () => {
@@ -138,15 +144,52 @@ export function Header() {
         </div>
 
         {/* Search Bar */}
-        <div className="flex-1 max-w-2xl mx-8">
-          <div className="relative">
+        <div className="flex-1 max-w-2xl mx-8 relative">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (searchQuery.trim().length > 0) {
+                setSearchOpen(false)
+                router.push(`/agent/search?q=${encodeURIComponent(searchQuery.trim())}`)
+              }
+            }}
+            className="relative"
+          >
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
+              ref={searchInputRef}
               type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                if (e.target.value.trim().length > 0) {
+                  setSearchOpen(true)
+                } else {
+                  setSearchOpen(false)
+                }
+              }}
+              onFocus={() => {
+                if (searchQuery.trim().length > 0) {
+                  setSearchOpen(true)
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setSearchOpen(false)
+                  searchInputRef.current?.blur()
+                }
+              }}
               placeholder={dashboardContent.header.searchPlaceholder}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent"
             />
-          </div>
+          </form>
+          
+          {/* Search Dropdown */}
+          <SearchDropdown
+            query={searchQuery}
+            isOpen={searchOpen}
+            onClose={() => setSearchOpen(false)}
+          />
         </div>
 
         {/* Right Side - Notifications and User */}
