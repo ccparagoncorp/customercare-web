@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { TracerUpdateDisplay } from "../TracerUpdateDisplay"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { apiFetch } from "@/lib/api-client"
 
 interface SOP {
   id: string
@@ -18,15 +19,24 @@ interface SOPTracerContentProps {
 export function SOPTracerContent({ kategoriSOP, namaSOP }: SOPTracerContentProps) {
   const [sop, setSOP] = useState<SOP | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchSOP = async () => {
       try {
-        const res = await fetch(`/api/sop/${encodeURIComponent(kategoriSOP.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(namaSOP.toLowerCase().replace(/\s+/g, '-'))}`)
-        if (res.ok) {
-          const data = await res.json()
+        setLoading(true)
+        setError(null)
+        const { data, error } = await apiFetch<SOP>(
+          `/api/sop/${encodeURIComponent(kategoriSOP.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(namaSOP.toLowerCase().replace(/\s+/g, '-'))}`
+        )
+        if (data) {
           setSOP(data)
+        } else if (error) {
+          setError(error)
         }
+      } catch (err) {
+        console.error('Unexpected error fetching SOP:', err)
+        setError(err instanceof Error ? err.message : 'Failed to fetch SOP data')
       } finally {
         setLoading(false)
       }
@@ -38,8 +48,8 @@ export function SOPTracerContent({ kategoriSOP, namaSOP }: SOPTracerContentProps
     return <div className="text-center py-12">Loading...</div>
   }
 
-  if (!sop) {
-    return <div className="text-center py-12 text-red-500">SOP not found</div>
+  if (error || !sop) {
+    return <div className="text-center py-12 text-red-500">{error || 'SOP not found'}</div>
   }
 
   const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
@@ -60,8 +70,7 @@ export function SOPTracerContent({ kategoriSOP, namaSOP }: SOPTracerContentProps
       </div>
 
       <TracerUpdateDisplay 
-        sourceTable="sops" 
-        sourceKey={sop.id}
+        sopId={sop.id}
         title={`Tracer Updates for ${sop.name}`}
       />
     </div>
