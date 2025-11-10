@@ -459,7 +459,7 @@ export async function GET(request: NextRequest) {
     // Fetch tracer updates
     // Note: We only use sourceTable and sourceKey to avoid issues with fields that don't exist in database
     // Using type assertion with unknown first as recommended by TypeScript
-    const tracerUpdates = await (prisma.tracerUpdate.findMany as unknown as (
+    const tracerUpdates = await (prismaClient.tracerUpdate.findMany as unknown as (
       args: {
         where?: Record<string, unknown>
         orderBy?: { changedAt: 'asc' | 'desc' }
