@@ -151,7 +151,8 @@ export async function GET(request: NextRequest) {
                   break
                 }
                 case 'produks': {
-                  const product = await prisma.produk.findUnique({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const product = await (prismaClient.produk.findUnique as any)({
                     where: { id: sourceKeyStr },
                     select: { 
                       name: true,
@@ -203,7 +204,8 @@ export async function GET(request: NextRequest) {
                   break
                 }
                 case 'detail_produks': {
-                  const detailProduk = await prisma.detailProduk.findUnique({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const detailProduk = await (prismaClient.detailProduk.findUnique as any)({
                     where: { id: sourceKeyStr },
                     select: {
                       produk: {
