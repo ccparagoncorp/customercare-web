@@ -503,6 +503,473 @@ export async function GET(request: NextRequest) {
       },
     })
 
+    // Helper function to get related table information
+    const getRelatedTableInfo = async (sourceTable: string, sourceKey: string): Promise<Array<{ tableName: string; fieldName: string; value: string }>> => {
+      const relatedInfo: Array<{ tableName: string; fieldName: string; value: string }> = []
+      
+      try {
+        const sourceTableStr = String(sourceTable)
+        const sourceKeyStr = String(sourceKey)
+        
+        switch (sourceTableStr) {
+          case 'detail_produks': {
+            // Get product info
+            const detailProduk = await prisma.detailProduk.findUnique({
+              where: { id: sourceKeyStr },
+              select: { 
+                produk: {
+                  select: {
+                    id: true,
+                    name: true,
+                    subkategoriProduk: {
+                      select: {
+                        id: true,
+                        name: true,
+                        kategoriProduk: {
+                          select: {
+                            id: true,
+                            name: true,
+                            brand: {
+                              select: {
+                                id: true,
+                                name: true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    kategoriProduk: {
+                      select: {
+                        id: true,
+                        name: true,
+                        brand: {
+                          select: {
+                            id: true,
+                            name: true
+                          }
+                        }
+                      }
+                    },
+                    brand: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (detailProduk?.produk) {
+              relatedInfo.push({ tableName: 'Produk', fieldName: 'name', value: detailProduk.produk.name })
+              
+              if (detailProduk.produk.subkategoriProduk) {
+                relatedInfo.push({ tableName: 'Subkategori Produk', fieldName: 'name', value: detailProduk.produk.subkategoriProduk.name })
+                if (detailProduk.produk.subkategoriProduk.kategoriProduk) {
+                  relatedInfo.push({ tableName: 'Kategori Produk', fieldName: 'name', value: detailProduk.produk.subkategoriProduk.kategoriProduk.name })
+                  if (detailProduk.produk.subkategoriProduk.kategoriProduk.brand) {
+                    relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: detailProduk.produk.subkategoriProduk.kategoriProduk.brand.name })
+                  }
+                }
+              } else if (detailProduk.produk.kategoriProduk) {
+                relatedInfo.push({ tableName: 'Kategori Produk', fieldName: 'name', value: detailProduk.produk.kategoriProduk.name })
+                if (detailProduk.produk.kategoriProduk.brand) {
+                  relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: detailProduk.produk.kategoriProduk.brand.name })
+                }
+              } else if (detailProduk.produk.brand) {
+                relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: detailProduk.produk.brand.name })
+              }
+            }
+            break
+          }
+          
+          case 'produks': {
+            // Get product's related info
+            const produk = await prisma.produk.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                subkategoriProduk: {
+                  select: {
+                    id: true,
+                    name: true,
+                    kategoriProduk: {
+                      select: {
+                        id: true,
+                        name: true,
+                        brand: {
+                          select: {
+                            id: true,
+                            name: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                kategoriProduk: {
+                  select: {
+                    id: true,
+                    name: true,
+                    brand: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                },
+                brand: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            })
+            
+            if (produk) {
+              if (produk.subkategoriProduk) {
+                relatedInfo.push({ tableName: 'Subkategori Produk', fieldName: 'name', value: produk.subkategoriProduk.name })
+                if (produk.subkategoriProduk.kategoriProduk) {
+                  relatedInfo.push({ tableName: 'Kategori Produk', fieldName: 'name', value: produk.subkategoriProduk.kategoriProduk.name })
+                  if (produk.subkategoriProduk.kategoriProduk.brand) {
+                    relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: produk.subkategoriProduk.kategoriProduk.brand.name })
+                  }
+                }
+              } else if (produk.kategoriProduk) {
+                relatedInfo.push({ tableName: 'Kategori Produk', fieldName: 'name', value: produk.kategoriProduk.name })
+                if (produk.kategoriProduk.brand) {
+                  relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: produk.kategoriProduk.brand.name })
+                }
+              } else if (produk.brand) {
+                relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: produk.brand.name })
+              }
+            }
+            break
+          }
+          
+          case 'subkategori_produks': {
+            // Get subcategory's related info
+            const subcategory = await prisma.subkategoriProduk.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                kategoriProduk: {
+                  select: {
+                    id: true,
+                    name: true,
+                    brand: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (subcategory?.kategoriProduk) {
+              relatedInfo.push({ tableName: 'Kategori Produk', fieldName: 'name', value: subcategory.kategoriProduk.name })
+              if (subcategory.kategoriProduk.brand) {
+                relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: subcategory.kategoriProduk.brand.name })
+              }
+            }
+            break
+          }
+          
+          case 'kategori_produks': {
+            // Get category's related info
+            const category = await prisma.kategoriProduk.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                brand: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            })
+            
+            if (category?.brand) {
+              relatedInfo.push({ tableName: 'Brand', fieldName: 'name', value: category.brand.name })
+            }
+            break
+          }
+          
+          case 'detail_sops': {
+            // Get detail SOP's related info
+            const detailSOP = await prisma.detailSOP.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                jenisSOP: {
+                  select: {
+                    id: true,
+                    name: true,
+                    sop: {
+                      select: {
+                        id: true,
+                        name: true,
+                        kategoriSOP: {
+                          select: {
+                            id: true,
+                            name: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (detailSOP?.jenisSOP) {
+              relatedInfo.push({ tableName: 'Jenis SOP', fieldName: 'name', value: detailSOP.jenisSOP.name })
+              if (detailSOP.jenisSOP.sop) {
+                relatedInfo.push({ tableName: 'SOP', fieldName: 'name', value: detailSOP.jenisSOP.sop.name })
+                if (detailSOP.jenisSOP.sop.kategoriSOP) {
+                  relatedInfo.push({ tableName: 'Kategori SOP', fieldName: 'name', value: detailSOP.jenisSOP.sop.kategoriSOP.name })
+                }
+              }
+            }
+            break
+          }
+          
+          case 'jenis_sops': {
+            // Get jenis SOP's related info
+            const jenisSOP = await prisma.jenisSOP.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                sop: {
+                  select: {
+                    id: true,
+                    name: true,
+                    kategoriSOP: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (jenisSOP?.sop) {
+              relatedInfo.push({ tableName: 'SOP', fieldName: 'name', value: jenisSOP.sop.name })
+              if (jenisSOP.sop.kategoriSOP) {
+                relatedInfo.push({ tableName: 'Kategori SOP', fieldName: 'name', value: jenisSOP.sop.kategoriSOP.name })
+              }
+            }
+            break
+          }
+          
+          case 'sops': {
+            // Get SOP's related info
+            // Prisma generates SOP model as sOP (lowercase s, uppercase OP)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const prismaClient = prisma as any
+            const sop = await prismaClient.sOP.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                kategoriSOP: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            })
+            
+            if (sop?.kategoriSOP) {
+              relatedInfo.push({ tableName: 'Kategori SOP', fieldName: 'name', value: sop.kategoriSOP.name })
+            }
+            break
+          }
+          
+          case 'subdetail_quality_trainings': {
+            // Get subdetail quality training's related info
+            const subdetail = await prisma.subdetailQualityTraining.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                detailQualityTraining: {
+                  select: {
+                    id: true,
+                    name: true,
+                    jenisQualityTraining: {
+                      select: {
+                        id: true,
+                        name: true,
+                        qualityTraining: {
+                          select: {
+                            id: true,
+                            title: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (subdetail?.detailQualityTraining) {
+              relatedInfo.push({ tableName: 'Detail Quality Training', fieldName: 'name', value: subdetail.detailQualityTraining.name })
+              if (subdetail.detailQualityTraining.jenisQualityTraining) {
+                relatedInfo.push({ tableName: 'Jenis Quality Training', fieldName: 'name', value: subdetail.detailQualityTraining.jenisQualityTraining.name })
+                if (subdetail.detailQualityTraining.jenisQualityTraining.qualityTraining) {
+                  relatedInfo.push({ tableName: 'Quality Training', fieldName: 'title', value: subdetail.detailQualityTraining.jenisQualityTraining.qualityTraining.title })
+                }
+              }
+            }
+            break
+          }
+          
+          case 'detail_quality_trainings': {
+            // Get detail quality training's related info
+            const detail = await prisma.detailQualityTraining.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                jenisQualityTraining: {
+                  select: {
+                    id: true,
+                    name: true,
+                    qualityTraining: {
+                      select: {
+                        id: true,
+                        title: true
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (detail?.jenisQualityTraining) {
+              relatedInfo.push({ tableName: 'Jenis Quality Training', fieldName: 'name', value: detail.jenisQualityTraining.name })
+              if (detail.jenisQualityTraining.qualityTraining) {
+                relatedInfo.push({ tableName: 'Quality Training', fieldName: 'title', value: detail.jenisQualityTraining.qualityTraining.title })
+              }
+            }
+            break
+          }
+          
+          case 'jenis_quality_trainings': {
+            // Get jenis quality training's related info
+            const jenis = await prisma.jenisQualityTraining.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                qualityTraining: {
+                  select: {
+                    id: true,
+                    title: true
+                  }
+                }
+              }
+            })
+            
+            if (jenis?.qualityTraining) {
+              relatedInfo.push({ tableName: 'Quality Training', fieldName: 'title', value: jenis.qualityTraining.title })
+            }
+            break
+          }
+          
+          case 'produk_jenis_detail_knowledges': {
+            // Get produk jenis detail knowledge's related info
+            const produkJenis = await prisma.produkJenisDetailKnowledge.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                jenisDetailKnowledge: {
+                  select: {
+                    id: true,
+                    name: true,
+                    detailKnowledge: {
+                      select: {
+                        id: true,
+                        name: true,
+                        knowledge: {
+                          select: {
+                            id: true,
+                            title: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (produkJenis?.jenisDetailKnowledge) {
+              relatedInfo.push({ tableName: 'Jenis Detail Knowledge', fieldName: 'name', value: produkJenis.jenisDetailKnowledge.name })
+              if (produkJenis.jenisDetailKnowledge.detailKnowledge) {
+                relatedInfo.push({ tableName: 'Detail Knowledge', fieldName: 'name', value: produkJenis.jenisDetailKnowledge.detailKnowledge.name })
+                if (produkJenis.jenisDetailKnowledge.detailKnowledge.knowledge) {
+                  relatedInfo.push({ tableName: 'Knowledge', fieldName: 'title', value: produkJenis.jenisDetailKnowledge.detailKnowledge.knowledge.title })
+                }
+              }
+            }
+            break
+          }
+          
+          case 'jenis_detail_knowledges': {
+            // Get jenis detail knowledge's related info
+            const jenis = await prisma.jenisDetailKnowledge.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                detailKnowledge: {
+                  select: {
+                    id: true,
+                    name: true,
+                    knowledge: {
+                      select: {
+                        id: true,
+                        title: true
+                      }
+                    }
+                  }
+                }
+              }
+            })
+            
+            if (jenis?.detailKnowledge) {
+              relatedInfo.push({ tableName: 'Detail Knowledge', fieldName: 'name', value: jenis.detailKnowledge.name })
+              if (jenis.detailKnowledge.knowledge) {
+                relatedInfo.push({ tableName: 'Knowledge', fieldName: 'title', value: jenis.detailKnowledge.knowledge.title })
+              }
+            }
+            break
+          }
+          
+          case 'detail_knowledges': {
+            // Get detail knowledge's related info
+            const detail = await prisma.detailKnowledge.findUnique({
+              where: { id: sourceKeyStr },
+              select: {
+                knowledge: {
+                  select: {
+                    id: true,
+                    title: true
+                  }
+                }
+              }
+            })
+            
+            if (detail?.knowledge) {
+              relatedInfo.push({ tableName: 'Knowledge', fieldName: 'title', value: detail.knowledge.title })
+            }
+            break
+          }
+        }
+      } catch (err) {
+        console.warn(`Could not get related table info for ${sourceTable}:${sourceKey}`, err)
+      }
+      
+      return relatedInfo
+    }
+
     // Enhance tracer updates with updateNotes from source tables
     // If fieldName is "updateNotes", we already have it in newValue/oldValue
     // If fieldName is "id", replace oldValue/newValue with record names
@@ -511,10 +978,14 @@ export async function GET(request: NextRequest) {
       tracerUpdates.map(async (update) => {
         try {
           const sourceKey = String(update.sourceKey)
+          const sourceTable = String(update.sourceTable)
           let updateNotes: string | null = null
           let displayFieldName = String(update.fieldName)
           let displayOldValue: string | null = update.oldValue ? String(update.oldValue) : null
           let displayNewValue: string | null = update.newValue ? String(update.newValue) : null
+          
+          // Get related table information
+          const relatedTableInfo = await getRelatedTableInfo(sourceTable, sourceKey)
 
           // Helper function to get record name based on table and ID
           const getRecordName = async (tableName: string, id: string): Promise<string | null> => {
@@ -806,12 +1277,48 @@ export async function GET(request: NextRequest) {
             updateNotes = String(update.newValue)
           }
 
+          // Get changedBy name (from User or Agent table)
+          let changedByName: string | null = null
+          if (update.changedBy) {
+            try {
+              const changedById = String(update.changedBy)
+              
+              // Try to find in User table first
+              const user = await prisma.user.findUnique({
+                where: { id: changedById },
+                select: { name: true },
+              })
+              
+              if (user) {
+                changedByName = user.name
+              } else {
+                // If not found in User, try Agent table
+                const agent = await prisma.agent.findUnique({
+                  where: { id: changedById },
+                  select: { name: true },
+                })
+                
+                if (agent) {
+                  changedByName = agent.name
+                } else {
+                  // If not found in both, keep the original ID
+                  changedByName = changedById
+                }
+              }
+            } catch (err) {
+              console.warn(`Could not get changedBy name for ${update.changedBy}`, err)
+              changedByName = String(update.changedBy)
+            }
+          }
+
           return {
             ...update,
             fieldName: displayFieldName,
             oldValue: displayOldValue,
             newValue: displayNewValue,
             updateNotes: updateNotes || null,
+            relatedTableInfo: relatedTableInfo,
+            changedBy: changedByName,
           }
         } catch (err) {
           // If we can't enhance the update, just return it as is
