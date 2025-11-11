@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
 import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon, ExternalLink, Check, X, ChevronRight, ClipboardList } from "lucide-react"
+import { TracerButton } from "@/components/agents/TracerButton"
 
 interface QualityTraining {
   id: string
@@ -75,6 +76,8 @@ export default function QualityTrainingPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [expandedDetails, setExpandedDetails] = useState<Set<string>>(new Set())
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const isScrollingRef = useRef(false) // Flag to prevent loop between scroll and hash update
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   // Sort jenisQualityTrainings by createdAt
   const sortedJenisQualityTrainings = useMemo(() => {
@@ -116,12 +119,90 @@ export default function QualityTrainingPage() {
       )
       
       if (matchingJenis && sectionRefs.current[matchingJenis.id]) {
+        isScrollingRef.current = true // Set flag to prevent observer from updating hash
         setTimeout(() => {
           sectionRefs.current[matchingJenis.id]?.scrollIntoView({ 
             behavior: 'smooth',
             block: 'start'
           })
+          // Reset flag after scroll animation completes
+          setTimeout(() => {
+            isScrollingRef.current = false
+          }, 1000)
         }, 300) // Small delay to ensure DOM is ready
+      }
+    }
+  }, [qualityTraining, sortedJenisQualityTrainings])
+
+  // Setup Intersection Observer for auto-updating URL hash on scroll
+  useEffect(() => {
+    if (!qualityTraining || sortedJenisQualityTrainings.length === 0) return
+
+    // Wait for DOM to be ready
+    const setupObserver = () => {
+      // Cleanup previous observer
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+
+      // Create new Intersection Observer
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          // Don't update hash if we're programmatically scrolling
+          if (isScrollingRef.current) return
+
+          // Find the entry with the highest intersection ratio that's visible
+          const visibleEntries = entries.filter(entry => entry.isIntersecting)
+          if (visibleEntries.length === 0) return
+
+          // Sort by intersection ratio (highest first) and then by position (topmost first)
+          visibleEntries.sort((a, b) => {
+            if (b.intersectionRatio !== a.intersectionRatio) {
+              return b.intersectionRatio - a.intersectionRatio
+            }
+            const aTop = a.boundingClientRect.top
+            const bTop = b.boundingClientRect.top
+            return aTop - bTop
+          })
+
+          const mostVisible = visibleEntries[0]
+          if (!mostVisible.isIntersecting) return
+
+          // Get the section ID from the element
+          const sectionElement = mostVisible.target as HTMLElement
+          const sectionId = sectionElement.id
+
+          // Only update if hash is different
+          if (window.location.hash.slice(1) !== sectionId) {
+            // Update URL hash without triggering scroll
+            window.history.replaceState(null, '', `#${sectionId}`)
+          }
+        },
+        {
+          root: null,
+          rootMargin: '-20% 0px -60% 0px', // Trigger when section is in the top 40% of viewport
+          threshold: [0, 0.25, 0.5, 0.75, 1]
+        }
+      )
+
+      // Observe all sections
+      sortedJenisQualityTrainings.forEach((jenis) => {
+        const sectionId = createSlug(jenis.name)
+        const element = document.getElementById(sectionId)
+        if (element && observerRef.current) {
+          observerRef.current.observe(element)
+        }
+      })
+    }
+
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(setupObserver, 500)
+
+    // Cleanup on unmount
+    return () => {
+      clearTimeout(timeoutId)
+      if (observerRef.current) {
+        observerRef.current.disconnect()
       }
     }
   }, [qualityTraining, sortedJenisQualityTrainings])
@@ -143,6 +224,9 @@ export default function QualityTrainingPage() {
     // Update hash without triggering navigation
     window.history.pushState(null, '', `#${slug}`)
     
+    // Set flag to prevent observer from updating hash during scroll
+    isScrollingRef.current = true
+    
     // Scroll to section
     setTimeout(() => {
       if (sectionRefs.current[jenis.id]) {
@@ -150,6 +234,10 @@ export default function QualityTrainingPage() {
           behavior: 'smooth',
           block: 'start'
         })
+        // Reset flag after scroll animation completes
+        setTimeout(() => {
+          isScrollingRef.current = false
+        }, 1000)
       }
     }, 100)
   }
@@ -197,6 +285,24 @@ export default function QualityTrainingPage() {
       return {
         type: 'all-materi-training',
         layout: 'slides-grid',
+        showIcons: false,
+      }
+    }
+    else if (
+      name.includes('behaviour-customer-service') || 
+      name.includes('behaviour customer service') || 
+      name.includes('behavior-customer-service') || 
+      name.includes('behavior customer service') ||
+      name.includes('behaviour-customer-care') || 
+      name.includes('behaviour customer care') || 
+      name.includes('behavior-customer-care') || 
+      name.includes('behavior customer care') ||
+      (name.includes('behaviour') && name.includes('customer') && (name.includes('service') || name.includes('care'))) ||
+      (name.includes('behavior') && name.includes('customer') && (name.includes('service') || name.includes('care')))
+    ) {
+      return {
+        type: 'behaviour-customer-service',
+        layout: 'card-grid',
         showIcons: false,
       }
     }
@@ -320,10 +426,13 @@ export default function QualityTrainingPage() {
         <div className="text-center">
           <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{qualityTraining.title}</h1>
         </div>
+        <div className="flex justify-center mt-6">
+          <TracerButton href={`/agent/${qualityTrainingName}/tracer`} className="" />
+        </div>
       </div>
 
       {/* Information Stats */}
-      <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 mx-24">
+      {/* <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 mx-24">
         <h3 className="text-2xl font-bold text-[#064379] mb-6 text-center flex items-center justify-center">
           <BookOpen className="h-6 w-6 mr-3" />
           Information
@@ -334,9 +443,9 @@ export default function QualityTrainingPage() {
               {qualityTraining.jenisQualityTrainings.length}
             </div>
             <div className="text-sm text-[#064379]/80 font-medium">Total Training Types</div>
-          </div>
+          </div> */}
 
-          <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
+          {/* <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
             <div className="text-4xl font-bold text-[#064379] mb-2">
               {(() => {
                 const date = new Date(qualityTraining.updatedAt || qualityTraining.createdAt);
@@ -354,9 +463,9 @@ export default function QualityTrainingPage() {
             <div className="text-sm text-[#064379]/80 font-medium">
               {qualityTraining.updatedAt ? "Last Updated" : "Created On"}
             </div>
-          </div>
+          </div> */}
 
-          <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20 mx-24">
+          {/* <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20 mx-24">
             <div className="text-4xl font-bold text-[#064379] mb-2">
               {qualityTraining.updatedBy || qualityTraining.createdBy || "System"}
             </div>
@@ -364,10 +473,10 @@ export default function QualityTrainingPage() {
               {qualityTraining.updatedBy ? "Updated By" : "Created By"}
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Update Notes */}
-        {qualityTraining.updateNotes && (
+        {/* {qualityTraining.updateNotes && (
           <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20 mx-24">
             <h4 className="text-lg font-bold text-[#064379] mb-3 flex items-center">
               <Edit3 className="h-5 w-5 mr-2" />
@@ -376,7 +485,7 @@ export default function QualityTrainingPage() {
             <p className="text-[#064379]/90 leading-relaxed">{qualityTraining.updateNotes}</p>
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Description Section */}
       {qualityTraining.description && (
@@ -471,6 +580,9 @@ export default function QualityTrainingPage() {
           if (jenis.name.toLowerCase().includes('tips')) {
             console.log('Jenis name:', jenis.name, 'Design config:', designConfig)
           }
+          if (jenis.name.toLowerCase().includes('behaviour') || jenis.name.toLowerCase().includes('behavior')) {
+            console.log('Behaviour/Customer Service - Jenis name:', jenis.name, 'Design config:', designConfig)
+          }
           
           // Determine section wrapper classes based on design config
           const getSectionWrapperClasses = () => {
@@ -479,6 +591,9 @@ export default function QualityTrainingPage() {
             }
             if (designConfig.type === 'tips-tricks-customer-services') {
               return "overflow-hidden scroll-mt-20 bg-gradient-to-br from-[#fef3c7] to-[#fde68a]"
+            }
+            if (designConfig.type === 'behaviour-customer-service') {
+              return "overflow-hidden scroll-mt-20 bg-gradient-to-br from-[#f0f4ff] to-[#e8f0fe]"
             }
             return "overflow-hidden scroll-mt-20"
           }
@@ -490,6 +605,9 @@ export default function QualityTrainingPage() {
             }
             if (designConfig.type === 'tips-tricks-customer-services') {
               return "bg-[#d6e5ff] p-4 pt-24"
+            }
+            if (designConfig.type === 'behaviour-customer-service') {
+              return "bg-[#064379] p-4 pt-24"
             }
             if (designConfig.type === 'all-materi-training') {
               return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] px-0 py-4 pt-24"
@@ -510,6 +628,9 @@ export default function QualityTrainingPage() {
             }
             if (designConfig.type === 'tips-tricks-customer-services') {
               return "bg-[#d6e5ff] p-8 pb-32"
+            }
+            if (designConfig.type === 'behaviour-customer-service') {
+              return "bg-gradient-to-b from-[#064379] to-[#0d0d0e] p-8 pb-32"
             }
             return "bg-white/80 backdrop-blur-sm p-4 pb-24"
           }
@@ -592,6 +713,112 @@ export default function QualityTrainingPage() {
                     )
                   }
 
+                  // Behaviour Customer Care - Modern card grid layout
+                  if (designConfig.type === 'behaviour-customer-service' && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
+                    return (
+                      <div className="flex flex-col gap-8 max-w-7xl mx-auto">
+                        {jenis.detailQualityTrainings.map((detail) => (
+                          <div
+                            key={detail.id}
+                            className="group bg-gradient-to-r from-[#51abae] to-[#041965] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-[#ffde59] transform hover:-translate-y-2"
+                          >
+                            {/* Image Section */}
+                            {detail.logos && detail.logos[0] && (
+                              <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[#4f46e5] to-[#7c3aed]">
+                                <Image 
+                                  src={detail.logos[0]} 
+                                  alt={detail.name} 
+                                  width={400} 
+                                  height={200}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              </div>
+                            )}
+                            
+                            {/* Content Section */}
+                            <div className="p-6">
+                              <div className="flex items-center">
+                                <div className="w-1/6 items-center justify-center text-center">
+                                  <h3 className="text-9xl font-black text-[#ffde59] mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
+                                    {detail.name[0]}
+                                  </h3>
+                                </div>
+                                <div>
+                                  <h3 className="text-3xl font-bold text-white mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
+                                    {detail.name}
+                                  </h3>
+                                  
+                                  {detail.description && (
+                                    <p className="text-white text-lg leading-relaxed mb-4 whitespace-pre-line line-clamp-4">
+                                      {detail.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Subdetails */}
+                              {detail.subdetailQualityTrainings && detail.subdetailQualityTrainings.length > 0 && (
+                                <div className="mb-4">
+                                  <button
+                                    onClick={() => toggleDetails(detail.id)}
+                                    className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                                  >
+                                    <span className="font-bold text-sm">View Details ({detail.subdetailQualityTrainings.length})</span>
+                                    <div className="flex items-center gap-2">
+                                      {expandedDetails.has(detail.id) ? (
+                                        <ChevronUp className="h-4 w-4" />
+                                      ) : (
+                                        <ChevronDown className="h-4 w-4" />
+                                      )}
+                                    </div>
+                                  </button>
+                                  
+                                  {expandedDetails.has(detail.id) && (
+                                    <div className="mt-4 space-y-3">
+                                      {detail.subdetailQualityTrainings.map((subdetail) => (
+                                        <div key={subdetail.id} className="bg-gradient-to-r from-[#f0f4ff] to-[#e8f0fe] rounded-lg p-4 border-l-4 border-[#4f46e5] shadow-sm hover:shadow-md transition-shadow">
+                                          <div className="flex items-start gap-4">
+                                            {subdetail.logos && subdetail.logos.length > 0 && subdetail.logos[0] && (
+                                              <div className="flex-shrink-0">
+                                                {renderImage(subdetail, 'w-24 h-24')}
+                                              </div>
+                                            )}
+                                            <div className="flex-1">
+                                              <p className="text-sm text-[#4f46e5] font-medium mb-2">{subdetail.name}</p>
+                                              {subdetail.description && (
+                                                <p className="text-[#4f46e5]/80 text-sm leading-relaxed whitespace-pre-line">
+                                                  {subdetail.description}
+                                                </p>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Link Slide */}
+                              {detail.linkslide && (
+                                <a
+                                  href={detail.linkslide}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-white rounded-lg hover:from-[#4338ca] hover:to-[#6d28d9] transition-colors text-sm font-medium w-full justify-center"
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                  <span>Open Slide</span>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  }
+
                   // All Materi Training - Slides only, 2-column grid with pair coloring
                   if ((designConfig.type === 'all-materi-training') && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
                     const slideDetails = jenis.detailQualityTrainings.filter(d => !!d.linkslide)
@@ -607,12 +834,13 @@ export default function QualityTrainingPage() {
                       <div className="w-full">
                         {pairs.map((pair, pairIndex) => {
                           const theme = pairThemes[pairIndex % pairThemes.length]
+                          const isLastPairWithOneItem = pairIndex === pairs.length - 1 && pair.length === 1
                           return (
                             <div key={pairIndex} className={`w-full bg-gradient-to-r ${theme.wrapper}`}>
                               <div className="p-16 px-48">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className={`grid gap-6 ${isLastPairWithOneItem ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
                               {pair.map((d) => (
-                                <div key={d.id}>
+                                <div key={d.id} className={isLastPairWithOneItem ? 'w-full' : ''}>
                                   <div className={`rounded-2xl border border-white/20 shadow-lg overflow-hidden bg-gradient-to-b ${theme.wrapper}`}>
                                     <h4 className="text-white font-bold text-3xl justify-center text-center my-4">{d.name}</h4>
 
@@ -640,9 +868,6 @@ export default function QualityTrainingPage() {
                                 </div>
 
                               ))}
-                              {pair.length === 1 && (
-                                <div className="hidden md:block"></div>
-                              )}
                                 </div>
                               </div>
                             </div>
