@@ -93,6 +93,100 @@
       "resolved": "Resolved",
       "pending": "Pending",
       "escalated": "Escalated"
+    },
+    "dnaCustomerCare": {
+      "title": "DNA Customer Care",
+      "aboutParagon": {
+        "title": "About Paragon",
+        "description": "Paragon is an Indonesia beauty company\nwith the purpose of creating a greater good\nfor the society through innovation.",
+        "image": "/paragondariweb.png",
+        "history": "History of Paragon"
+      },
+      "timeline": [
+        {
+          "year": "1985",
+          "description": "Paragon was founded, marking the beginning of Indonesia's beauty industry journey."
+        },
+        {
+          "year": "1995",
+          "description": "Launching brand Wardah Cosmetics"
+        },
+        {
+          "year": "1999",
+          "description": "Expansion of product portfolio and market reach across Indonesia."
+        },
+        {
+          "year": "2005",
+          "description": "Introduction of halal-certified beauty products, setting new industry standards."
+        },
+        {
+          "year": "2010",
+          "description": "Launch of multiple successful brands including Emina, Make Over, and Kahf."
+        },
+        {
+          "year": "2015",
+          "description": "Digital transformation and e-commerce expansion to serve customers nationwide."
+        },
+        {
+          "year": "2020",
+          "description": "Strengthening customer care division with world-class service standards."
+        }
+      ]
+    },
+    "paragonStats": {
+      "title": "Paragonians",
+      "description": "With more than 14.000 employees that we call Paragonian all over Indonesia and Malaysia, we keep on innovating for better products programs, and ways of working to create more goodness to the society.",
+      "stats": [
+        {
+          "value": "›14.000",
+          "label": "Paragonians",
+          "icon": "users"
+        },
+        {
+          "value": "47",
+          "label": "Distribution Centers",
+          "icon": "store"
+        },
+        {
+          "value": "›200",
+          "label": "CSR Partners",
+          "icon": "handshake"
+        },
+        {
+          "value": "›5000",
+          "label": "SKU Products",
+          "icon": "tube"
+        }
+      ]
+    },
+    "valueIdentity": {
+      "logoImage": "/logoparagonteks.png",
+      "left": {
+        "title": "5 Value Paragon",
+        "items": [
+          "Ketuhanan",
+          "Kepedulian",
+          "Kerendahan Hati",
+          "Ketangguhan",
+          "Inovasi"
+        ]
+      },
+      "right": {
+        "title": "7 Basic Identity",
+        "items": [
+          "Intrapreneurship",
+          "Respect pada sesama",
+          "Gotong Royong",
+          "Perbaikan Berkelanjutan",
+          "Pembelajar",
+          "Fokus Pada Pelanggan",
+          "Niat Baik"
+        ]
+      }
+    },
+    "channelsOverview": {
+      "title": "We handle 6 channels and 14 brands of ParagonCorp at ID and MY",
+      "image": "/channel.png"
     }
   },
   "common": {
