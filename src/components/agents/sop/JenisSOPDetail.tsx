@@ -120,7 +120,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
             <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
             <span className="font-medium">{sopContent.sop.back} {sop.kategoriSOP.name}</span>
           </Link>
-          <TracerButton href={`/agent/sop/${slugify(sop.kategoriSOP.name)}/${slugify(sop.name)}/tracer`} className="bg-white text-blue-600 hover:bg-gray-100" />
+          <TracerButton href={`/agent/sop/${slugify(sop.kategoriSOP.name)}/${slugify(sop.name)}/tracer`} className="text-blue-600 hover:bg-gray-100" />
         </div>
         
         {/* Title & Description */}
@@ -202,19 +202,29 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
                   <ImageIcon className="w-5 h-5 text-[#0259b7]" />
                   <h3 className="text-lg font-semibold text-gray-900">Galeri</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {jenis.images.map((image, idx) => (
                     <div 
                       key={idx} 
-                      className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300 group"
+                      className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300 group cursor-pointer"
+                      onClick={() => window.open(image, '_blank')}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          window.open(image, '_blank')
+                        }
+                      }}
+                      aria-label={`Buka gambar ${idx + 1} di tab baru`}
                     >
                       <Image
                         src={image}
                         alt={`${jenis.name} - Image ${idx + 1}`}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="group-hover:scale-101 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   ))}
                 </div>

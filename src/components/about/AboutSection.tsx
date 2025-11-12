@@ -40,7 +40,7 @@ export default function AboutSection({ className = '' }: AboutSectionProps) {
                     case 'people':
                       return (
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01.99L14 10h-2v12h2v-6h2v6h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9V9.5c0-.83-.67-1.5-1.5-1.5S6 8.67 6 9.5V15H4.5v7h3z"/>
+                          <path d="M10 8c1.66 0 3-1.34 3-3S11.66 2 10 2 7 3.34 7 5s1.34 3 3 3zm4.5 4c1.12 0 2.11-.59 2.66-1.5h.84c.44 0 .86.1 1.24.29.38.19.7.47.96.82l1.8 2.43V20h-2v-4h-2v4h-2v-4.5l-2-1.5V20H8v-5.5l2-1.5V20H6v-6.5L3 16v-1l3.5-2.5V11c0-1.66 1.34-3 3-3h4.5z"/>
                         </svg>
                       );
                     case 'earth':
@@ -82,23 +82,20 @@ export default function AboutSection({ className = '' }: AboutSectionProps) {
                   }
                 };
 
-                // Color mapping - menggunakan warna biru konsisten
-                const getColorClasses = () => {
-                  return 'bg-blue-500/20 border-blue-400/30 text-blue-300';
-                };
-
                 return (
                   <ScrollAnimation key={index} direction="up" delay={index * 0.1}>
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 h-[180px] sm:h-[200px] md:h-[220px] flex flex-col">
+                    <div className="bg-gradient-to-b from-[#5ce1e6] to-[#3e55ef] backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 h-[180px] sm:h-[200px] md:h-[220px] flex flex-col">
                       {/* Icon */}
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 ${getColorClasses()}`}>
-                        {getIcon(item.icon)}
+                      <div className='flex items-center gap-2'>
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 text-white  bg-[#041965]">
+                          {getIcon(item.icon)}
+                        </div>
+                        
+                        <h4 className="text-base sm:text-lg font-bold text-[#041965] mb-2 sm:mb-3">
+                          {item.title}
+                        </h4>
                       </div>
-                      
-                      <h4 className="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 flex-shrink-0">
-                        {item.title}
-                      </h4>
-                      <p className="text-white/70 text-xs sm:text-sm leading-relaxed flex-grow overflow-hidden">
+                      <p className="text-white text-md font-medium leading-relaxed flex-grow overflow-hidden">
                         {item.description}
                       </p>
                     </div>

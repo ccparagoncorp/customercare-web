@@ -306,6 +306,13 @@ export default function QualityTrainingPage() {
         showIcons: false,
       }
     }
+    else if (name.includes('faq') || name === 'faq' || name.includes('frequently asked questions')) {
+      return {
+        type: 'faq',
+        layout: 'faq-list',
+        showIcons: false,
+      }
+    }
     
     // Default design
     return {
@@ -501,7 +508,7 @@ export default function QualityTrainingPage() {
       )}
 
       {/* Search Bar */}
-      <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-6 mx-24">
+      {/* <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-6 mx-24">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#064379]/50" />
           <input
@@ -512,7 +519,7 @@ export default function QualityTrainingPage() {
             className="w-full pl-12 pr-4 py-3 rounded-lg border border-[#064379]/20 focus:outline-none focus:ring-2 focus:ring-[#064379] text-[#064379]"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Cards Section - JenisQualityTraining Cards */}
       <div className="mt-8 mx-24">
@@ -595,6 +602,9 @@ export default function QualityTrainingPage() {
             if (designConfig.type === 'behaviour-customer-service') {
               return "overflow-hidden scroll-mt-20 bg-gradient-to-br from-[#f0f4ff] to-[#e8f0fe]"
             }
+            if (designConfig.type === 'faq') {
+              return "overflow-hidden scroll-mt-20 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]"
+            }
             return "overflow-hidden scroll-mt-20"
           }
 
@@ -611,6 +621,9 @@ export default function QualityTrainingPage() {
             }
             if (designConfig.type === 'all-materi-training') {
               return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] px-0 py-4 pt-24"
+            }
+            if (designConfig.type === 'faq') {
+              return "bg-[#064379] p-4 pt-24"
             }
             return "bg-gradient-to-r from-[#064379] to-[#0d0d0e] p-4 pb-12 pt-24"
           }
@@ -632,6 +645,9 @@ export default function QualityTrainingPage() {
             if (designConfig.type === 'behaviour-customer-service') {
               return "bg-gradient-to-b from-[#064379] to-[#0d0d0e] p-8 pb-32"
             }
+            if (designConfig.type === 'faq') {
+              return "bg-gradient-to-b from-[#064379] to-[#0d0d0e] p-8 pb-32"
+            }
             return "bg-white/80 backdrop-blur-sm p-4 pb-24"
           }
 
@@ -646,7 +662,11 @@ export default function QualityTrainingPage() {
             >
               {/* Section Banner Header */}
               <div className={getSectionHeaderClasses()}>
-                <h2 className={designConfig.type === 'tips-tricks-customer-services' ? 'text-5xl font-bold text-[#064379] text-center' : 'text-5xl font-bold text-white text-center'}>{jenis.name}</h2>
+                <h2 className={
+                  designConfig.type === 'tips-tricks-customer-services' 
+                    ? 'text-6xl font-extrabold text-[#064379] text-center' 
+                    : 'text-6xl font-extrabold text-white text-center'
+                }>{jenis.name}</h2>
                 {jenis.description && (
                   <p className="text-white/80 text-center mt-2">{jenis.description}</p>
                 )}
@@ -1022,6 +1042,107 @@ export default function QualityTrainingPage() {
                             </div>
                           </div>
                         </div>
+                    )
+                  }
+
+                  // FAQ Layout - List with expandable descriptions
+                  if (designConfig.type === 'faq' && jenis.detailQualityTrainings && jenis.detailQualityTrainings.length > 0) {
+                    return (
+                      <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+                        {jenis.detailQualityTrainings.map((detail, index) => (
+                          <div
+                            key={detail.id}
+                            className="cursor-pointer bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden"
+                          >
+                            {/* Question Header - Always Visible */}
+                            <button
+                              onClick={() => toggleDetails(detail.id)}
+                              className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors duration-200"
+                            >
+                              <div className="flex items-start gap-4 flex-1">
+                                <h3 className="text-lg font-black text-[#064379] flex-1">
+                                  {detail.name}
+                                </h3>
+                              </div>
+                              <div className="flex-shrink-0 ml-4 items-end justify-end">
+                                {expandedDetails.has(detail.id) ? (
+                                  <ChevronUp className="w-8 h-8 text-[#064379]" />
+                                ) : (
+                                  <ChevronDown className="w-8 h-8 text-gray-400" />
+                                )}
+                              </div>
+                            </button>
+
+                            {/* Answer/Description - Expandable */}
+                            {expandedDetails.has(detail.id) && (
+                              <div className="pb-6 pt-0 mx-6 border-t-2 border-[#064379] animate-fade-in">
+                                <div className="pt-4">
+                                  {detail.description && (
+                                    <p className="text-[#064379] leading-relaxed whitespace-pre-line mb-4">
+                                      {detail.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* Link Slide if available */}
+                                  {detail.linkslide && (
+                                    <a
+                                      href={detail.linkslide}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#0259b7] to-[#017cff] text-white rounded-lg hover:from-[#014a9a] hover:to-[#0166d6] transition-colors text-sm font-medium shadow-sm"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <ExternalLink className="h-4 w-4" />
+                                      <span>Open Slide</span>
+                                    </a>
+                                  )}
+
+                                  {/* Images if available */}
+                                  {detail.logos && detail.logos.length > 0 && (
+                                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      {detail.logos.map((logo, logoIndex) => (
+                                        <div key={logoIndex} className="relative rounded-lg overflow-hidden border border-gray-200">
+                                          {renderImage({ logos: [logo] }, 'w-full h-48')}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {/* SubdetailQualityTrainings if available */}
+                                  {detail.subdetailQualityTrainings && detail.subdetailQualityTrainings.length > 0 && (
+                                    <div className="mt-6 space-y-3">
+                                      {detail.subdetailQualityTrainings.map((subdetail) => (
+                                        <div
+                                          key={subdetail.id}
+                                          className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-l-4 border-[#0259b7]"
+                                        >
+                                          <div className="flex items-start gap-3">
+                                            {subdetail.logos && subdetail.logos.length > 0 && subdetail.logos[0] && (
+                                              <div className="flex-shrink-0">
+                                                {renderImage(subdetail, 'w-20 h-20')}
+                                              </div>
+                                            )}
+                                            <div className="flex-1">
+                                              <p className="text-sm font-semibold text-[#0259b7] mb-1">
+                                                {subdetail.name}
+                                              </p>
+                                              {subdetail.description && (
+                                                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                                                  {subdetail.description}
+                                                </p>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     )
                   }
                     

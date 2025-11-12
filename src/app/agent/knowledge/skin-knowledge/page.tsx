@@ -238,66 +238,11 @@ export default function SkinKnowledgePage() {
       </div>
 
       <div className="mt-8">
-        {/* Information Stats */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8">
-          <h3 className="text-2xl font-bold text-[#064379] mb-6 text-center flex items-center justify-center">
-            <BookOpen className="h-6 w-6 mr-3" />
-            {content.information.title}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
-              <div className="text-4xl font-bold text-[#064379] mb-2">
-                {knowledge.detailKnowledges.length}
-              </div>
-              <div className="text-sm text-[#064379]/80 font-medium">Total Skin Knowledge Items</div>
-            </div>
 
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
-              <div className="text-4xl font-bold text-[#064379] mb-2">
-                {(() => {
-                  const date = new Date(knowledge.updatedAt || knowledge.createdAt);
-                  return `${date.toLocaleDateString("id-ID", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })} ${date.toLocaleTimeString("en-GB", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}`;
-                })()}
-              </div>
-              <div className="text-sm text-[#064379]/80 font-medium">
-                {knowledge.updatedAt ? "Last Updated" : "Created On"}
-              </div>
-            </div>
-
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
-              <div className="text-4xl font-bold text-[#064379] mb-2">
-                {knowledge.updatedBy || knowledge.createdBy || "System"}
-              </div>
-              <div className="text-sm text-[#064379]/80 font-medium">
-                {knowledge.updatedBy ? "Updated By" : "Created By"}
-              </div>
-            </div>
-          </div>
-
-          {/* Update Notes */}
-          {knowledge.updateNotes && (
-            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
-              <h4 className="text-lg font-bold text-[#064379] mb-3 flex items-center">
-                <Edit3 className="h-5 w-5 mr-2" />
-                Update Notes
-              </h4>
-              <p className="text-[#064379]/90 leading-relaxed">{knowledge.updateNotes}</p>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-between items-start gap-6">
+        <div className="flex justify-between items-start gap-6 xl:flex-row flex-col">
           {/* LEFT SECTION - Main Knowledge Image and Description */}
           {(knowledge.logos || knowledge.description) && (
-            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 flex-1 h-155">
+            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 flex-1 h-155 w-full">
               <h2 className="text-3xl font-bold text-[#064379] mb-2 flex items-center">
                 <FileText className="h-8 w-8 mr-3" />
                 {content.knowledgeDetails.title}
@@ -481,6 +426,63 @@ export default function SkinKnowledgePage() {
           )}
         </div>
       </div>
+
+      {/* Information Stats */}
+        <div className="mt-12 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8">
+          <h3 className="text-2xl font-bold text-[#064379] mb-6 text-center flex items-center justify-center">
+            <BookOpen className="h-6 w-6 mr-3" />
+            {content.information.title}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
+              <div className="text-4xl font-bold text-[#064379] mb-2">
+                {knowledge.detailKnowledges.length}
+              </div>
+              <div className="text-sm text-[#064379]/80 font-medium">Total Skin Knowledge Items</div>
+            </div>
+
+            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
+              <div className="text-4xl font-bold text-[#064379] mb-2">
+                {(() => {
+                  const date = new Date(knowledge.updatedAt || knowledge.createdAt);
+                  return `${date.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })} ${date.toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}`;
+                })()}
+              </div>
+              <div className="text-sm text-[#064379]/80 font-medium">
+                {knowledge.updatedAt ? "Last Updated" : "Created On"}
+              </div>
+            </div>
+
+            <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
+              <div className="text-4xl font-bold text-[#064379] mb-2">
+                {knowledge.updatedBy || knowledge.createdBy || "System"}
+              </div>
+              <div className="text-sm text-[#064379]/80 font-medium">
+                {knowledge.updatedBy ? "Updated By" : "Created By"}
+              </div>
+            </div>
+          </div>
+
+          {/* Update Notes */}
+          {knowledge.updateNotes && (
+            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-[#064379]/20">
+              <h4 className="text-lg font-bold text-[#064379] mb-3 flex items-center">
+                <Edit3 className="h-5 w-5 mr-2" />
+                Update Notes
+              </h4>
+              <p className="text-[#064379]/90 leading-relaxed">{knowledge.updateNotes}</p>
+            </div>
+          )}
+        </div>
+
     </div>
   )
 }

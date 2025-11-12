@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lato } from "next/font/google";
 import "./globals.css";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import { ConditionalHeader } from "@/components/ConditionalHeader";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lato = Lato({
+  weight: ["300", "400", "700", "900"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-lato",
 });
 
 export const metadata: Metadata = {
   title: "CC Paragon - Customer Care Management System",
-  description: "Fullstack CRUD system for managing products, SOPs, and knowledge base",
+  description: "Website ",
 };
 
 export default function RootLayout({
@@ -28,7 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${lato.variable} font-sans antialiased`}
+        style={{ fontFamily: 'var(--font-lato), sans-serif' }}
       >
         <AuthProvider>
           <ConditionalHeader />
