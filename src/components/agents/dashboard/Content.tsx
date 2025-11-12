@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { AlertTriangle, Medal, ChevronDown, Calendar, ChevronLeft, ChevronRight, Users, Store, Handshake, TestTube } from "lucide-react"
+import { ChevronLeft, ChevronRight, Users, Store, Handshake, TestTube } from "lucide-react"
 import dashboardContent from "@/content/agent/dashboard.json"
 import { useAuth } from "@/components/auth/AuthProvider"
 
@@ -207,11 +207,7 @@ export function Content() {
 function DNACustomerCareSection() {
   const dnaData = dashboardContent.dashboard.dnaCustomerCare
   const timeline = dnaData.timeline
-
-  if (timeline.length === 0) {
-    return null
-  }
-
+ 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [timelineOffset, setTimelineOffset] = useState(TIMELINE_OFFSET)
@@ -258,6 +254,10 @@ function DNACustomerCareSection() {
     window.addEventListener('resize', updateOffset)
     return () => window.removeEventListener('resize', updateOffset)
   }, [])
+
+  if (timeline.length === 0) {
+    return null
+  }
 
   const handlePrevious = () => {
     if (isAnimating || timeline.length < 2) return
@@ -573,14 +573,14 @@ function ParagonValuesIdentitySection() {
     <div className={`space-y-5 ${align === 'left' ? 'text-left' : 'text-right'}`}>
       {items.map((item) => (
         <div key={item} className={`flex items-center gap-3 ${align === 'right' ? 'flex-row-reverse ml-auto' : ''}`}>
-          <div className="lg:w-10 lg:h-10 w-6 h-6 rounded-full bg-white/90 text-[#064379] flex items-center justify-center shadow">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 text-[#064379] flex items-center justify-center shadow">
             {align === 'left' ? (
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" strokeWidth={4} />
             ) : (
               <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" strokeWidth={4} />
             )}
           </div>
-          <span className="text-md sm:text-md lg:text-2xl font-semibold text-white leading-2 lg:leading-10">{item}</span>
+          <span className="text-base sm:text-lg lg:text-2xl font-semibold text-white leading-6 sm:leading-7 lg:leading-10">{item}</span>
         </div>
       ))}
     </div>
