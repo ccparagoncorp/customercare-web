@@ -129,7 +129,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
             <div className="p-2 bg-white/20 rounded-lg">
               <FileText className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-white">{sop.name}</h1>
+            <h1 className="md:text-4xl text-2xl font-bold text-white">{sop.name}</h1>
           </div>
           {sop.description && (
             <p className="text-white/90 text-lg leading-relaxed max-w-4xl">{sop.description}</p>
@@ -167,7 +167,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
               </div>
               
               <div className="relative z-10">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col md:flex-row items-start gap-4">
                   <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
                     <CheckCircle2 className="w-6 h-6 text-white" />
                   </div>
@@ -177,7 +177,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
                         {sopContent.jenis.detailTitle} {jenisIndex + 1}
                       </span>
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-3">{jenis.name}</h2>
+                    <h2 className="md:text-3xl text-xl font-bold text-white mb-3">{jenis.name}</h2>
                     {jenis.content && (
                       <p className="text-white/90 leading-relaxed">{jenis.content}</p>
                     )}

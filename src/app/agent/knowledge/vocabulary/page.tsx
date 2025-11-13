@@ -121,19 +121,19 @@ export default function VocabularyKnowledgePage() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         <div className="text-center relative">
           {/* Tracer Button - Top Right */}
-          <div className="absolute top-0 right-0">
+          <div className="absolute md:top-0 md:right-0 top-0 right-0">
             <Link 
               href={`/agent/knowledge/${knowledgeSlug}/tracer`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm bg-[#ffde59]/20 hover:bg-[#ffde59]/30 border border-[#ffde59]/30 text-[#ffde59]"
             >
               <History className="w-4 h-4" />
-              <span className="text-sm font-medium">Tracer Updates</span>
+              <span className="text-sm font-medium hidden md:block">Tracer Updates</span>
             </Link>
           </div>
           
-          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{knowledge.title}</h1>
+          <h1 className="text-3xl md:text-6xl font-bold text-[#ffde59] mb-4">{knowledge.title}</h1>
           {knowledge.description && (
-            <p className="text-xl text-[#ffde59] mb-6 max-w-3xl mx-auto">{knowledge.description}</p>
+            <p className="text-md md:text-xl text-[#ffde59] mb-6 max-w-3xl mx-auto">{knowledge.description}</p>
           )}
         </div>
       </div>
@@ -141,18 +141,18 @@ export default function VocabularyKnowledgePage() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Main Content */}
         <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-3xl border border-[#064379]/20 shadow-2xl p-8">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-col md:flex-row gap-4">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4 flex items-center">
+              <h2 className="text-xl md:text-3xl font-bold text-white mb-4 flex items-center">
                 <FileText className="h-8 w-8 mr-3" />
                 {content.knowledgeDetails.title}
               </h2>
-              <p className="text-white text-lg leading-relaxed">
+              <p className="text-white text-xs md:text-lg leading-relaxed">
                 {content.knowledgeDetails.description}
               </p>
             </div>
 
-            <div className="mb-8 relative w-[450px]">
+            <div className="mb-8 relative w-full md:w-[450px]">
               {/* Icon kaca pembesar */}
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#b2fcff] pointer-events-none" />
 

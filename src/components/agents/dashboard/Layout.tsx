@@ -26,7 +26,9 @@ export function Layout({ children }: DashboardLayoutProps) {
           </main>
         </div>
       </div>
-      <FooterSection />
+      <div className="ml-18">
+        <FooterSection />
+      </div>
     </div>
   )
 }

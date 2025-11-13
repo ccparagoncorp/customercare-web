@@ -429,9 +429,9 @@ export default function QualityTrainingPage() {
   return (
     <div className="min-h-screen my-16">
       {/* Header Section */}
-      <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl px-4 sm:px-6 lg:px-8 py-8 mx-24">
+      <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl px-4 sm:px-6 lg:px-8 py-8 md:mx-24 mx-4">
         <div className="text-center">
-          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{qualityTraining.title}</h1>
+          <h1 className="md:text-6xl text-3xl font-bold text-[#ffde59] mb-4">{qualityTraining.title}</h1>
         </div>
         <div className="flex justify-center mt-6">
           <TracerButton href={`/agent/${qualityTrainingName}/tracer`} className="" />
@@ -497,11 +497,11 @@ export default function QualityTrainingPage() {
       {/* Description Section */}
       {qualityTraining.description && (
         <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 mx-24">
-          <h2 className="text-3xl font-bold text-[#064379] mb-4 flex items-center">
+          <h2 className="md:text-3xl text-xl font-bold text-[#064379] mb-4 flex items-center">
             <FileText className="h-8 w-8 mr-3" />
             Description
           </h2>
-          <div className="text-[#064379]/90 leading-relaxed text-lg">
+          <div className="text-[#064379]/90 leading-relaxed md:text-lg text-md">
             {qualityTraining.description}
           </div>
         </div>
@@ -522,7 +522,7 @@ export default function QualityTrainingPage() {
       </div> */}
 
       {/* Cards Section - JenisQualityTraining Cards */}
-      <div className="mt-8 mx-24">
+      <div className="mt-8 md:mx-24 mx-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJenisQualityTrainings.map((jenis, index) => (
             <div
@@ -664,8 +664,8 @@ export default function QualityTrainingPage() {
               <div className={getSectionHeaderClasses()}>
                 <h2 className={
                   designConfig.type === 'tips-tricks-customer-services' 
-                    ? 'text-6xl font-extrabold text-[#064379] text-center' 
-                    : 'text-6xl font-extrabold text-white text-center'
+                    ? 'md:text-6xl text-3xl font-extrabold text-[#064379] text-center' 
+                    : 'md:text-6xl text-3xl font-extrabold text-white text-center'
                 }>{jenis.name}</h2>
                 {jenis.description && (
                   <p className="text-white/80 text-center mt-2">{jenis.description}</p>
@@ -758,19 +758,19 @@ export default function QualityTrainingPage() {
                             
                             {/* Content Section */}
                             <div className="p-6">
-                              <div className="flex items-center">
+                              <div className="flex items-center gap-4">
                                 <div className="w-1/6 items-center justify-center text-center">
-                                  <h3 className="text-9xl font-black text-[#ffde59] mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
+                                  <h3 className="md:text-9xl text-6xl font-black text-[#ffde59] mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
                                     {detail.name[0]}
                                   </h3>
                                 </div>
                                 <div>
-                                  <h3 className="text-3xl font-bold text-white mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
+                                  <h3 className="md:text-3xl text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-[#ffde59] transition-colors">
                                     {detail.name}
                                   </h3>
                                   
                                   {detail.description && (
-                                    <p className="text-white text-lg leading-relaxed mb-4 whitespace-pre-line line-clamp-4">
+                                    <p className="text-white md:text-lg text-sm leading-relaxed mb-4 whitespace-pre-line line-clamp-4">
                                       {detail.description}
                                     </p>
                                   )}
@@ -857,12 +857,12 @@ export default function QualityTrainingPage() {
                           const isLastPairWithOneItem = pairIndex === pairs.length - 1 && pair.length === 1
                           return (
                             <div key={pairIndex} className={`w-full bg-gradient-to-r ${theme.wrapper}`}>
-                              <div className="p-16 px-48">
+                              <div className="p-16 md:px-48 px-4">
                                 <div className={`grid gap-6 ${isLastPairWithOneItem ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
                               {pair.map((d) => (
                                 <div key={d.id} className={isLastPairWithOneItem ? 'w-full' : ''}>
                                   <div className={`rounded-2xl border border-white/20 shadow-lg overflow-hidden bg-gradient-to-b ${theme.wrapper}`}>
-                                    <h4 className="text-white font-bold text-3xl justify-center text-center my-4">{d.name}</h4>
+                                    <h4 className="text-white font-bold md:text-3xl text-xl justify-center text-center my-4">{d.name}</h4>
 
                                     {/* Responsive 16:9 iframe using padding-bottom hack for broader support */}
                                     <div className="relative w-full pb-[56.25%]">
@@ -907,14 +907,14 @@ export default function QualityTrainingPage() {
                            <div className="flex flex-col">
                                <div className="flex items-center justify-center gap-3 mb-4">
                                  <Check className="h-10 w-10 text-white bg-green-600 rounded-full flex-shrink-0 p-1" />
-                                 <h3 className="text-4xl font-black text-white">{firstDetail.name}</h3>
+                                 <h3 className="md:text-4xl text-2xl font-black text-white">{firstDetail.name}</h3>
                                </div>
  
                              {/* First Detail - Do's (with Check icon) */}
                              <div className="bg-white rounded-lg p-6 px-12 shadow-sm border border-gray-200 flex-1 flex flex-col">
                               <div>
                                 {firstDetail.description && (
-                                  <p className="text-[#064379] text-lg font-bold leading-10 whitespace-pre-line">
+                                  <p className="text-[#064379] md:text-lg text-sm font-bold md:leading-10 leading-7 whitespace-pre-line">
                                     {firstDetail.description}
                                   </p>
                                 )}
@@ -978,12 +978,12 @@ export default function QualityTrainingPage() {
                            <div className="flex flex-col">
                              <div className="flex items-center justify-center gap-3 mb-4">
                                  <X className="h-10 w-10 text-white bg-red-600 rounded-full flex-shrink-0 p-1" />
-                                 <h3 className="text-4xl font-black text-white">{secondDetail.name}</h3>
+                                 <h3 className="md:text-4xl text-2xl font-black text-white">{secondDetail.name}</h3>
                                </div>
                              
                              <div className="bg-white rounded-lg p-6 px-12 shadow-sm border border-gray-200 flex-1 flex flex-col">
                               {secondDetail.description && (
-                                <p className="text-[#064379] text-lg font-bold leading-10 whitespace-pre-line">
+                                <p className="text-[#064379] md:text-lg text-sm font-bold md:leading-10 leading-7 whitespace-pre-line">
                                   {secondDetail.description}
                                 </p>
                               )}
@@ -1060,7 +1060,7 @@ export default function QualityTrainingPage() {
                               className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors duration-200"
                             >
                               <div className="flex items-start gap-4 flex-1">
-                                <h3 className="text-lg font-black text-[#064379] flex-1">
+                                <h3 className="md:text-lg text-base font-black text-[#064379] flex-1">
                                   {detail.name}
                                 </h3>
                               </div>

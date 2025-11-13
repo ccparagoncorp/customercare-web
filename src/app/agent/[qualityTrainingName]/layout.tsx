@@ -6,7 +6,7 @@ export default function KnowledgeLayout({
   children: React.ReactNode
 }) {
   return <Layout>
-    <div className="py-6">
+    <div className="md:py-6 py-2">
       {children}
     </div>
   </Layout>

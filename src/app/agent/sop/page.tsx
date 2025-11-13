@@ -12,8 +12,8 @@ export default function SOPPage() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center">
-                <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{sopContent.page.title}</h1>
-                <p className="text-xl text-[#ffde59]">
+                <h1 className="md:text-6xl text-3xl font-bold text-[#ffde59] mb-4">{sopContent.page.title}</h1>
+                <p className="md:text-xl text-md text-[#ffde59]">
                   {sopContent.page.description}
                 </p>
               </div>

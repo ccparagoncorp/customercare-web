@@ -68,11 +68,11 @@ export default function ProductsPage() {
         <div className="p-6 mt-12">
           <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
-              <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{productsContent.products.title}</h1>
-              <p className="text-xl text-[#ffde59]">{productsContent.products.subtitle}</p>
+              <h1 className="text-3xl md:text-6xl font-bold text-[#ffde59] mb-4">{productsContent.products.title}</h1>
+              <p className="text-md md:text-xl text-[#ffde59]">{productsContent.products.subtitle}</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-12 mx-48 my-24">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:gap-12 gap-4 mx-4 md:mx-48 my-24">
             {brands.map((brand) => {
               const palette = generateColorPalette(brand.colorbase || "#03438f")
               return (

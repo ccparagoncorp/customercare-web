@@ -55,32 +55,13 @@ export function Sidebar({ isOpen = false, onToggle }: SidebarProps) {
 
   return (
     <div 
-      className={`z-100 bg-gradient-to-b from-white to-gray-50 shadow-xl border-r border-gray-200 transition-all duration-300 ${isHovered ? 'w-60' : 'w-18'} h-screen flex flex-col fixed left-0 top-0 z-40`}
+      className={`z-50 bg-gradient-to-b from-white to-gray-50 shadow-xl border-r border-gray-200 transition-all duration-300 ${isHovered ? 'w-60' : 'w-18'} h-screen flex flex-col fixed left-0 top-0 z-40`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-3">
-        <div className="flex items-center justify-center overflow-hidden">
-          <div className="relative flex items-center justify-center" style={{ width: '133px', height: '39px' }}>
-            <Image
-              src="/logomini.png"
-              alt="Logo"
-              width={39}
-              height={39}
-              className="absolute rounded-lg transition-opacity duration-90 delay-100"
-              style={{ opacity: isHovered ? 0 : 1 }}
-            />
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={133}
-              height={39}
-              className="absolute rounded-lg transition-opacity duration-90 delay-100"
-              style={{ opacity: isHovered ? 1 : 0 }}
-            />
-          </div>
-        </div>
+      <div className="border-b border-gray-200 bg-white px-4 py-7">
+
       </div>
 
       {/* Navigation Menu */}
@@ -149,7 +130,7 @@ export function Sidebar({ isOpen = false, onToggle }: SidebarProps) {
               </span>
               {isActive && isHovered && (
                 <div className="ml-auto flex-shrink-0">
-                  <div className="w-2 h-2 bg-white rounded-full opacity-80"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-fade-in-dot"></div>
                 </div>
               )}
             </Link>

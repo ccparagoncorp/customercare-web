@@ -171,4 +171,3 @@ export function QualityTrainingSubmenu({ isHovered, isActive: externalIsActive }
     </div>
   )
 }
-

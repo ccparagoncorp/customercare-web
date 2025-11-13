@@ -51,10 +51,10 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-16 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse rounded-2xl w-1/3" />
+        <div className="md:h-16 h-12 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse rounded-2xl w-1/3" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse rounded-2xl" />
+            <div key={i} className="md:h-48 h-32 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse rounded-2xl" />
           ))}
         </div>
       </div>
@@ -65,7 +65,7 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
     return (
       <div className="text-center py-16">
         <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
-          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <FileText className="md:w-16 h-12 w-12 md:h-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">{sopContent.kategori.notFound}</p>
         </div>
       </div>
@@ -84,7 +84,7 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
             href="/agent/sop"
             className="inline-flex items-center text-white/90 hover:text-white transition-colors group"
           >
-            <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="md:w-5 h-4 md:h-5 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             <span className="font-medium">{sopContent.kategori.back}</span>
           </Link>
           <TracerButton href={`/agent/sop/${slugify(kategoriSOP)}/tracer`} className="" />
@@ -92,9 +92,9 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
         
         {/* Title & Description */}
         <div>
-          <h1 className="text-4xl font-bold text-white mb-3">{kategori.name}</h1>
+          <h1 className="md:text-4xl text-2xl font-bold text-white mb-3">{kategori.name}</h1>
           {kategori.description && (
-            <p className="text-white/90 text-lg leading-relaxed max-w-3xl">{kategori.description}</p>
+            <p className="text-white/90 md:text-lg text-md leading-relaxed max-w-3xl">{kategori.description}</p>
           )}
         </div>
       </div>

@@ -14,8 +14,8 @@ export function TracerButton({ href, className = "" }: TracerButtonProps) {
       href={href}
       className={`inline-flex items-center gap-2 px-4 py-2 bg-[#ffde59] text-white rounded-lg hover:bg-[#ffde59]/30 transition-colors shadow-sm hover:shadow-md ${className}`}
     >
-      <History className="w-4 h-4" />
-      <span className="text-[#121269] font-medium">Tracer Updates</span>
+      <History className="md:w-4 h-4 w-3 md:h-4" />
+      <span className="text-[#121269] font-medium hidden md:block">Tracer Updates</span>
     </Link>
   )
 }

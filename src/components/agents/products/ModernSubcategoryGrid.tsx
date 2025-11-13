@@ -65,7 +65,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
   if (loading) {
     return (
       <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 gap-2">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="group">
               <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-200 aspect-square">
@@ -161,7 +161,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
           </div>
         </div>
         {/* Grid (match brand grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-8 gap-2">
           {validSubcategories.map((subcategory) => {
             const totalProducts = subcategory.produks?.length || 0
 
@@ -244,7 +244,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
   // If no subcategories, show products directly
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 gap-2">
         {category.subkategoriProduks.flatMap(subcategory => 
           subcategory.produks.map(product => (
             <Link key={product.id} href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(subcategory.name.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, '-'))}`}>
@@ -252,7 +252,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
                 {/* Image Container */}
                 <div className="relative aspect-square overflow-hidden">
                   <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
-                    <Package className="h-16 w-16 text-gray-400" />
+                    <Package className="md:h-16 h-12 md:w-16 w-12 text-gray-400" />
                   </div>
                   
                   {/* Overlay */}
@@ -260,7 +260,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
                   
                   {/* Status Badge */}
                   <div className="absolute top-3 right-3">
-                    <div className="px-2 py-1 rounded-full text-xs font-medium" style={{ background: `${palette.primary}12`, color: palette.primary }}>
+                    <div className="px-2 py-1 rounded-full md:text-xs text-[8px] font-medium" style={{ background: `${palette.primary}12`, color: palette.primary }}>
                       <Star className="h-3 w-3 inline mr-1" />
                       {product.status}
                     </div>
@@ -269,7 +269,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
 
                 {/* Content */}
                 <div className="p-5">
-                  <h3 className="text-lg font-semibold text-gray-900 transition-colors duration-300 mb-2" style={{}}>
+                  <h3 className="md:text-lg text-[10px] font-semibold text-gray-900 transition-colors duration-300 mb-2" style={{}}>
                     {product.name}
                   </h3>
                 </div>
@@ -277,9 +277,9 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
                 {/* Hover Action */}
                 <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="flex items-center justify-center w-full py-2 px-4 text-white rounded-lg text-sm font-medium" style={{ background: `linear-gradient(135deg, ${palette.primary}, ${palette.primaryDark})` }}>
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="md:h-4 h-2 md:w-4 w-2 mr-2" />
                     View Details
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="md:h-4 h-2 md:w-4 w-2 ml-2 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </div>

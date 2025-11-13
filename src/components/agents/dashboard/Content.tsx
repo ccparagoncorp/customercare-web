@@ -26,7 +26,7 @@ interface TimelineItemState {
 export function Content() {
   const { user } = useAuth()
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4">
 
       {/* Main Banner */}
       <div className="relative bg-gradient-to-r from-[#03438f] to-[#025a9b] overflow-hidden shadow-lg border-b-32 border-[#03438f]">
@@ -40,7 +40,7 @@ export function Content() {
         />
           {/* <Image src="/bg.png" alt="banner" width={1000} height={1000} className="w-full h-full object-cover"/> */}
         {/* </div> */}
-        <div className="relative p-32 text-white">
+        <div className="relative md:p-32 py-20 px-12 text-white">
           <div className="flex items-center text-center justify-between">
             <div className="flex-1">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2">Halo, {user?.name.split(' ')[0]}, {dashboardContent.dashboard.welcome}</h2>
@@ -418,7 +418,7 @@ function DNACustomerCareSection() {
                 onClick={handlePrevious}
                 className={`absolute z-10 text-[#064379] hover:text-[#0259b7] transition-colors cursor-pointer ${
                   isMobileTimeline
-                    ? 'left-6 top-1/2 -translate-y-1/2 w-12 h-12'
+                    ? 'left-6 top-2/7 -translate-y-1/2 w-12 h-12'
                     : 'left-24 top-1/4 -translate-y-1/2 -translate-x-4 w-16 h-16'
                 }`}
                 aria-label="Previous year"
@@ -429,7 +429,7 @@ function DNACustomerCareSection() {
                 onClick={handleNext}
                 className={`absolute z-10 text-[#064379] hover:text-[#0259b7] transition-colors cursor-pointer ${
                   isMobileTimeline
-                    ? 'right-6 top-1/2 -translate-y-1/2 w-12 h-12'
+                    ? 'right-6 top-2/7 -translate-y-1/2 w-12 h-12'
                     : 'right-24 top-1/4 -translate-y-1/2 translate-x-4 w-16 h-16'
                 }`}
                 aria-label="Next year"
@@ -437,7 +437,7 @@ function DNACustomerCareSection() {
               />
 
               {/* Timeline Circles */}
-              <div className="relative h-36 mb-8">
+              <div className="relative h-36 mb-0 md:mb-8">
                 {items.map((item) => {
                   const isActive = item.position === 'center'
                   const opacity =
@@ -464,7 +464,7 @@ function DNACustomerCareSection() {
                       }}
                     >
                       <div
-                        className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-white font-bold shadow-lg  ${
+                        className={`w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center text-white font-bold shadow-lg  ${
                           isActive ? 'bg-gradient-to-br from-[#064379] to-[#0259b7] ring-4 ring-[#0259b7]/30 text-xl' : 'bg-gradient-to-br from-[#0643796b] to-[#025ab78a]'
                         }`}
                       >
@@ -623,7 +623,7 @@ function ParagonValuesIdentitySection() {
 
         {/* Right Panel */}
         <div
-          className={`${panelBaseClasses} min-h-[500px] lg:min-h-[640px]`}
+          className={`${panelBaseClasses} min-h-[580px] lg:min-h-[640px]`}
           style={{
             background:
               'linear-gradient(270deg, #0d4190 0%, #58d1e6 100%)',

@@ -112,7 +112,7 @@ export function BrandBackgroundSection({ brandName }: BrandBackgroundSectionProp
   const youtubeId = youtubeUrl ? getYouTubeId(youtubeUrl) : null
 
   return (
-    <div className="relative h-[500px] w-full overflow-hidden">
+    <div className="relative md:h-[500px] h-[200px] w-full overflow-hidden">
       {/* Background Media */}
       {youtubeId ? (
         <div className="absolute inset-0 overflow-hidden">

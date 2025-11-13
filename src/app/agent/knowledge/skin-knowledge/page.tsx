@@ -222,18 +222,18 @@ export default function SkinKnowledgePage() {
         <div className="text-center relative">
           {/* Tracer Button - Top Right */}
           {knowledge && (
-            <div className="absolute top-0 right-0">
+            <div className="absolute md:top-0 md:right-0 top-0 right-0">
               <Link 
                 href={`/agent/knowledge/${knowledgeSlug}/tracer`}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm bg-[#ffde59]/20 hover:bg-[#ffde59]/30 border border-[#ffde59]/30 text-[#ffde59]"
               >
                 <History className="w-4 h-4" />
-                <span className="text-sm font-medium">Tracer Updates</span>
+                <span className="text-sm font-medium hidden md:block">Tracer Updates</span>
               </Link>
             </div>
           )}
           
-          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{knowledge.title || content.title}</h1>
+          <h1 className="text-3xl md:text-6xl font-bold text-[#ffde59] mb-4 mx-24">{knowledge.title || content.title}</h1>
         </div>
       </div>
 
@@ -243,7 +243,7 @@ export default function SkinKnowledgePage() {
           {/* LEFT SECTION - Main Knowledge Image and Description */}
           {(knowledge.logos || knowledge.description) && (
             <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 p-8 flex-1 h-155 w-full">
-              <h2 className="text-3xl font-bold text-[#064379] mb-2 flex items-center">
+              <h2 className="text-xl md:text-3xl font-bold text-[#064379] mb-2 flex items-center">
                 <FileText className="h-8 w-8 mr-3" />
                 {content.knowledgeDetails.title}
               </h2>

@@ -241,6 +241,21 @@ body {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Fade In for active indicator dot */
+@keyframes fadeInDot {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
+}
+
+.animate-fade-in-dot {
+  animation: fadeInDot 0.05s ease-in-out 0.05s forwards;
+  opacity: 0;
+}
+
 /* Slide animations for timeline */
 @keyframes slideInLeft {
   0% {

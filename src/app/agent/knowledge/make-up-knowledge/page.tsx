@@ -305,17 +305,17 @@ export default function MakeUpKnowledgePage() {
       <div className="bg-[repeating-linear-gradient(135deg,#23519c_0%,#398dff_25%,#23519c_50%)] rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center relative">
           {/* Tracer Button - Top Right */}
-          <div className="absolute top-0 right-0">
+          <div className="absolute md:top-0 md:right-0 top-0 right-0">
             <Link 
               href={`/agent/knowledge/${knowledgeSlug}/tracer`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm bg-[#ffde59]/20 hover:bg-[#ffde59]/30 border border-[#ffde59]/30 text-[#ffde59]"
             >
               <History className="w-4 h-4" />
-              <span className="text-sm font-medium">Tracer Updates</span>
+              <span className="text-sm font-medium hidden md:block">Tracer Updates</span>
             </Link>
           </div>
           
-          <h1 className="text-6xl font-bold text-[#ffde59] mb-4">{knowledge.title || content.title}</h1>
+          <h1 className="text-3xl md:text-6xl font-bold text-[#ffde59] mb-4 mx-8">{knowledge.title || content.title}</h1>
         </div>
       </div>
       

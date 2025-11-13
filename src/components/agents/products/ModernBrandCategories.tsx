@@ -77,7 +77,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
         </div>
         
         {/* Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="group">
               <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg border border-gray-100 aspect-square">
@@ -185,7 +185,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
       </div>
 
       {/* Enhanced Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-8 gap-2">
         {validCategories.map((category) => {
           // Filter out invalid subcategories when counting products
           const validSubcategories = (category.subkategoriProduks || []).filter(
@@ -261,13 +261,13 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
                   {/* Floating Stats */}
                   <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
                     <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
-                      <div className="flex items-center justify-between text-xs text-gray-600">
+                      <div className="flex items-center justify-between text-[8px] md:text-xs text-gray-600">
                         <div className="flex items-center">
-                          <Package className="h-3 w-3 mr-1" />
+                          <Package className="md:h-3 h-2 md:w-3 w-2 mr-1" />
                           <span className="font-semibold">{totalProducts} Products</span>
                         </div>
                         <div className="flex items-center">
-                          <Layers className="h-3 w-3 mr-1" />
+                          <Layers className="md:h-3 h-2 md:w-3 w-2 mr-1" />
                           <span className="font-semibold">{category.subkategoriProduks?.length || 0} Subcategories</span>
                         </div>
                       </div>
@@ -294,7 +294,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
                 {/* Enhanced Action Button */}
                 <div className="px-6 pb-6">
                   <div 
-                    className={`flex items-center justify-center w-full py-3 px-4 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                    className={`flex items-center justify-center w-full py-3 px-4 rounded-2xl md:text-sm text-[8px] font-semibold transition-all duration-300 ${
                       isCurrentCategory 
                         ? 'text-white shadow-lg' 
                         : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 group-hover:text-white group-hover:shadow-lg'
@@ -315,9 +315,9 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
                       }
                     }}
                   >
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="md:h-4 h-2 md:w-4 w-2 mr-2" />
                     {isCurrentCategory ? 'Viewing Now' : 'Explore Category'}
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="md:h-4 h-2 md:w-4 w-2 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </div>
               </div>

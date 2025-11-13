@@ -111,7 +111,7 @@ export function SubcategoryBackgroundSection({ brandName, categoryName, subcateg
   const backgroundImage = subcategory.images && subcategory.images.length > 1 ? subcategory.images[1] : null
 
   return (
-    <div className="relative h-[500px] w-full overflow-hidden">
+    <div className="relative md:h-[500px] h-[200px] w-full overflow-hidden">
       {/* Background Media to match CategoryBackgroundSection */}
       {youtubeId ? (
         <div className="absolute inset-0 overflow-hidden">

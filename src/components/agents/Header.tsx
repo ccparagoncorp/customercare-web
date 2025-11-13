@@ -7,6 +7,7 @@ import { useAuth } from "../auth/AuthProvider"
 import { NotificationDropdown } from "./NotificationDropdown"
 import { SearchDropdown } from "./SearchDropdown"
 import dashboardContent from "@/content/agent/dashboard.json"
+import Image from "next/image"
 
 export function Header() {
   const router = useRouter()
@@ -140,7 +141,22 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200 px-6 py-2">
       <div className="flex items-center justify-between">
 
-        <div>
+        <div className="flex items-center justify-center">
+          <Image
+              src="/logo.png"
+              alt="Logo"
+              width={140}
+              height={39}
+              className="hidden lg:block"
+            />
+            <Image
+              src="/logomini.png"
+              alt="Logo kecil"
+              width={40}
+              height={28}
+              className="block lg:hidden" // tampil di layar kecil (sm–md)
+              priority
+            />
         </div>
 
         {/* Search Bar */}
