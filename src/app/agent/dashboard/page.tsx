@@ -15,7 +15,9 @@ export default function DashboardPage() {
       <main className="ml-12 mt-9 w-full">
         <Content />
       </main>
-      <FooterSection />
+      <div className="ml-18">
+        <FooterSection />
+      </div>
     </ProtectedRoute>
   )
 }
