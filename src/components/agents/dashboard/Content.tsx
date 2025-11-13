@@ -386,9 +386,9 @@ function DNACustomerCareSection() {
   return (
     <div className="my-16 lg:my-24">
       {/* Header */}
-      <div className="px-4 lg:px-8 py-6 lg:py-8">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl mb-4 font-extrabold text-[#064379]">{dnaData.title}</h2>
-      </div>
+      {/* <div className="px-4 lg:px-8 py-6 lg:py-8"> */}
+        {/* <h2 className="text-3xl md:text-4xl lg:text-5xl mb-4 font-extrabold text-[#064379]">{dnaData.title}</h2> */}
+      {/* </div> */}
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-0">
