@@ -199,7 +199,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
                     </div>
                   
                     {/* Floating Stats -- tampil di atas gambar */}
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 z-20">
+                    {/* <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 z-20">
                       <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
                         <div className="flex items-center justify-between text-xs text-gray-600">
                           <div className="flex items-center">
@@ -208,7 +208,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Content -- p-6, title bold */}
