@@ -165,38 +165,85 @@ export async function GET(request: NextRequest) {
           kategoriProduk: {
             select: {
               name: true,
+              brand: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
           subkategoriProduk: {
             select: {
               name: true,
+              kategoriProduk: {
+                select: {
+                  name: true,
+                  brand: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
       })
 
-      products.forEach((product: { id: string; name: string; description: string | null; kapasitas: string | null; status: string | null; brand?: { name: string } | null; kategoriProduk?: { name: string } | null; subkategoriProduk?: { name: string } | null }) => {
+      products.forEach((product: { id: string; name: string; description: string | null; kapasitas: string | null; status: string | null; brand?: { name: string } | null; kategoriProduk?: { name: string; brand?: { name: string } | null } | null; subkategoriProduk?: { name: string; kategoriProduk?: { name: string; brand?: { name: string } | null } | null } | null }) => {
         let link = '/agent/products'
         
-        // Build link path berdasarkan data yang tersedia
-        if (product.brand && product.brand.name) {
-          const brandSlug = product.brand.name.toLowerCase().trim().replace(/\s+/g, '-')
+        // Logic baru: mulai dari subcategory, naik ke category, lalu ke brand
+        let subcategoryName: string | null = null
+        let categoryName: string | null = null
+        let brandName: string | null = null
+        
+        // Prioritas 1: Cek apakah punya subcategory
+        if (product.subkategoriProduk?.name) {
+          // Simpan subcategory
+          subcategoryName = product.subkategoriProduk.name
           
-          if (product.kategoriProduk && product.kategoriProduk.name) {
-            const categorySlug = product.kategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
+          // Dari subcategory, ambil category
+          if (product.subkategoriProduk.kategoriProduk?.name) {
+            categoryName = product.subkategoriProduk.kategoriProduk.name
             
-            if (product.subkategoriProduk && product.subkategoriProduk.name) {
-              // Full path: brand/category/subcategory/product
-              const subcategorySlug = product.subkategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
-              link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}`
-            } else {
-              // Path tanpa subcategory: brand/category/product
-              link = `/agent/products/${brandSlug}/${categorySlug}`
+            // Dari category, ambil brand
+            if (product.subkategoriProduk.kategoriProduk.brand?.name) {
+              brandName = product.subkategoriProduk.kategoriProduk.brand.name
             }
-          } else {
-            // Path hanya brand jika tidak ada category
-            link = `/agent/products/${brandSlug}`
           }
+        }
+        // Prioritas 2: Jika tidak ada subcategory, mulai dari category
+        else if (product.kategoriProduk?.name) {
+          // Simpan category
+          categoryName = product.kategoriProduk.name
+          
+          // Dari category, ambil brand
+          if (product.kategoriProduk.brand?.name) {
+            brandName = product.kategoriProduk.brand.name
+          }
+        }
+        // Prioritas 3: Jika tidak ada category, langsung ke brand
+        else if (product.brand?.name) {
+          brandName = product.brand.name
+        }
+        
+        // Rangkai link berdasarkan data yang tersedia
+        if (subcategoryName && categoryName && brandName) {
+          // Full path: brand/category/subcategory
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          const categorySlug = categoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          const subcategorySlug = subcategoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}`
+        } else if (categoryName && brandName) {
+          // Path tanpa subcategory: brand/category
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          const categorySlug = categoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}/${categorySlug}`
+        } else if (brandName) {
+          // Path hanya brand: brand
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}`
         }
 
         results.push({
@@ -207,9 +254,9 @@ export async function GET(request: NextRequest) {
           link,
           metadata: {
             table: 'produks',
-            brand: product.brand?.name,
-            category: product.kategoriProduk?.name,
-            subcategory: product.subkategoriProduk?.name,
+            brand: brandName || product.brand?.name,
+            category: categoryName || product.kategoriProduk?.name,
+            subcategory: subcategoryName || product.subkategoriProduk?.name,
             status: product.status,
           },
         })
@@ -239,11 +286,26 @@ export async function GET(request: NextRequest) {
               kategoriProduk: {
                 select: {
                   name: true,
+                  brand: {
+                    select: {
+                      name: true,
+                    },
+                  },
                 },
               },
               subkategoriProduk: {
                 select: {
                   name: true,
+                  kategoriProduk: {
+                    select: {
+                      name: true,
+                      brand: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -251,31 +313,61 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      detailProducts.forEach((detailProduct: { id: string; name: string; detail: string; produk: { id: string; name: string; brand?: { name: string } | null; kategoriProduk?: { name: string } | null; subkategoriProduk?: { name: string } | null } }) => {
+      detailProducts.forEach((detailProduct: { id: string; name: string; detail: string; produk: { id: string; name: string; brand?: { name: string } | null; kategoriProduk?: { name: string; brand?: { name: string } | null } | null; subkategoriProduk?: { name: string; kategoriProduk?: { name: string; brand?: { name: string } | null } | null } | null } }) => {
         const product = detailProduct.produk
         let link = '/agent/products'
         
-        // Build link path berdasarkan data yang tersedia
-        if (product.brand && product.brand.name) {
-          const brandSlug = product.brand.name.toLowerCase().trim().replace(/\s+/g, '-')
+        // Logic baru: mulai dari subcategory, naik ke category, lalu ke brand
+        let subcategoryName: string | null = null
+        let categoryName: string | null = null
+        let brandName: string | null = null
+        
+        // Prioritas 1: Cek apakah punya subcategory
+        if (product.subkategoriProduk?.name) {
+          // Simpan subcategory
+          subcategoryName = product.subkategoriProduk.name
           
-          if (product.kategoriProduk && product.kategoriProduk.name) {
-            const categorySlug = product.kategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
+          // Dari subcategory, ambil category
+          if (product.subkategoriProduk.kategoriProduk?.name) {
+            categoryName = product.subkategoriProduk.kategoriProduk.name
             
-            if (product.subkategoriProduk && product.subkategoriProduk.name) {
-              // Full path: brand/category/subcategory/product
-              const subcategorySlug = product.subkategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
-              const productSlug = product.name.toLowerCase().trim().replace(/\s+/g, '-')
-              link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}/${productSlug}`
-            } else {
-              // Path tanpa subcategory: brand/category/product
-              const productSlug = product.name.toLowerCase().trim().replace(/\s+/g, '-')
-              link = `/agent/products/${brandSlug}/${categorySlug}/${productSlug}`
+            // Dari category, ambil brand
+            if (product.subkategoriProduk.kategoriProduk.brand?.name) {
+              brandName = product.subkategoriProduk.kategoriProduk.brand.name
             }
-          } else {
-            // Path hanya brand jika tidak ada category
-            link = `/agent/products/${brandSlug}`
           }
+        }
+        // Prioritas 2: Jika tidak ada subcategory, mulai dari category
+        else if (product.kategoriProduk?.name) {
+          // Simpan category
+          categoryName = product.kategoriProduk.name
+          
+          // Dari category, ambil brand
+          if (product.kategoriProduk.brand?.name) {
+            brandName = product.kategoriProduk.brand.name
+          }
+        }
+        // Prioritas 3: Jika tidak ada category, langsung ke brand
+        else if (product.brand?.name) {
+          brandName = product.brand.name
+        }
+        
+        // Rangkai link berdasarkan data yang tersedia
+        if (subcategoryName && categoryName && brandName) {
+          // Full path: brand/category/subcategory
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          const categorySlug = categoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          const subcategorySlug = subcategoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}`
+        } else if (categoryName && brandName) {
+          // Path tanpa subcategory: brand/category
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          const categorySlug = categoryName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}/${categorySlug}`
+        } else if (brandName) {
+          // Path hanya brand: brand
+          const brandSlug = brandName.toLowerCase().trim().replace(/\s+/g, '-')
+          link = `/agent/products/${brandSlug}`
         }
 
         results.push({
@@ -287,9 +379,9 @@ export async function GET(request: NextRequest) {
           metadata: {
             table: 'detail_produks',
             product: product.name,
-            brand: product.brand?.name,
-            category: product.kategoriProduk?.name,
-            subcategory: product.subkategoriProduk?.name,
+            brand: brandName || product.brand?.name,
+            category: categoryName || product.kategoriProduk?.name,
+            subcategory: subcategoryName || product.subkategoriProduk?.name,
           },
         })
       })
