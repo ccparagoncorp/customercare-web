@@ -188,12 +188,10 @@ export async function GET(request: NextRequest) {
             if (product.subkategoriProduk && product.subkategoriProduk.name) {
               // Full path: brand/category/subcategory/product
               const subcategorySlug = product.subkategoriProduk.name.toLowerCase().trim().replace(/\s+/g, '-')
-              const productSlug = product.name.toLowerCase().trim().replace(/\s+/g, '-')
-              link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}/${productSlug}`
+              link = `/agent/products/${brandSlug}/${categorySlug}/${subcategorySlug}`
             } else {
               // Path tanpa subcategory: brand/category/product
-              const productSlug = product.name.toLowerCase().trim().replace(/\s+/g, '-')
-              link = `/agent/products/${brandSlug}/${categorySlug}/${productSlug}`
+              link = `/agent/products/${brandSlug}/${categorySlug}`
             }
           } else {
             // Path hanya brand jika tidak ada category
