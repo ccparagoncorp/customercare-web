@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ChevronRight, ArrowLeft, FileText, ListChecks } from "lucide-react"
+import { ChevronRight, ArrowLeft, FileText, ListChecks, ExternalLink } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
 import { TracerButton } from "../TracerButton"
 
@@ -10,6 +10,7 @@ interface SOP {
   id: string
   name: string
   description: string | null
+  link: string | null
   jenisSOPs: Array<{
     id: string
     name: string
@@ -74,6 +75,14 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
 
   const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
 
+  const formatLink = (url?: string | null) => {
+    if (!url) return "#"
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url
+    }
+    return `https://${url}`
+  }
+
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -133,7 +142,7 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
                   {sop.description}
                 </p>
               )}
-              
+             
               {/* Stats */}
               <div className="flex items-center justify-between pt-4 border-t border-gray-100 group-hover:border-[#0259b7]/20 transition-colors">
                 <div className="flex items-center gap-2 text-sm">

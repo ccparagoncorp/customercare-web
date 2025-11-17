@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, FileText, CheckCircle2, ImageIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react"
+import { ArrowLeft, FileText, CheckCircle2, ImageIcon, Copy, Check, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
 import { TracerButton } from "../TracerButton"
 
@@ -18,6 +18,7 @@ interface JenisSOP {
   name: string
   content: string | null
   images: string[]
+  link: string | null
   detailSOPs: DetailSOP[]
 }
 
@@ -25,6 +26,7 @@ interface SOP {
   id: string
   name: string
   description: string | null
+  link: string | null
   kategoriSOP: {
     id: string
     name: string
@@ -81,6 +83,91 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
     } catch {
       // noop
     }
+  }
+
+  const formatLink = (url?: string | null) => {
+    if (!url) return "#"
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url
+    }
+    return `https://${url}`
+  }
+
+  const getEmbedUrl = (url?: string | null) => {
+    if (!url) return null
+    let normalized = url.trim()
+    if (!normalized.startsWith("http://") && !normalized.startsWith("https://")) {
+      normalized = `https://${normalized}`
+    }
+
+    const slideMatch = normalized.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/)
+    if (slideMatch) {
+      return `https://docs.google.com/presentation/d/${slideMatch[1]}/embed?start=false&loop=false&delayms=3000`
+    }
+
+    const docMatch = normalized.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/)
+    if (docMatch) {
+      return `https://docs.google.com/document/d/${docMatch[1]}/preview`
+    }
+
+    const sheetMatch = normalized.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/)
+    if (sheetMatch) {
+      return `https://docs.google.com/spreadsheets/d/${sheetMatch[1]}/preview`
+    }
+
+    const driveMatch = normalized.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/)
+    if (driveMatch) {
+      return `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+    }
+
+    return normalized
+  }
+
+  const renderLinkPreview = (link?: string | null, title?: string, variant: "sop" | "jenis" = "sop") => {
+    if (!link) return null
+    const embedUrl = getEmbedUrl(link)
+    if (!embedUrl) return null
+
+    const containerClasses =
+      variant === "sop"
+        ? "mt-6 bg-white/10 border border-white/30 rounded-2xl p-4 backdrop-blur"
+        : "px-8 py-6 border-b border-gray-100 bg-gray-50/60"
+
+    return (
+      <div className={containerClasses}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className={`text-sm font-semibold ${variant === "sop" ? "text-white/90" : "text-gray-700"}`}>
+              {title ? ` ${title}` : ""}
+            </p>
+            <p className={`text-xs ${variant === "sop" ? "text-white/70" : "text-gray-500"}`}>
+              Link akan terbuka otomatis ketika diklik
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.open(formatLink(link), "_blank", "noopener,noreferrer")}
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${
+              variant === "sop"
+                ? "border-white/30 text-white hover:bg-white/10"
+                : "border-blue-200 text-blue-700 hover:bg-blue-50"
+            } transition-colors`}
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>Buka Tab Baru</span>
+          </button>
+        </div>
+        <div className="relative w-full pb-[56.25%] rounded-xl overflow-hidden bg-black/10">
+          <iframe
+            src={embedUrl}
+            className="absolute inset-0 w-full h-full border-0 rounded-xl bg-white"
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+      </div>
+    )
   }
 
   if (loading) {
@@ -146,6 +233,7 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
               Total Langkah: {sop.jenisSOPs.reduce((acc, j) => acc + j.detailSOPs.length, 0)}
             </span>
           </div>
+          {renderLinkPreview(sop.link, sop.name, "sop")}
         </div>
       </div>
 
@@ -195,40 +283,45 @@ export function JenisSOPDetail({ kategoriSOP, namaSOP }: JenisSOPDetailProps) {
               </div>
             </div>
 
-            {/* Images Section */}
-            {expandedSections[jenis.id] && jenis.images.length > 0 && (
-              <div className="px-8 py-8 border-b border-gray-100 bg-gray-50/50">
-                <div className="flex items-center gap-2 mb-6">
-                  <ImageIcon className="w-5 h-5 text-[#0259b7]" />
-                  <h3 className="text-lg font-semibold text-gray-900">Galeri</h3>
-                </div>
-                <div className="grid grid-cols-1 gap-6">
-                  {jenis.images.map((image, idx) => (
-                    <div 
-                      key={idx} 
-                      className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300 group cursor-pointer"
-                      onClick={() => window.open(image, '_blank')}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
-                          window.open(image, '_blank')
-                        }
-                      }}
-                      aria-label={`Buka gambar ${idx + 1} di tab baru`}
-                    >
-                      <Image
-                        src={image}
-                        alt={`${jenis.name} - Image ${idx + 1}`}
-                        fill
-                        className="group-hover:scale-101 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            {expandedSections[jenis.id] && (
+              <>
+                {renderLinkPreview(jenis.link, jenis.name, "jenis")}
+                {/* Images Section */}
+                {jenis.images.length > 0 && (
+                  <div className="px-8 py-8 border-b border-gray-100 bg-gray-50/50">
+                    <div className="flex items-center gap-2 mb-6">
+                      <ImageIcon className="w-5 h-5 text-[#0259b7]" />
+                      <h3 className="text-lg font-semibold text-gray-900">Galeri</h3>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="grid grid-cols-1 gap-6">
+                      {jenis.images.map((image, idx) => (
+                        <div 
+                          key={idx} 
+                          className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300 group cursor-pointer"
+                          onClick={() => window.open(image, '_blank')}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              window.open(image, '_blank')
+                            }
+                          }}
+                          aria-label={`Buka gambar ${idx + 1} di tab baru`}
+                        >
+                          <Image
+                            src={image}
+                            alt={`${jenis.name} - Image ${idx + 1}`}
+                            fill
+                            className="group-hover:scale-101 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* DetailSOPs */}
