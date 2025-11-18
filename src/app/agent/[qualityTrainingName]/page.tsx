@@ -55,9 +55,14 @@ export default function QualityTrainingPage() {
     fetchQualityTraining()
   }, [fetchQualityTraining])
 
-  // Handle hash navigation and scroll to section
+  // Check if qualityTrainingName is "Trainer" or "QA Agent"
+  const normalizedName = qualityTrainingName.toLowerCase()
+  const isTrainer = normalizedName === 'trainer'
+  const isQAAgent = normalizedName === 'qa agent' || normalizedName === 'qa-agent'
+
+  // Handle hash navigation and scroll to section - Only for Trainer
   useEffect(() => {
-    if (!qualityTraining || sortedJenisQualityTrainings.length === 0) return
+    if (!isTrainer || !qualityTraining || sortedJenisQualityTrainings.length === 0) return
 
     const hash = window.location.hash.slice(1) // Remove #
     if (hash) {
@@ -80,11 +85,11 @@ export default function QualityTrainingPage() {
         }, 300) // Small delay to ensure DOM is ready
       }
     }
-  }, [qualityTraining, sortedJenisQualityTrainings])
+  }, [isTrainer, qualityTraining, sortedJenisQualityTrainings])
 
-  // Setup Intersection Observer for auto-updating URL hash on scroll
+  // Setup Intersection Observer for auto-updating URL hash on scroll - Only for Trainer
   useEffect(() => {
-    if (!qualityTraining || sortedJenisQualityTrainings.length === 0) return
+    if (!isTrainer || !qualityTraining || sortedJenisQualityTrainings.length === 0) return
 
     // Wait for DOM to be ready
     const setupObserver = () => {
@@ -153,7 +158,7 @@ export default function QualityTrainingPage() {
         observerRef.current.disconnect()
       }
     }
-  }, [qualityTraining, sortedJenisQualityTrainings])
+  }, [isTrainer, qualityTraining, sortedJenisQualityTrainings])
 
   const toggleDetails = (detailId: string) => {
     setExpandedDetails(prev => {
@@ -190,6 +195,16 @@ export default function QualityTrainingPage() {
     }, 100)
   }
 
+  const handleCardClickQAAgent = (jenis: JenisQualityTraining) => {
+    // For QA Agent, just scroll without hash navigation
+    if (sectionRefs.current[jenis.id]) {
+      sectionRefs.current[jenis.id]?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
 
   if (loading) {
     return (
@@ -213,11 +228,6 @@ export default function QualityTrainingPage() {
       </div>
     )
   }
-
-  // Check if qualityTrainingName is "Trainer" or "QA Agent"
-  const normalizedName = qualityTrainingName.toLowerCase()
-  const isTrainer = normalizedName === 'trainer'
-  const isQAAgent = normalizedName === 'qa agent' || normalizedName === 'qa-agent'
 
   return (
     <div className="min-h-screen my-16">
@@ -262,7 +272,7 @@ export default function QualityTrainingPage() {
           {/* Cards Section - QA Agent */}
           <QAAgentCards 
             jenisQualityTrainings={sortedJenisQualityTrainings}
-            onCardClick={handleCardClick}
+            onCardClick={handleCardClickQAAgent}
           />
 
           {/* Sections - QA Agent */}

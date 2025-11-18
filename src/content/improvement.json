@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "title": "Submit Your Improvement",
+    "subtitle": "We value your ideas and suggestions. Share your feedback to help us improve our services.",
+    "backgroundImage": "/contact.png"
+  },
+  "form": {
+    "title": "Share Your Improvement Suggestions",
+    "subtitle": "Your feedback helps us grow. Please choose whether to submit anonymously or include your details.",
+    "successMessage": "Thank you for your improvement suggestion! We appreciate your input.",
+    "errorMessage": "Something went wrong. Please try again later.",
+    "anonymousLabel": "Submit anonymously",
+    "notAnonymousLabel": "Include my details",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "roleLabel": "Role",
+    "rolePlaceholder": "Your role/position",
+    "messageLabel": "Improvement Suggestion",
+    "messagePlaceholder": "Write your improvement suggestion or feedback...",
+    "submitButton": "Submit Improvement"
+  }
+}
+

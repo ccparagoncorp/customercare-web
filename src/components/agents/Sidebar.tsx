@@ -22,7 +22,7 @@ const navigationItems = [
   { icon: Calendar, label: "Scheduling & WFM", href: "/agent/dashboard/scheduling" },
   { icon: Megaphone, label: "Announcements", href: "/agent/dashboard/announcements" },
   { icon: Trophy, label: "Achievements & People", href: "/agent/dashboard/achievements" },
-  { icon: BarChart3, label: "Improvements", href: "/agent/dashboard/improvements" },
+  { icon: BarChart3, label: "Improvements", href: "/agent/improvement" },
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

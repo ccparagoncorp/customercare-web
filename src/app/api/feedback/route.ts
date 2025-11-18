@@ -13,17 +13,29 @@ export async function POST(request: Request) {
     const email = String(data.email || '').trim();
     const subject = String(data.subject || 'New Feedback').trim();
     const message = String(data.message || '').trim();
-    const source = String(data.source || 'contact-form').trim() as 'contact-form' | 'feedback-widget';
+    const role = String(data.role || '').trim();
+    const source = String(data.source || 'contact-form').trim() as 'contact-form' | 'feedback-widget' | 'improvement-form';
     const rating = data.rating ? Number(data.rating) : undefined;
 
-    console.log('Processed fields:', { name, email, subject, messageLength: message.length, source, rating }); // Debug log
+    console.log('Processed fields:', { name, email, subject, role, messageLength: message.length, source, rating }); // Debug log
 
-    if (!name || !email || !message) {
-      return NextResponse.json({
-        ok: false,
-        error: 'Missing required fields',
-        received: { name, email, subject, messageLength: message.length }
-      }, { status: 400 });
+    // Validation - improvement form doesn't require email to be valid
+    if (source === 'improvement-form') {
+      if (!name || !message) {
+        return NextResponse.json({
+          ok: false,
+          error: 'Missing required fields',
+          received: { name, messageLength: message.length }
+        }, { status: 400 });
+      }
+    } else {
+      if (!name || !email || !message) {
+        return NextResponse.json({
+          ok: false,
+          error: 'Missing required fields',
+          received: { name, email, subject, messageLength: message.length }
+        }, { status: 400 });
+      }
     }
 
     // Read SMTP config (supports both SMTP_* and generic HOST/PORT/USER/PASS/SECURE)
@@ -55,9 +67,12 @@ export async function POST(request: Request) {
 
     const html = `
       <div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.6;color:#0f172a">
-        <h2 style="margin:0 0 12px 0;color:#0f172a">New Feedback Submitted</h2>
+        <h2 style="margin:0 0 12px 0;color:#0f172a">New ${source === 'improvement-form' ? 'Improvement' : 'Feedback'} Submitted</h2>
         <p style="margin:0 0 8px 0"><strong>Name:</strong> ${escapeHtml(name)}</p>
-        <p style="margin:0 0 8px 0"><strong>Email:</strong> ${escapeHtml(email)}</p>
+        ${source !== 'improvement-form' ? `<p style="margin:0 0 8px 0"><strong>Email:</strong> ${escapeHtml(email)}</p>` : ''}
+        ${source === 'improvement-form' && role ? `<p style="margin:0 0 8px 0"><strong>Role:</strong> ${escapeHtml(role)}</p>` : ''}
+        ${source === 'contact-form' ? `<p style="margin:0 0 8px 0"><strong>Subject:</strong> ${escapeHtml(subject)}</p>` : ''}
+        ${source === 'feedback-widget' && rating ? `<p style="margin:0 0 8px 0"><strong>Rating:</strong> ${rating}/5</p>` : ''}
         <p style="margin:16px 0 8px 0"><strong>Message:</strong></p>
         <div style="white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:12px;border:1px solid #e2e8f0">${escapeHtml(message)}</div>
       </div>
@@ -65,20 +80,26 @@ export async function POST(request: Request) {
 
     try {
       // Send email
-      await transporter.sendMail({
+      const mailOptions: any = {
         from,
         to,
-        subject: `[Feedback] ${subject}`,
-        replyTo: email,
-        text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+        subject: `[${source === 'improvement-form' ? 'Improvement' : 'Feedback'}] ${subject}`,
+        text: `Name: ${name}${source !== 'improvement-form' ? `\nEmail: ${email}` : ''}${source === 'improvement-form' && role ? `\nRole: ${role}` : ''}\n\n${message}`,
         html,
-      });
+      };
+      
+      // Only add replyTo for non-improvement forms
+      if (source !== 'improvement-form') {
+        mailOptions.replyTo = email;
+      }
+      
+      await transporter.sendMail(mailOptions);
 
       // Save to Google Sheets
       const feedbackData: FeedbackData = {
         name,
         email,
-        title: source === 'contact-form' ? subject : undefined, // hanya untuk contact form
+        title: source === 'contact-form' ? subject : source === 'improvement-form' ? role : undefined, // subject untuk contact form, role untuk improvement form
         rating: source === 'feedback-widget' ? rating : undefined, // hanya untuk feedback widget
         feedback: message,
         source,
@@ -105,7 +126,7 @@ export async function POST(request: Request) {
       const feedbackData: FeedbackData = {
         name,
         email,
-        title: source === 'contact-form' ? subject : undefined, // hanya untuk contact form
+        title: source === 'contact-form' ? subject : source === 'improvement-form' ? role : undefined, // subject untuk contact form, role untuk improvement form
         rating: source === 'feedback-widget' ? rating : undefined, // hanya untuk feedback widget
         feedback: message,
         source,
