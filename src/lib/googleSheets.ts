@@ -66,7 +66,7 @@ export async function saveToGoogleSheets(data: FeedbackData): Promise<void> {
     // Prepare the data row sesuai struktur spreadsheet
     // Untuk improvement-form: Timestamp, Email, Name, Role, Message, Form (6 kolom)
     // Untuk form lain: Timestamp, Email, Name, Title, Rating, Feedback, Source (7 kolom)
-    let values: any[][];
+    let values: (string | number)[][];
     
     if (data.source === 'improvement-form') {
       // Improvement form: 6 kolom (Timestamp, Email, Name, Role, Message, Form)
