@@ -80,7 +80,14 @@ export async function POST(request: Request) {
 
     try {
       // Send email
-      const mailOptions: any = {
+      const mailOptions: {
+        from: string;
+        to: string;
+        subject: string;
+        text: string;
+        html: string;
+        replyTo?: string;
+      } = {
         from,
         to,
         subject: `[${source === 'improvement-form' ? 'Improvement' : 'Feedback'}] ${subject}`,
