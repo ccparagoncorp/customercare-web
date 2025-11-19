@@ -16,9 +16,11 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [profileFoto, setProfileFoto] = useState<string | null>(null)
   const { user, logout } = useAuth()
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const hasFetchedFotoRef = useRef(false)
   
   // Fetch unread notification count
   const fetchUnreadCount = useCallback(async () => {
@@ -104,6 +106,44 @@ export function Header() {
     await logout()
     window.location.href = '/login'
   }
+
+  // Fetch profile foto
+  useEffect(() => {
+    const fetchProfileFoto = async () => {
+      if (!user?.id || hasFetchedFotoRef.current) return
+
+      try {
+        const response = await fetch(`/api/agent/profile?userId=${user.id}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.foto) {
+            setProfileFoto(data.foto)
+          }
+          hasFetchedFotoRef.current = true
+        }
+      } catch (error) {
+        console.error('Error fetching profile foto:', error)
+      }
+    }
+
+    if (user?.id) {
+      fetchProfileFoto()
+    }
+
+    // Listen for profile photo updates (when user uploads new photo)
+    const handleProfileUpdate = () => {
+      hasFetchedFotoRef.current = false
+      if (user?.id) {
+        fetchProfileFoto()
+      }
+    }
+
+    window.addEventListener('profile-photo-updated', handleProfileUpdate)
+
+    return () => {
+      window.removeEventListener('profile-photo-updated', handleProfileUpdate)
+    }
+  }, [user?.id])
 
   // Set up polling for unread count
   useEffect(() => {
@@ -253,9 +293,21 @@ export function Header() {
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="flex items-center space-x-2 text-gray-700 hover:text-[#03438f] transition-colors"
             >
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4" />
-              </div>
+              {profileFoto ? (
+                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
+                  <Image
+                    src={profileFoto}
+                    alt={user?.name || 'User'}
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4" />
+                </div>
+              )}
               <div className="hidden sm:block text-left">
                 <p className="font-medium">{user?.name || 'User'}</p>
               </div>
@@ -265,12 +317,35 @@ export function Header() {
             {/* Dropdown Menu */}
             {userMenuOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
-                  <p className="text-sm text-gray-500">{dashboardContent.header.user.role}</p>
+                <div className="px-4 py-2 border-b border-gray-100 flex items-center space-x-3">
+                  {profileFoto ? (
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
+                      <Image
+                        src={profileFoto}
+                        alt={user?.name || 'User'}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                      <User className="h-5 w-5" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
+                    <p className="text-sm text-gray-500">{dashboardContent.header.user.role}</p>
+                  </div>
                 </div>
                 
-                <button className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
+                <button 
+                  onClick={() => {
+                    setUserMenuOpen(false)
+                    router.push('/agent/profile')
+                  }}
+                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                >
                   <User className="h-4 w-4" />
                   <span>{dashboardContent.header.user.profile}</span>
                 </button>
