@@ -48,16 +48,20 @@ export function BrandGrid() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await fetch('/api/brands')
+        setLoading(true)
+        const response = await fetch('/api/brands', {
+          // Use cache for faster loading
+          next: { revalidate: 300 }
+        })
         if (!response.ok) {
           throw new Error('Failed to fetch brands')
         }
         const data = await response.json()
         setBrands(data)
         setFilteredBrands(data)
+        setLoading(false) // Move before catch to avoid blocking on error
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
         setLoading(false)
       }
     }

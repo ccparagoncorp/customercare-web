@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
+import { unstable_cache } from 'next/cache'
 
 // Helper function to create slug from title
 function createSlug(title: string): string {
@@ -11,29 +12,47 @@ function createSlug(title: string): string {
     .trim()
 }
 
+// Cache quality trainings for 5 minutes - data rarely changes
+const getCachedQualityTrainings = unstable_cache(
+  async () => {
+    const prisma = createPrismaClient()
+    try {
+      const qualityTrainings = await prisma.qualityTraining.findMany({
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+
+      // Add slug to each quality training item
+      const qualityTrainingsWithSlug = qualityTrainings.map(qualityTraining => ({
+        ...qualityTraining,
+        slug: createSlug(qualityTraining.title)
+      }))
+
+      await prisma.$disconnect()
+      return qualityTrainingsWithSlug
+    } catch (error) {
+      await prisma.$disconnect().catch(() => {})
+      throw error
+    }
+  },
+  ['quality-trainings-list'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['quality-trainings']
+  }
+)
+
 export async function GET() {
-  const prisma = createPrismaClient()
-  
   try {
-    const qualityTrainings = await prisma.qualityTraining.findMany({
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-
-    // Add slug to each quality training item
-    const qualityTrainingsWithSlug = qualityTrainings.map(qualityTraining => ({
-      ...qualityTraining,
-      slug: createSlug(qualityTraining.title)
-    }))
-
-    return NextResponse.json(qualityTrainingsWithSlug)
+    const qualityTrainings = await getCachedQualityTrainings()
+    return NextResponse.json(qualityTrainings)
   } catch (error) {
     // Graceful fallback when DB is unreachable or env missing
     const isDbConnectivityIssue = error instanceof Error && (
@@ -53,8 +72,6 @@ export async function GET() {
 
     console.error('Error fetching quality trainings:', error)
     return NextResponse.json({ error: 'Failed to fetch quality trainings' }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 }
 

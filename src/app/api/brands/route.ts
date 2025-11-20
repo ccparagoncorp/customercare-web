@@ -1,33 +1,74 @@
 import { NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
+import { unstable_cache } from 'next/cache'
 
-export async function GET() {
-  const prisma = createPrismaClient()
-  
-  try {
-    const brands = await prisma.brand.findMany({
-      include: {
-        kategoriProduks: {
-          include: {
-            subkategoriProduks: {
-              include: {
-                produks: {
-                  select: {
-                    id: true,
-                    name: true,
-                    status: true
+// Cache brands for 5 minutes (300 seconds) - data rarely changes
+const getCachedBrands = unstable_cache(
+  async () => {
+    const prisma = createPrismaClient()
+    try {
+      // Optimized: select only needed fields
+      const brands = await prisma.brand.findMany({
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          images: true,
+          link_sampul: true,
+          colorbase: true,
+          kategoriProduks: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              images: true,
+              subkategoriProduks: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  images: true,
+                  produks: {
+                    select: {
+                      id: true,
+                      name: true,
+                      status: true
+                    }
                   }
+                }
+              },
+              produks: {
+                select: {
+                  id: true,
+                  name: true,
+                  status: true
                 }
               }
             }
           }
+        },
+        orderBy: {
+          createdAt: 'asc'
         }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      }
-    })
+      })
+      
+      await prisma.$disconnect()
+      return brands
+    } catch (error) {
+      await prisma.$disconnect().catch(() => {})
+      throw error
+    }
+  },
+  ['brands-list'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['brands']
+  }
+)
 
+export async function GET() {
+  try {
+    const brands = await getCachedBrands()
     return NextResponse.json(brands)
   } catch (error) {
     // Check if it's a database connectivity issue
@@ -51,12 +92,5 @@ export async function GET() {
       { error: 'Failed to fetch brands' },
       { status: 500 }
     )
-  } finally {
-    try {
-      await prisma.$disconnect()
-    } catch (disconnectError) {
-      // Ignore disconnect errors
-      console.warn('Error disconnecting Prisma client:', disconnectError)
-    }
   }
 }

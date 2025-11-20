@@ -39,14 +39,17 @@ export default function QualityTrainingPage() {
   const fetchQualityTraining = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch(`/api/quality-training/${encodeURIComponent(qualityTrainingName)}`)
+      const response = await fetch(`/api/quality-training/${encodeURIComponent(qualityTrainingName)}`, {
+        // Cache for faster loading
+        next: { revalidate: 300 }
+      })
       if (response.ok) {
         const data = await response.json()
         setQualityTraining(data)
       }
+      setLoading(false) // Set false after data is loaded, not in finally
     } catch (error) {
       console.error("Error fetching quality training:", error)
-    } finally {
       setLoading(false)
     }
   }, [qualityTrainingName])

@@ -26,25 +26,27 @@ export async function GET(request: NextRequest) {
     type TracerUpdateWhere = Record<string, unknown>
     let where: TracerUpdateWhere = {}
 
-    // Scope-based queries (hierarchical)
+    // Scope-based queries (hierarchical) - OPTIMIZED: parallel queries where possible
     if (brandId) {
       // Brand scope: get all updates related to this brand
       // This includes: brand, all categories, all subcategories, all products, all detail products
-      // First, get all related IDs
-      const categories = await prismaClient.kategoriProduk.findMany({
-        where: { brandId: brandId },
-        select: { id: true }
-      })
-      const categoryIds = categories.map((c: { id: string }) => c.id)
+      // OPTIMIZED: Fetch categories and subcategories in parallel
+      const [categories, subcategories] = await Promise.all([
+        prismaClient.kategoriProduk.findMany({
+          where: { brandId: brandId },
+          select: { id: true }
+        }),
+        prismaClient.subkategoriProduk.findMany({
+          where: {
+            kategoriProduk: {
+              brandId: brandId
+            }
+          },
+          select: { id: true }
+        })
+      ])
       
-      const subcategories = await prismaClient.subkategoriProduk.findMany({
-        where: {
-          kategoriProduk: {
-            brandId: brandId
-          }
-        },
-        select: { id: true }
-      })
+      const categoryIds = categories.map((c: { id: string }) => c.id)
       const subcategoryIds = subcategories.map((s: { id: string }) => s.id)
       
       // Get all products related to this brand (via brandId, categoryId, or subcategoryId)
@@ -60,14 +62,17 @@ export async function GET(request: NextRequest) {
       })
       const productIds = products.map((p: { id: string }) => p.id)
       
-      // Get all detail products for these products
-      const detailProducts = await prismaClient.detailProduk.findMany({
-        where: {
-          produkId: { in: productIds }
-        },
-        select: { id: true }
-      })
-      const detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      // Get all detail products for these products (only if there are products)
+      let detailProductIds: string[] = []
+      if (productIds.length > 0) {
+        const detailProducts = await prismaClient.detailProduk.findMany({
+          where: {
+            produkId: { in: productIds }
+          },
+          select: { id: true }
+        })
+        detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      }
 
       // Build OR condition for all related entities
       // Use sourceTable and sourceKey since brandId, categoryId, etc. may not exist in database yet
@@ -143,14 +148,17 @@ export async function GET(request: NextRequest) {
       })
       const productIds = products.map((p: { id: string }) => p.id)
       
-      // Get all detail products for these products
-      const detailProducts = await prismaClient.detailProduk.findMany({
-        where: {
-          produkId: { in: productIds }
-        },
-        select: { id: true }
-      })
-      const detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      // Get all detail products for these products (only if there are products)
+      let detailProductIds: string[] = []
+      if (productIds.length > 0) {
+        const detailProducts = await prismaClient.detailProduk.findMany({
+          where: {
+            produkId: { in: productIds }
+          },
+          select: { id: true }
+        })
+        detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      }
 
       const orConditions: Array<Record<string, unknown>> = [
         // Track category by sourceTable
@@ -203,14 +211,17 @@ export async function GET(request: NextRequest) {
       })
       const productIds = products.map((p: { id: string }) => p.id)
       
-      // Get all detail products for these products
-      const detailProducts = await prismaClient.detailProduk.findMany({
-        where: {
-          produkId: { in: productIds }
-        },
-        select: { id: true }
-      })
-      const detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      // Get all detail products for these products (only if there are products)
+      let detailProductIds: string[] = []
+      if (productIds.length > 0) {
+        const detailProducts = await prismaClient.detailProduk.findMany({
+          where: {
+            produkId: { in: productIds }
+          },
+          select: { id: true }
+        })
+        detailProductIds = detailProducts.map((d: { id: string }) => d.id)
+      }
 
       const orConditions: Array<Record<string, unknown>> = [
         // Track subcategory by sourceTable

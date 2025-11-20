@@ -64,14 +64,20 @@ export default function AchievementsPage() {
   useEffect(() => {
     const fetchTopAgents = async () => {
       try {
-        setLoading(true)
+        // Only show loading on first load or when data is empty
+        if (Object.keys(topAgentsByCategory).length === 0) {
+          setLoading(true)
+        }
         setError(null)
 
         const url = selectedMonth 
           ? `/api/agent/achievements?month=${selectedMonth}`
           : '/api/agent/achievements'
         
-        const response = await fetch(url)
+        const response = await fetch(url, {
+          // Cache for faster loading
+          next: { revalidate: 60 } // 1 minute cache
+        })
         
         if (!response.ok) {
           throw new Error('Failed to fetch top agents')
@@ -80,10 +86,10 @@ export default function AchievementsPage() {
         const data = await response.json()
         setTopAgentsByCategory(data.topAgentsByCategory || {})
         setAllAgentsByCategory(data.allAgentsByCategory || {})
+        setLoading(false) // Set false after data is loaded
       } catch (err) {
         console.error('Error fetching top agents:', err)
         setError('Failed to load achievements. Please try again.')
-      } finally {
         setLoading(false)
       }
     }
@@ -135,21 +141,6 @@ export default function AchievementsPage() {
       default:
         return 'h-48'
     }
-  }
-
-  if (loading) {
-    return (
-      <ProtectedRoute>
-        <Layout>
-          <div className="min-h-screen mt-12 flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#03438f] mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading achievements...</p>
-            </div>
-          </div>
-        </Layout>
-      </ProtectedRoute>
-    )
   }
 
   if (error) {
@@ -235,7 +226,21 @@ export default function AchievementsPage() {
             </div>
 
             {/* Top 3 by Category */}
-            {Object.keys(topAgentsByCategory).length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {[1, 2].map((i) => (
+                  <div key={i} className="rounded-xl shadow-lg bg-white border border-gray-200 p-6 animate-pulse">
+                    <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div className="flex items-end justify-center gap-4 mb-8">
+                      <div className="flex-1 h-64 bg-gray-200 rounded-t-2xl"></div>
+                      <div className="flex-1 h-80 bg-gray-200 rounded-t-2xl"></div>
+                      <div className="flex-1 h-56 bg-gray-200 rounded-t-2xl"></div>
+                    </div>
+                    <div className="h-96 bg-gray-100 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : Object.keys(topAgentsByCategory).length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(topAgentsByCategory).map(([category, topAgents]) => (
                   <div key={category} className="rounded-xl shadow-lg bg-white border border-gray-200 p-6">

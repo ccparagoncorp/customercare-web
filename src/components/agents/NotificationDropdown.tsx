@@ -43,10 +43,10 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
     readIdsRef.current = readIds
   }, [readIds])
 
-  // Fetch notifications
+  // Fetch notifications - no blocking loading
   const fetchNotifications = async () => {
     try {
-      setLoading(true)
+      // Don't set loading for non-blocking fetch
       const response = await fetch('/api/notifications?limit=50')
       if (response.ok) {
         const data = await response.json()
@@ -64,9 +64,9 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
         
         setNotifications(notificationsWithReadStatus)
       }
+      setLoading(false) // Only set false after data is loaded
     } catch (error) {
       console.error('Error fetching notifications:', error)
-    } finally {
       setLoading(false)
     }
   }
@@ -195,9 +195,13 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
     }
   }
 
-  // Fetch notifications when dropdown opens
+  // Fetch notifications when dropdown opens - show skeleton instead of blocking
   useEffect(() => {
     if (isOpen) {
+      // Start with loading state, but don't block UI
+      if (notifications.length === 0) {
+        setLoading(true)
+      }
       fetchNotifications()
       // Set up polling to refresh notifications every 30 seconds
       const interval = setInterval(fetchNotifications, 30000)

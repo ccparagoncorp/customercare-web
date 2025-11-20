@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
+import { unstable_cache } from 'next/cache'
 
 // Helper function to create slug from title
 function createSlug(title: string): string {
@@ -11,29 +12,47 @@ function createSlug(title: string): string {
     .trim()
 }
 
+// Cache knowledges for 5 minutes - data rarely changes
+const getCachedKnowledges = unstable_cache(
+  async () => {
+    const prisma = createPrismaClient()
+    try {
+      const knowledges = await prisma.knowledge.findMany({
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+
+      // Add slug to each knowledge item
+      const knowledgesWithSlug = knowledges.map(knowledge => ({
+        ...knowledge,
+        slug: createSlug(knowledge.title)
+      }))
+
+      await prisma.$disconnect()
+      return knowledgesWithSlug
+    } catch (error) {
+      await prisma.$disconnect().catch(() => {})
+      throw error
+    }
+  },
+  ['knowledges-list'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['knowledges']
+  }
+)
+
 export async function GET() {
-  const prisma = createPrismaClient()
-  
   try {
-    const knowledges = await prisma.knowledge.findMany({
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-
-    // Add slug to each knowledge item
-    const knowledgesWithSlug = knowledges.map(knowledge => ({
-      ...knowledge,
-      slug: createSlug(knowledge.title)
-    }))
-
-    return NextResponse.json(knowledgesWithSlug)
+    const knowledges = await getCachedKnowledges()
+    return NextResponse.json(knowledges)
   } catch (error) {
     // Graceful fallback when DB is unreachable or env missing
     const isDbConnectivityIssue = error instanceof Error && (
@@ -53,7 +72,5 @@ export async function GET() {
 
     console.error('Error fetching knowledges:', error)
     return NextResponse.json({ error: 'Failed to fetch knowledges' }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 }

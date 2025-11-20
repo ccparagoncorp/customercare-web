@@ -74,11 +74,15 @@ export default function ProfilePage() {
         hasFetchedRef.current = true
         currentUserIdRef.current = user.id
 
-        const response = await fetch(`/api/agent/profile?userId=${user.id}`)
+        const response = await fetch(`/api/agent/profile?userId=${user.id}`, {
+          // Cache for faster loading
+          next: { revalidate: 60 } // 1 minute cache
+        })
         
         if (!response.ok) {
           if (response.status === 401 || response.status === 404) {
             setError('Profile not found. Please contact administrator.')
+            setLoading(false)
             return
           }
           throw new Error('Failed to fetch profile')
@@ -86,11 +90,11 @@ export default function ProfilePage() {
 
         const data = await response.json()
         setProfile(data)
+        setLoading(false) // Set false after data is loaded, not in finally
       } catch (err) {
         console.error('Error fetching profile:', err)
         setError('Failed to load profile. Please try again.')
         hasFetchedRef.current = false // Reset on error so it can retry
-      } finally {
         setLoading(false)
       }
     }
@@ -203,20 +207,7 @@ export default function ProfilePage() {
     }
   }
 
-  if (loading) {
-    return (
-      <ProtectedRoute>
-        <Layout>
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#03438f] mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading profile...</p>
-            </div>
-          </div>
-        </Layout>
-      </ProtectedRoute>
-    )
-  }
+  // Show skeleton instead of blocking loading screen
 
   if (error) {
     return (
@@ -263,6 +254,33 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Card */}
+            {loading ? (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse">
+                <div className="bg-gradient-to-r from-[#03438f] to-[#0259b7] px-8 py-12">
+                  <div className="flex items-center space-x-6">
+                    <div className="w-32 h-32 rounded-full bg-white/20"></div>
+                    <div className="flex-1">
+                      <div className="h-8 bg-white/20 rounded w-1/3 mb-2"></div>
+                      <div className="h-4 bg-white/20 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-16 bg-gray-100 rounded"></div>
+                    ))}
+                  </div>
+                  <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-24 bg-gray-100 rounded"></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : profile ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               {/* Profile Header */}
               <div className="bg-gradient-to-r from-[#03438f] to-[#0259b7] px-8 py-12">
@@ -433,6 +451,7 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
+            ) : null}
           </div>
         </div>
 

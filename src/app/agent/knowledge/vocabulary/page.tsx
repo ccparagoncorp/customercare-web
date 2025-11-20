@@ -56,14 +56,17 @@ export default function VocabularyKnowledgePage() {
   const fetchKnowledge = async () => {
     setLoading(true)
     try {
-      const response = await fetch("/api/knowledge/vocabulary")
+      const response = await fetch("/api/knowledge/vocabulary", {
+        // Cache for faster loading
+        next: { revalidate: 300 }
+      })
       if (response.ok) {
         const data = await response.json()
         setKnowledge(data)
       }
+      setLoading(false) // Set false after data is loaded, not in finally
     } catch (error) {
       console.error("Error fetching knowledge:", error)
-    } finally {
       setLoading(false)
     }
   }

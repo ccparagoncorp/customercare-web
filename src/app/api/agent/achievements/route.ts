@@ -22,12 +22,17 @@ export async function GET(request: NextRequest) {
       endDate = new Date(year, month, 0, 23, 59, 59, 999) // Last moment of the selected month
     }
 
-    // Get all agents with their performances
+    // Get all agents with their performances - optimized: select only needed fields
     const agents = await prisma.agent.findMany({
       where: {
         isActive: true
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        foto: true,
+        category: true,
         performances: {
           where: monthFilter && startDate && endDate
             ? {
@@ -36,7 +41,12 @@ export async function GET(request: NextRequest) {
                   lte: endDate
                 }
               }
-            : undefined
+            : undefined,
+          select: {
+            qaScore: true,
+            quizScore: true,
+            typingTestScore: true
+          }
         }
       }
     })
@@ -46,14 +56,12 @@ export async function GET(request: NextRequest) {
       const performances = agent.performances || []
       
       if (performances.length === 0) {
-        // Remove password from response
-        const { password, ...agentWithoutPassword } = agent
         return {
-          id: agentWithoutPassword.id,
-          name: agentWithoutPassword.name,
-          email: agentWithoutPassword.email,
-          foto: agentWithoutPassword.foto,
-          category: agentWithoutPassword.category,
+          id: agent.id,
+          name: agent.name,
+          email: agent.email,
+          foto: agent.foto,
+          category: agent.category,
           overallScore: 0,
           averageScores: {
             qaScore: 0,
@@ -76,16 +84,13 @@ export async function GET(request: NextRequest) {
 
       // Calculate overall score as percentage (average of all three scores)
       const overallScore = Math.round((avgQAScore + avgQuizScore + avgTypingTestScore) / 3)
-
-      // Remove password from response
-      const { password, ...agentWithoutPassword } = agent
       
       return {
-        id: agentWithoutPassword.id,
-        name: agentWithoutPassword.name,
-        email: agentWithoutPassword.email,
-        foto: agentWithoutPassword.foto,
-        category: agentWithoutPassword.category,
+        id: agent.id,
+        name: agent.name,
+        email: agent.email,
+        foto: agent.foto,
+        category: agent.category,
         overallScore,
         averageScores: {
           qaScore: avgQAScore,

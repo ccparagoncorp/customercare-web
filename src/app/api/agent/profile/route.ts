@@ -16,15 +16,30 @@ export async function GET(request: NextRequest) {
 
     const prisma = createPrismaClient()
 
-    // Get agent data from database
+    // Get agent data from database - optimized: select only needed fields
     const agent = await prisma.agent.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        foto: true,
+        category: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
         performances: {
           orderBy: {
             timestamp: 'desc'
           },
-          take: 10 // Get last 10 performances
+          take: 10, // Get last 10 performances
+          select: {
+            id: true,
+            qaScore: true,
+            quizScore: true,
+            typingTestScore: true,
+            timestamp: true
+          }
         }
       }
     })
@@ -49,13 +64,10 @@ export async function GET(request: NextRequest) {
       ? Math.round(performances.reduce((sum, p) => sum + p.typingTestScore, 0) / performances.length)
       : 0
 
-    // Remove password from response
-    const { password, ...agentWithoutPassword } = agent
-
     await prisma.$disconnect()
 
     return NextResponse.json({
-      ...agentWithoutPassword,
+      ...agent,
       averageScores: {
         qaScore: avgQAScore,
         quizScore: avgQuizScore,

@@ -41,21 +41,26 @@ export function SubcategoryOrProductGrid({ brandName, brandId, categoryId }: Sub
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/categories/${categoryId}`)
+        const response = await fetch(`/api/categories/${categoryId}`, {
+          // Cache for faster loading
+          next: { revalidate: 300 }
+        })
         if (response.ok) {
           const data = await response.json()
           setCategory(data)
+          setLoading(false) // Set false after data is loaded
         } else if (response.status === 503) {
           setError('Database connection unavailable. Please try again later.')
           console.warn('Database connection issue when fetching category')
+          setLoading(false)
         } else {
           const errorData = await response.json().catch(() => ({}))
           setError(errorData.error || 'Failed to fetch category')
+          setLoading(false)
         }
       } catch (err) {
         console.error('Error fetching category:', err)
         setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
         setLoading(false)
       }
     }

@@ -227,14 +227,17 @@ export default function MakeUpKnowledgePage() {
   const fetchKnowledge = async () => {
     setLoading(true)
     try {
-      const response = await fetch("/api/knowledge/make-up-knowledge")
+      const response = await fetch("/api/knowledge/make-up-knowledge", {
+        // Cache for faster loading
+        next: { revalidate: 300 }
+      })
       if (response.ok) {
         const data = await response.json()
         setKnowledge(data)
       }
+      setLoading(false) // Set false after data is loaded, not in finally
     } catch (error) {
       console.error("Error fetching knowledge:", error)
-    } finally {
       setLoading(false)
     }
   }
