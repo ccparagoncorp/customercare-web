@@ -43,24 +43,33 @@ export function BrandContentWrapper({ brandName }: { brandName: string }) {
   useEffect(() => {
     const run = async () => {
       try {
+        // API route already has caching, just fetch normally
         const { data, error } = await apiFetch<BrandWithNested>(
           `/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`
         )
         if (data) {
           setBrand(data)
+          setLoading(false) // Set false immediately after data loads
         } else if (error) {
           console.warn('Error fetching brand:', error)
+          setLoading(false)
         }
       } catch (err) {
         console.error('Unexpected error:', err)
-      } finally {
         setLoading(false)
       }
     }
     run()
   }, [brandName])
 
-  if (loading || !brand) return null
+  // Don't block render - show content immediately when ready
+  if (!brand) {
+    if (loading) {
+      // Minimal loading state - just empty space
+      return <div className="min-h-[200px]"></div>
+    }
+    return null
+  }
 
   // Filter out categories that are NULL, empty, or "-"
   const categories = (brand.kategoriProduks || []).filter(

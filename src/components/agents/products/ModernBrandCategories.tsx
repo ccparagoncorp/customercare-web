@@ -44,17 +44,19 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
   useEffect(() => {
     const fetchBrand = async () => {
       try {
+        // API route already has caching, just fetch normally
         const url = `/api/brands/by-name/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}`
         const response = await fetch(url)
         if (response.ok) {
           const data = await response.json()
           setBrand(data)
+          setLoading(false) // Set false immediately after data loads
         } else {
           setError('Brand not found')
+          setLoading(false)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
         setLoading(false)
       }
     }
@@ -62,32 +64,23 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
     fetchBrand()
   }, [brandName])
 
+  // Minimal loading - reduce skeleton count from 8 to 3
   if (loading) {
     return (
       <div className="space-y-12">
-        {/* Header Skeleton */}
+        {/* Minimal Header Skeleton */}
         <div className="text-center space-y-6">
-          <div className="space-y-4">
-            <Skeleton className="h-16 w-96 mx-auto" />
-            <Skeleton className="h-6 w-80 mx-auto" />
-          </div>
-          <div className="flex justify-center">
-            <Skeleton className="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500" />
-          </div>
+          <div className="h-12 w-64 mx-auto bg-gray-200 rounded-lg"></div>
         </div>
         
-        {/* Grid Skeleton */}
+        {/* Minimal Grid Skeleton - only 3 items */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="group">
-              <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg border border-gray-100 aspect-square">
-                <Skeleton className="absolute inset-0" />
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100"></div>
-              </div>
+              <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg border border-gray-100 aspect-square bg-gray-100"></div>
               <div className="mt-6 space-y-3">
-                <Skeleton className="h-7 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-1/2" />
+                <div className="h-6 w-3/4 bg-gray-200 rounded"></div>
+                <div className="h-4 w-full bg-gray-200 rounded"></div>
               </div>
             </div>
           ))}

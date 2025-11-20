@@ -35,18 +35,19 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch category by brand and category name
+        // API route already has caching, just fetch normally
         const categoryResponse = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`)
         if (categoryResponse.ok) {
           const categoryData = await categoryResponse.json()
           setCategory(categoryData)
           setBrand(categoryData.brand)
+          setLoading(false) // Set false immediately after data loads
         } else {
           setError('Category not found')
+          setLoading(false)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
         setLoading(false)
       }
     }
@@ -54,19 +55,16 @@ export function CategoryBackgroundSection({ brandName, categoryName }: CategoryB
     fetchData()
   }, [brandName, categoryName])
 
+  // Minimal loading - remove heavy skeleton
   if (loading) {
     return (
-      <div className="relative h-96 w-full overflow-hidden">
-        <Skeleton className="absolute inset-0" />
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-end">
-          <div className="flex items-center justify-between mb-8">
-            <Skeleton className="h-10 w-40 bg-white/20" />
+      <div className="relative md:h-[500px] h-[200px] w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="relative z-10 p-8 lg:p-12 h-full flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <div className="h-10 w-32 bg-white/30 rounded-full"></div>
+            <div className="h-10 w-32 bg-white/30 rounded-full"></div>
           </div>
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-80 bg-white/20" />
-            <Skeleton className="h-6 w-96 bg-white/20" />
-          </div>
+          <div className="h-12 w-64 bg-white/30 rounded-lg"></div>
         </div>
       </div>
     )

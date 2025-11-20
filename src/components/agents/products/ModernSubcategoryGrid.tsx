@@ -46,15 +46,16 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
     }
     const fetchData = async () => {
       try {
+        // API route already has caching, just fetch normally
         const response = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`)
         if (!response.ok) {
           throw new Error('Failed to fetch category')
         }
         const data = await response.json()
         setCategory(data)
+        setLoading(false) // Set false immediately after data loads
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
         setLoading(false)
       }
     }
@@ -62,18 +63,17 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
     fetchData()
   }, [brandName, categoryName, initialCategory])
 
+  // Minimal loading - reduce skeleton from 8 to 3
   if (loading) {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 gap-2">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="group">
-              <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-200 aspect-square">
-                <Skeleton className="absolute inset-0" />
-              </div>
+              <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-200 aspect-square bg-gray-100"></div>
               <div className="mt-4 space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
+                <div className="h-6 w-3/4 bg-gray-200 rounded"></div>
+                <div className="h-4 w-full bg-gray-200 rounded"></div>
               </div>
             </div>
           ))}

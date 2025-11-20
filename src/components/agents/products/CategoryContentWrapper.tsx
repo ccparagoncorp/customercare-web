@@ -47,19 +47,30 @@ export function CategoryContentWrapper({ brandName, categoryName }: { brandName:
   useEffect(() => {
     const run = async () => {
       try {
+        // API route already has caching, just fetch normally
         const res = await fetch(`/api/brands/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}`)
         if (res.ok) {
           const data = await res.json()
           setCategory(data)
+          setLoading(false) // Set false immediately after data loads
+        } else {
+          setLoading(false)
         }
-      } finally {
+      } catch (err) {
         setLoading(false)
       }
     }
     run()
   }, [brandName, categoryName])
 
-  if (loading || !category) return null
+  // Don't block render - show content immediately when ready
+  if (!category) {
+    if (loading) {
+      // Minimal loading state - just empty space
+      return <div className="min-h-[200px]"></div>
+    }
+    return null
+  }
 
   // Filter out subcategories that are NULL, empty, or "-"
   const validSubcategories = (category.subkategoriProduks || []).filter(
