@@ -207,7 +207,7 @@ export default function ProfilePage() {
     return (
       <ProtectedRoute>
         <Layout>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#03438f] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading profile...</p>
@@ -222,7 +222,7 @@ export default function ProfilePage() {
     return (
       <ProtectedRoute>
         <Layout>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
               <p className="text-red-600 mb-4">{error}</p>
               <button
@@ -245,7 +245,7 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen py-8">
           <div className="max-w-4xl mx-auto px-6">
             {/* Header */}
             <div className="mb-8 mt-12">
@@ -277,6 +277,8 @@ export default function ProfilePage() {
                           width={128}
                           height={128}
                           className="w-full h-full object-cover"
+                          quality={100}
+                          unoptimized
                         />
                       </div>
                     ) : (
@@ -464,6 +466,8 @@ export default function ProfilePage() {
                       width={192}
                       height={192}
                       className="w-full h-full object-cover"
+                      quality={100}
+                      unoptimized
                     />
                   </div>
                 ) : (

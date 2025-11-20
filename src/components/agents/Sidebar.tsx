@@ -18,10 +18,10 @@ const navigationItems = [
   { icon: BookOpen, label: "Knowledge Base", href: "/agent/knowledge" },
   { icon: Lightbulb, label: "Product Knowledge", href: "/agent/products" },
   { icon: Settings, label: "SOP & Workflows", href: "/agent/sop" },
-  { icon: Clipboard, label: "Quality & Training", href: "/agent/dashboard/training" },
-  { icon: Calendar, label: "Scheduling & WFM", href: "/agent/dashboard/scheduling" },
-  { icon: Megaphone, label: "Announcements", href: "/agent/dashboard/announcements" },
-  { icon: Trophy, label: "Achievements & People", href: "/agent/dashboard/achievements" },
+  { icon: Clipboard, label: "Quality & Training", href: "/agent/training" },
+  { icon: Calendar, label: "Scheduling & WFM", href: "/agent/scheduling" },
+  { icon: Megaphone, label: "Announcements", href: "/agent/announcements" },
+  { icon: Trophy, label: "Achievements & People", href: "/agent/achievements" },
   { icon: BarChart3, label: "Improvements", href: "/agent/improvement" },
 ]
 

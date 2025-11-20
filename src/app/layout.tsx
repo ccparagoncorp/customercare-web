@@ -14,7 +14,12 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "CC Paragon - Customer Care Management System",
   description: "Website ",
+  icons: {
+    icon: "/logomini.png",
+  },
 };
+
+
 
 export default function RootLayout({
   children,
