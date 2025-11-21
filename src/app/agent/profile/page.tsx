@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/components/auth/AuthProvider"
-import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft } from "lucide-react"
+import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft, Edit, Lock } from "lucide-react"
 import Image from "next/image"
 
 interface Performance {
@@ -46,6 +46,18 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const hasFetchedRef = useRef(false)
   const currentUserIdRef = useRef<string | null>(null)
+  
+  // Edit profile modal states
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [editError, setEditError] = useState<string | null>(null)
 
   useEffect(() => {
     // Skip if already have profile data
@@ -74,10 +86,7 @@ export default function ProfilePage() {
         hasFetchedRef.current = true
         currentUserIdRef.current = user.id
 
-        const response = await fetch(`/api/agent/profile?userId=${user.id}`, {
-          // Cache for faster loading
-          next: { revalidate: 60 } // 1 minute cache
-        })
+        const response = await fetch(`/api/agent/profile?userId=${user.id}`)
         
         if (!response.ok) {
           if (response.status === 401 || response.status === 404) {
@@ -90,6 +99,14 @@ export default function ProfilePage() {
 
         const data = await response.json()
         setProfile(data)
+        // Initialize edit form with current data
+        setEditForm({
+          name: data.name,
+          email: data.email,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
         setLoading(false) // Set false after data is loaded, not in finally
       } catch (err) {
         console.error('Error fetching profile:', err)
@@ -205,6 +222,132 @@ export default function ProfilePage() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
+  }
+
+  const handleEditProfile = async () => {
+    if (!user?.id) {
+      setEditError('User tidak ditemukan')
+      return
+    }
+
+    // Validate form
+    if (!editForm.name.trim()) {
+      setEditError('Nama tidak boleh kosong')
+      return
+    }
+
+    if (!editForm.email.trim()) {
+      setEditError('Email tidak boleh kosong')
+      return
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(editForm.email)) {
+      setEditError('Format email tidak valid')
+      return
+    }
+
+    // If changing password, validate password fields
+    if (editForm.newPassword) {
+      if (!editForm.currentPassword) {
+        setEditError('Password saat ini diperlukan untuk mengubah password')
+        return
+      }
+
+      if (editForm.newPassword.length < 6) {
+        setEditError('Password baru minimal 6 karakter')
+        return
+      }
+
+      if (editForm.newPassword !== editForm.confirmPassword) {
+        setEditError('Password baru dan konfirmasi password tidak cocok')
+        return
+      }
+    }
+
+    try {
+      setEditing(true)
+      setEditError(null)
+
+      const updateData: {
+        name?: string
+        email?: string
+        currentPassword?: string
+        newPassword?: string
+      } = {
+        name: editForm.name.trim(),
+        email: editForm.email.trim()
+      }
+
+      if (editForm.newPassword) {
+        updateData.currentPassword = editForm.currentPassword
+        updateData.newPassword = editForm.newPassword
+      }
+
+      const response = await fetch(`/api/agent/profile?userId=${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update profile')
+      }
+
+      // Update local profile state
+      if (profile) {
+        setProfile({
+          ...profile,
+          name: editForm.name.trim(),
+          email: editForm.email.trim()
+        })
+      }
+
+      // Dispatch event to update header (name and photo)
+      window.dispatchEvent(new CustomEvent('profile-updated'))
+      
+      // Also dispatch photo update event for backward compatibility
+      window.dispatchEvent(new CustomEvent('profile-photo-updated'))
+
+      // Close modal and reset form
+      setShowEditModal(false)
+      setEditForm({
+        name: '',
+        email: '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      })
+      setEditError(null)
+
+      // Show success message or refresh
+      if (editForm.newPassword) {
+        alert('Profile dan password berhasil diubah. Silakan login ulang dengan password baru.')
+        // Optionally log out user if password was changed
+        window.location.href = '/login'
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err)
+      setEditError(err instanceof Error ? err.message : 'Gagal mengupdate profile. Silakan coba lagi.')
+    } finally {
+      setEditing(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false)
+    setEditForm({
+      name: '',
+      email: '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    })
+    setEditError(null)
   }
 
   // Show skeleton instead of blocking loading screen
@@ -337,7 +480,28 @@ export default function ProfilePage() {
               <div className="p-8">
                 {/* Basic Information */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Informasi Dasar</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900">Informasi Dasar</h3>
+                    <button
+                      onClick={() => {
+                        if (profile) {
+                          setEditForm({
+                            name: profile.name,
+                            email: profile.email,
+                            currentPassword: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                          })
+                        }
+                        setEditError(null)
+                        setShowEditModal(true)
+                      }}
+                      className="flex items-center space-x-2 px-4 py-2 bg-[#03438f] text-white rounded-lg hover:bg-[#0259b7] transition-colors text-sm font-medium"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Edit Profile</span>
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex items-start space-x-3">
                       <User className="w-5 h-5 text-gray-400 mt-1" />
@@ -542,6 +706,148 @@ export default function ProfilePage() {
                     </>
                   ) : (
                     'Unggah Foto'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Profile Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={handleCancelEdit}>
+            <div className="bg-white rounded-lg shadow-xl w-full p-4 md:p-6 max-h-[90vh] overflow-y-auto max-w-md" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900">Edit Profile</h3>
+                <button
+                  onClick={handleCancelEdit}
+                  disabled={editing}
+                  className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {editError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{editError}</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {/* Name Field */}
+                <div>
+                  <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Nama
+                  </label>
+                  <input
+                    id="edit-name"
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    disabled={editing}
+                    className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
+                    placeholder="Masukkan nama"
+                  />
+                </div>
+
+                {/* Email Field */}
+                <div>
+                  <label htmlFor="edit-email" className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    id="edit-email"
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    disabled={editing}
+                    className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
+                    placeholder="Masukkan email"
+                  />
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Lock className="w-4 h-4 text-gray-500" />
+                    <h4 className="text-sm font-semibold text-gray-700">Ubah Password</h4>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Kosongkan jika tidak ingin mengubah password
+                  </p>
+
+                  {/* Current Password */}
+                  <div className="mb-4">
+                    <label htmlFor="edit-current-password" className="block text-sm font-medium text-gray-700 mb-2">
+                      Password Saat Ini
+                    </label>
+                    <input
+                      id="edit-current-password"
+                      type="password"
+                      value={editForm.currentPassword}
+                      onChange={(e) => setEditForm({ ...editForm, currentPassword: e.target.value })}
+                      disabled={editing}
+                      className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
+                      placeholder="Masukkan password saat ini"
+                    />
+                  </div>
+
+                  {/* New Password */}
+                  <div className="mb-4">
+                    <label htmlFor="edit-new-password" className="block text-sm font-medium text-gray-700 mb-2">
+                      Password Baru
+                    </label>
+                    <input
+                      id="edit-new-password"
+                      type="password"
+                      value={editForm.newPassword}
+                      onChange={(e) => setEditForm({ ...editForm, newPassword: e.target.value })}
+                      disabled={editing}
+                      className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
+                      placeholder="Masukkan password baru (min. 6 karakter)"
+                    />
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    <label htmlFor="edit-confirm-password" className="block text-sm font-medium text-gray-700 mb-2">
+                      Konfirmasi Password Baru
+                    </label>
+                    <input
+                      id="edit-confirm-password"
+                      type="password"
+                      value={editForm.confirmPassword}
+                      onChange={(e) => setEditForm({ ...editForm, confirmPassword: e.target.value })}
+                      disabled={editing}
+                      className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03438f] focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
+                      placeholder="Konfirmasi password baru"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-6">
+                <button
+                  onClick={handleCancelEdit}
+                  disabled={editing}
+                  className="flex-1 px-4 py-2 text-sm md:text-base border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleEditProfile}
+                  disabled={editing}
+                  className="flex-1 px-4 py-2 text-sm md:text-base bg-[#03438f] text-white rounded-lg hover:bg-[#0259b7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {editing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Menyimpan...
+                    </>
+                  ) : (
+                    'Simpan Perubahan'
                   )}
                 </button>
               </div>

@@ -17,6 +17,7 @@ export function Header() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [profileFoto, setProfileFoto] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string | null>(null)
   const { user, logout } = useAuth()
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -107,10 +108,10 @@ export function Header() {
     window.location.href = '/login'
   }
 
-  // Fetch profile foto
+  // Fetch profile data (foto and name)
   useEffect(() => {
-    const fetchProfileFoto = async () => {
-      if (!user?.id || hasFetchedFotoRef.current) return
+    const fetchProfileData = async () => {
+      if (!user?.id) return
 
       try {
         const response = await fetch(`/api/agent/profile?userId=${user.id}`)
@@ -119,31 +120,41 @@ export function Header() {
           if (data.foto) {
             setProfileFoto(data.foto)
           }
+          if (data.name) {
+            setUserName(data.name)
+          }
           hasFetchedFotoRef.current = true
         }
       } catch (error) {
-        console.error('Error fetching profile foto:', error)
+        console.error('Error fetching profile data:', error)
       }
     }
 
-    if (user?.id) {
-      fetchProfileFoto()
+    // Initialize with user name from auth
+    if (user?.name) {
+      setUserName(user.name)
     }
 
-    // Listen for profile photo updates (when user uploads new photo)
+    if (user?.id) {
+      fetchProfileData()
+    }
+
+    // Listen for profile updates (photo, name, email)
     const handleProfileUpdate = () => {
       hasFetchedFotoRef.current = false
       if (user?.id) {
-        fetchProfileFoto()
+        fetchProfileData()
       }
     }
 
     window.addEventListener('profile-photo-updated', handleProfileUpdate)
+    window.addEventListener('profile-updated', handleProfileUpdate)
 
     return () => {
       window.removeEventListener('profile-photo-updated', handleProfileUpdate)
+      window.removeEventListener('profile-updated', handleProfileUpdate)
     }
-  }, [user?.id])
+  }, [user?.id, user?.name])
 
   // Set up polling for unread count
   useEffect(() => {
@@ -297,7 +308,7 @@ export function Header() {
                 <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
                   <Image
                     src={profileFoto}
-                    alt={user?.name || 'User'}
+                    alt={userName || user?.name || 'User'}
                     width={32}
                     height={32}
                     className="w-full h-full object-cover"
@@ -311,7 +322,7 @@ export function Header() {
                 </div>
               )}
               <div className="hidden sm:block text-left">
-                <p className="font-medium">{user?.name || 'User'}</p>
+                <p className="font-medium">{userName || user?.name || 'User'}</p>
               </div>
               <ChevronDown className="h-4 w-4" />
             </button>
@@ -324,7 +335,7 @@ export function Header() {
                     <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
                       <Image
                         src={profileFoto}
-                        alt={user?.name || 'User'}
+                        alt={userName || user?.name || 'User'}
                         width={40}
                         height={40}
                         className="w-full h-full object-cover"
@@ -338,7 +349,7 @@ export function Header() {
                     </div>
                   )}
                   <div>
-                    <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
+                    <p className="font-medium text-gray-900">{userName || user?.name || 'User'}</p>
                     <p className="text-sm text-gray-500">{dashboardContent.header.user.role}</p>
                   </div>
                 </div>

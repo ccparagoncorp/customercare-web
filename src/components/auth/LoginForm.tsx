@@ -125,30 +125,11 @@ export function LoginForm() {
           )}
         </div>
 
-        {/* Remember Me & Forgot Password */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 text-[#03438f] focus:ring-[#03438f] border-gray-300 rounded"
-            />
-            <span className="ml-2 text-sm text-gray-700">{login.form.rememberMe}</span>
-          </label>
-          <button
-            type="button"
-            className="text-sm text-[#03438f] hover:text-[#03438f]/80 font-medium"
-          >
-            {login.form.forgotPassword}
-          </button>
-        </div>
-
         {/* Sign In Button */}
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full h-11 bg-[#03438f] hover:bg-[#03438f]/90 text-white font-semibold rounded-lg flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="w-full h-11 mt-12 bg-[#03438f] hover:bg-[#03438f]/90 text-white font-semibold rounded-lg flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           {isLoading ? (
             <>
