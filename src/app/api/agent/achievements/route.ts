@@ -42,9 +42,26 @@ export async function GET(request: NextRequest) {
       }
     })
     
+    // Define performance type
+    type PerformanceData = {
+      qaScore: number
+      quizScore: number
+      typingTestScore: number
+      afrt: number
+      art: number
+      rt: number
+      rr: number
+      csat: number
+      [key: string]: unknown
+    }
+
     // Helper function to safely get field value
-    const getField = (p: any, field: string): number => {
-      return p[field] !== undefined && p[field] !== null ? Number(p[field]) : 0
+    const getField = (p: PerformanceData | unknown, field: string): number => {
+      if (p && typeof p === 'object' && field in p) {
+        const value = (p as Record<string, unknown>)[field]
+        return value !== undefined && value !== null ? Number(value) : 0
+      }
+      return 0
     }
 
     // Calculate overall score for each agent
@@ -84,28 +101,28 @@ export async function GET(request: NextRequest) {
       // Calculate average scores using helper function
       
       const avgQAScore = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'qaScore'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'qaScore'), 0) / performances.length
       )
       const avgQuizScore = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'quizScore'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'quizScore'), 0) / performances.length
       )
       const avgTypingTestScore = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'typingTestScore'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'typingTestScore'), 0) / performances.length
       )
       const avgAfrt = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'afrt'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'afrt'), 0) / performances.length
       )
       const avgArt = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'art'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'art'), 0) / performances.length
       )
       const avgRt = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'rt'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'rt'), 0) / performances.length
       )
       const avgRr = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'rr'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'rr'), 0) / performances.length
       )
       const avgCsat = Math.round(
-        performances.reduce((sum: number, p: any) => sum + getField(p, 'csat'), 0) / performances.length
+        performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'csat'), 0) / performances.length
       )
 
       // Calculate overall score as percentage (average of all scores)

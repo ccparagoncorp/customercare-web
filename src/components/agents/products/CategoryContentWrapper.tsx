@@ -56,7 +56,7 @@ export function CategoryContentWrapper({ brandName, categoryName }: { brandName:
         } else {
           setLoading(false)
         }
-      } catch (err) {
+      } catch {
         setLoading(false)
       }
     }

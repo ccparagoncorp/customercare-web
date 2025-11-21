@@ -43,34 +43,52 @@ export async function GET(request: NextRequest) {
     // Calculate average scores
     const performances = agent.performances || []
     
+    // Define performance type
+    type PerformanceData = {
+      qaScore: number
+      quizScore: number
+      typingTestScore: number
+      afrt: number
+      art: number
+      rt: number
+      rr: number
+      csat: number
+      id: string
+      timestamp: Date | string
+      [key: string]: unknown
+    }
+    
     // Type-safe access to performance fields with fallback to 0 if field doesn't exist
-    const getField = (p: any, field: string): number => {
-      const value = p[field]
-      return value !== undefined && value !== null ? Number(value) : 0
+    const getField = (p: PerformanceData | unknown, field: string): number => {
+      if (p && typeof p === 'object' && field in p) {
+        const value = (p as Record<string, unknown>)[field]
+        return value !== undefined && value !== null ? Number(value) : 0
+      }
+      return 0
     }
     const avgQAScore = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'qaScore'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'qaScore'), 0) / performances.length)
       : 0
     const avgQuizScore = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'quizScore'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'quizScore'), 0) / performances.length)
       : 0
     const avgTypingTestScore = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'typingTestScore'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'typingTestScore'), 0) / performances.length)
       : 0
     const avgAfrt = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'afrt'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'afrt'), 0) / performances.length)
       : 0
     const avgArt = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'art'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'art'), 0) / performances.length)
       : 0
     const avgRt = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'rt'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'rt'), 0) / performances.length)
       : 0
     const avgRr = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'rr'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'rr'), 0) / performances.length)
       : 0
     const avgCsat = performances.length > 0
-      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'csat'), 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'csat'), 0) / performances.length)
       : 0
 
     await prisma.$disconnect()
@@ -84,7 +102,7 @@ export async function GET(request: NextRequest) {
       isActive: agent.isActive,
       createdAt: agent.createdAt,
       updatedAt: agent.updatedAt,
-      performances: performances.map((p: any) => ({
+      performances: performances.map((p: PerformanceData) => ({
         id: p.id,
         qaScore: getField(p, 'qaScore'),
         quizScore: getField(p, 'quizScore'),
@@ -107,13 +125,14 @@ export async function GET(request: NextRequest) {
         csat: avgCsat
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching agent profile:', error)
-    if (error?.message) {
-      console.error('Error details:', error.message)
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error'
+    if (errorMessage) {
+      console.error('Error details:', errorMessage)
     }
     return NextResponse.json(
-      { error: error?.message || 'Internal server error' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

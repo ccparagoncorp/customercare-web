@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload new photo to Supabase storage
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from(BUCKET_NAME)
       .upload(filePath, buffer, {
         contentType: file.type,

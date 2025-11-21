@@ -69,7 +69,7 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 gap-2">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="group">
-              <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-200 aspect-square bg-gray-100"></div>
+              <div className="relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm border border-gray-200 aspect-square"></div>
               <div className="mt-4 space-y-2">
                 <div className="h-6 w-3/4 bg-gray-200 rounded"></div>
                 <div className="h-4 w-full bg-gray-200 rounded"></div>
@@ -162,8 +162,6 @@ export function ModernSubcategoryGrid({ brandName, categoryName, initialCategory
         {/* Grid (match brand grid) */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-8 gap-2">
           {validSubcategories.map((subcategory) => {
-            const totalProducts = subcategory.produks?.length || 0
-
             return (
               <Link key={subcategory.id} href={`/agent/products/${encodeURIComponent(brandName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(subcategory.name.toLowerCase().replace(/\s+/g, '-'))}`}>
                 <div

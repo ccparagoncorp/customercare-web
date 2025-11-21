@@ -76,7 +76,7 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="group">
-              <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg border border-gray-100 aspect-square bg-gray-100"></div>
+              <div className="relative overflow-hidden rounded-3xl bg-gray-100 shadow-lg border border-gray-100 aspect-square"></div>
               <div className="mt-6 space-y-3">
                 <div className="h-6 w-3/4 bg-gray-200 rounded"></div>
                 <div className="h-4 w-full bg-gray-200 rounded"></div>
@@ -183,9 +183,6 @@ export function ModernBrandCategories({ brandName, currentCategoryName }: Modern
           const validSubcategories = (category.subkategoriProduks || []).filter(
             (sub) => sub.name && sub.name.trim() !== '' && sub.name.trim() !== '-'
           )
-          const totalProducts = validSubcategories.reduce((total, subcategory) => {
-            return total + (subcategory.produks?.length || 0)
-          }, 0)
 
           const isCurrentCategory = currentCategoryName === category.name
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { Trophy, Medal, Award, ArrowLeft, Calendar, RefreshCw } from "lucide-react"
@@ -67,7 +67,7 @@ export default function AchievementsPage() {
     return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
   }
 
-  const fetchTopAgents = async (showRefreshing = false, month?: string) => {
+  const fetchTopAgents = useCallback(async (showRefreshing = false, month?: string) => {
     const monthToUse = month || selectedMonth
     try {
       // Only show loading on first load or when data is empty
@@ -104,11 +104,11 @@ export default function AchievementsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [selectedMonth, topAgentsByCategory])
 
   useEffect(() => {
     fetchTopAgents()
-  }, [selectedMonth])
+  }, [fetchTopAgents])
 
   // Auto-refresh every 30 seconds to get latest data
   useEffect(() => {
@@ -118,8 +118,7 @@ export default function AchievementsPage() {
     }, 30000) // 30 seconds
 
     return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMonth])
+  }, [fetchTopAgents])
 
   const formatCategory = (category: string) => {
     return category

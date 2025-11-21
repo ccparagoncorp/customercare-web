@@ -75,14 +75,6 @@ export function SOPList({ kategoriSOP }: SOPListProps) {
 
   const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
 
-  const formatLink = (url?: string | null) => {
-    if (!url) return "#"
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      return url
-    }
-    return `https://${url}`
-  }
-
   return (
     <div className="space-y-8">
       {/* Header Section */}

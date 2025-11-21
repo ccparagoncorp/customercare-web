@@ -207,7 +207,8 @@ export function NotificationDropdown({ isOpen, onClose, onNotificationsRead }: N
       const interval = setInterval(fetchNotifications, 30000)
       return () => clearInterval(interval)
     }
-  }, [isOpen])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, notifications.length])
 
   // Format date
   const formatDate = (dateString: string) => {
