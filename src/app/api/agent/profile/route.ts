@@ -18,30 +18,16 @@ export async function GET(request: NextRequest) {
 
     const prisma = createPrismaClient()
 
-    // Get agent data from database - optimized: select only needed fields
+    // Get agent data from database
+    // Using include instead of select to avoid Prisma Client type issues with new fields
     const agent = await prisma.agent.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        foto: true,
-        category: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         performances: {
           orderBy: {
             timestamp: 'desc'
           },
-          take: 10, // Get last 10 performances
-          select: {
-            id: true,
-            qaScore: true,
-            quizScore: true,
-            typingTestScore: true,
-            timestamp: true
-          }
+          take: 10 // Get last 10 performances
         }
       }
     })
@@ -56,34 +42,78 @@ export async function GET(request: NextRequest) {
 
     // Calculate average scores
     const performances = agent.performances || []
+    
+    // Type-safe access to performance fields with fallback to 0 if field doesn't exist
+    const getField = (p: any, field: string): number => {
+      const value = p[field]
+      return value !== undefined && value !== null ? Number(value) : 0
+    }
     const avgQAScore = performances.length > 0
-      ? Math.round(performances.reduce((sum, p) => sum + p.qaScore, 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'qaScore'), 0) / performances.length)
       : 0
     const avgQuizScore = performances.length > 0
-      ? Math.round(performances.reduce((sum, p) => sum + p.quizScore, 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'quizScore'), 0) / performances.length)
       : 0
     const avgTypingTestScore = performances.length > 0
-      ? Math.round(performances.reduce((sum, p) => sum + p.typingTestScore, 0) / performances.length)
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'typingTestScore'), 0) / performances.length)
+      : 0
+    const avgAfrt = performances.length > 0
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'afrt'), 0) / performances.length)
+      : 0
+    const avgArt = performances.length > 0
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'art'), 0) / performances.length)
+      : 0
+    const avgRt = performances.length > 0
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'rt'), 0) / performances.length)
+      : 0
+    const avgRr = performances.length > 0
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'rr'), 0) / performances.length)
+      : 0
+    const avgCsat = performances.length > 0
+      ? Math.round(performances.reduce((sum: number, p: any) => sum + getField(p, 'csat'), 0) / performances.length)
       : 0
 
     await prisma.$disconnect()
 
     return NextResponse.json({
-      ...agent,
-      performances: performances.map(p => ({
-        ...p,
-        timestamp: p.timestamp.toISOString()
+      id: agent.id,
+      name: agent.name,
+      email: agent.email,
+      foto: agent.foto,
+      category: agent.category,
+      isActive: agent.isActive,
+      createdAt: agent.createdAt,
+      updatedAt: agent.updatedAt,
+      performances: performances.map((p: any) => ({
+        id: p.id,
+        qaScore: getField(p, 'qaScore'),
+        quizScore: getField(p, 'quizScore'),
+        typingTestScore: getField(p, 'typingTestScore'),
+        afrt: getField(p, 'afrt'),
+        art: getField(p, 'art'),
+        rt: getField(p, 'rt'),
+        rr: getField(p, 'rr'),
+        csat: getField(p, 'csat'),
+        timestamp: p.timestamp ? new Date(p.timestamp).toISOString() : new Date().toISOString()
       })),
       averageScores: {
         qaScore: avgQAScore,
         quizScore: avgQuizScore,
-        typingTestScore: avgTypingTestScore
+        typingTestScore: avgTypingTestScore,
+        afrt: avgAfrt,
+        art: avgArt,
+        rt: avgRt,
+        rr: avgRr,
+        csat: avgCsat
       }
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching agent profile:', error)
+    if (error?.message) {
+      console.error('Error details:', error.message)
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error?.message || 'Internal server error' },
       { status: 500 }
     )
   }

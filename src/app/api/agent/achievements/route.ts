@@ -22,17 +22,13 @@ export async function GET(request: NextRequest) {
       endDate = new Date(year, month, 0, 23, 59, 59, 999) // Last moment of the selected month
     }
 
-    // Get all agents with their performances - optimized: select only needed fields
+    // Get all agents with their performances
+    // Using include to get all fields from performances (including new fields)
     const agents = await prisma.agent.findMany({
       where: {
         isActive: true
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        foto: true,
-        category: true,
+      include: {
         performances: {
           where: monthFilter && startDate && endDate
             ? {
@@ -41,19 +37,28 @@ export async function GET(request: NextRequest) {
                   lte: endDate
                 }
               }
-            : undefined,
-          select: {
-            qaScore: true,
-            quizScore: true,
-            typingTestScore: true
-          }
+            : undefined
         }
       }
     })
+    
+    // Helper function to safely get field value
+    const getField = (p: any, field: string): number => {
+      return p[field] !== undefined && p[field] !== null ? Number(p[field]) : 0
+    }
 
     // Calculate overall score for each agent
     const agentsWithScores = agents.map(agent => {
-      const performances = agent.performances || []
+      const performances = (agent.performances || []) as unknown as Array<{
+        qaScore: number
+        quizScore: number
+        typingTestScore: number
+        afrt: number
+        art: number
+        rt: number
+        rr: number
+        csat: number
+      }>
       
       if (performances.length === 0) {
         return {
@@ -66,24 +71,47 @@ export async function GET(request: NextRequest) {
           averageScores: {
             qaScore: 0,
             quizScore: 0,
-            typingTestScore: 0
+            typingTestScore: 0,
+            afrt: 0,
+            art: 0,
+            rt: 0,
+            rr: 0,
+            csat: 0
           }
         }
       }
 
-      // Calculate average scores
+      // Calculate average scores using helper function
+      
       const avgQAScore = Math.round(
-        performances.reduce((sum, p) => sum + p.qaScore, 0) / performances.length
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'qaScore'), 0) / performances.length
       )
       const avgQuizScore = Math.round(
-        performances.reduce((sum, p) => sum + p.quizScore, 0) / performances.length
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'quizScore'), 0) / performances.length
       )
       const avgTypingTestScore = Math.round(
-        performances.reduce((sum, p) => sum + p.typingTestScore, 0) / performances.length
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'typingTestScore'), 0) / performances.length
+      )
+      const avgAfrt = Math.round(
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'afrt'), 0) / performances.length
+      )
+      const avgArt = Math.round(
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'art'), 0) / performances.length
+      )
+      const avgRt = Math.round(
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'rt'), 0) / performances.length
+      )
+      const avgRr = Math.round(
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'rr'), 0) / performances.length
+      )
+      const avgCsat = Math.round(
+        performances.reduce((sum: number, p: any) => sum + getField(p, 'csat'), 0) / performances.length
       )
 
-      // Calculate overall score as percentage (average of all three scores)
-      const overallScore = Math.round((avgQAScore + avgQuizScore + avgTypingTestScore) / 3)
+      // Calculate overall score as percentage (average of all scores)
+      const overallScore = Math.round(
+        (avgQAScore + avgQuizScore + avgTypingTestScore + avgAfrt + avgArt + avgRt + avgRr + avgCsat) / 8
+      )
       
       return {
         id: agent.id,
@@ -95,7 +123,12 @@ export async function GET(request: NextRequest) {
         averageScores: {
           qaScore: avgQAScore,
           quizScore: avgQuizScore,
-          typingTestScore: avgTypingTestScore
+          typingTestScore: avgTypingTestScore,
+          afrt: avgAfrt,
+          art: avgArt,
+          rt: avgRt,
+          rr: avgRr,
+          csat: avgCsat
         }
       }
     })

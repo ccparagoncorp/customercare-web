@@ -9,6 +9,9 @@ const lato = Lato({
   weight: ["300", "400", "700", "900"],
   subsets: ["latin"],
   variable: "--font-lato",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {

@@ -177,7 +177,6 @@ export default function MakeUpKnowledgePage() {
               priority={false}
               unoptimized={true}
               onError={(e) => {
-                console.log('Image failed to load:', jenis.logos[0]);
                 const target = e.target as HTMLImageElement;
                 const fallback = target.parentElement?.querySelector('.fallback-image') as HTMLElement;
                 if (fallback) {
@@ -186,7 +185,6 @@ export default function MakeUpKnowledgePage() {
                   fallback.classList.add('flex', 'items-center', 'justify-center');
                 }
               }}
-              onLoad={() => console.log('Image loaded successfully:', jenis.logos[0])}
             />
             <div className="hidden fallback-image w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 absolute inset-0">
               <div className="text-center">
@@ -752,7 +750,6 @@ export default function MakeUpKnowledgePage() {
                                 priority={false}
                                 unoptimized={true}
                                 onError={(e) => {
-                                  console.log('Image failed to load:', produk.logos[0]);
                                   const target = e.target as HTMLImageElement;
                                   const fallback = target.parentElement?.querySelector('.fallback-image') as HTMLElement;
                                   if (fallback) {

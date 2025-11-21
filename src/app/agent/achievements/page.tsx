@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
-import { Trophy, Medal, Award, ArrowLeft, Calendar } from "lucide-react"
+import { Trophy, Medal, Award, ArrowLeft, Calendar, RefreshCw } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
@@ -18,6 +18,11 @@ interface TopAgent {
     qaScore: number
     quizScore: number
     typingTestScore: number
+    afrt: number
+    art: number
+    rt: number
+    rr: number
+    csat: number
   }
 }
 
@@ -31,6 +36,7 @@ export default function AchievementsPage() {
   const [allAgentsByCategory, setAllAgentsByCategory] = useState<TopAgentsByCategory>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   
   // Get current month as default (YYYY-MM format)
   const getCurrentMonth = () => {
@@ -61,40 +67,58 @@ export default function AchievementsPage() {
     return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
   }
 
-  useEffect(() => {
-    const fetchTopAgents = async () => {
-      try {
-        // Only show loading on first load or when data is empty
-        if (Object.keys(topAgentsByCategory).length === 0) {
-          setLoading(true)
-        }
-        setError(null)
-
-        const url = selectedMonth 
-          ? `/api/agent/achievements?month=${selectedMonth}`
-          : '/api/agent/achievements'
-        
-        const response = await fetch(url, {
-          // Cache for faster loading
-          next: { revalidate: 60 } // 1 minute cache
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch top agents')
-        }
-
-        const data = await response.json()
-        setTopAgentsByCategory(data.topAgentsByCategory || {})
-        setAllAgentsByCategory(data.allAgentsByCategory || {})
-        setLoading(false) // Set false after data is loaded
-      } catch (err) {
-        console.error('Error fetching top agents:', err)
-        setError('Failed to load achievements. Please try again.')
-        setLoading(false)
+  const fetchTopAgents = async (showRefreshing = false, month?: string) => {
+    const monthToUse = month || selectedMonth
+    try {
+      // Only show loading on first load or when data is empty
+      if (showRefreshing) {
+        setRefreshing(true)
+      } else if (Object.keys(topAgentsByCategory).length === 0) {
+        setLoading(true)
       }
-    }
+      setError(null)
 
+      const url = monthToUse 
+        ? `/api/agent/achievements?month=${monthToUse}&t=${Date.now()}`
+        : `/api/agent/achievements?t=${Date.now()}`
+      
+      const response = await fetch(url, {
+        cache: 'no-store', // Always fetch fresh data
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch top agents')
+      }
+
+      const data = await response.json()
+      setTopAgentsByCategory(data.topAgentsByCategory || {})
+      setAllAgentsByCategory(data.allAgentsByCategory || {})
+      setLoading(false)
+      setRefreshing(false)
+    } catch (err) {
+      console.error('Error fetching top agents:', err)
+      setError('Failed to load achievements. Please try again.')
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
     fetchTopAgents()
+  }, [selectedMonth])
+
+  // Auto-refresh every 30 seconds to get latest data
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Refresh in background - don't show loading state
+      fetchTopAgents(true)
+    }, 30000) // 30 seconds
+
+    return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth])
 
   const formatCategory = (category: string) => {
@@ -203,27 +227,37 @@ export default function AchievementsPage() {
                       </div>
                     </div>
                     {/* Month Filter - Full width on mobile */}
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl p-3 md:p-4 border border-white/20">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                        <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto">
-                          <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
-                          <label htmlFor="month-filter" className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
-                            Pilih Bulan:
-                          </label>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl p-3 md:p-4 border border-white/20 flex-1">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                          <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto">
+                            <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                            <label htmlFor="month-filter" className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
+                              Pilih Bulan:
+                            </label>
+                          </div>
+                          <select
+                            id="month-filter"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className="w-full sm:min-w-[200px] px-3 md:px-4 py-2 bg-white text-gray-900 rounded-lg text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent shadow-lg border-0"
+                          >
+                            {getAvailableMonths().map((month) => (
+                              <option key={month} value={month}>
+                                {formatMonthLabel(month)}
+                              </option>
+                            ))}
+                          </select>
                         </div>
-                        <select
-                          id="month-filter"
-                          value={selectedMonth}
-                          onChange={(e) => setSelectedMonth(e.target.value)}
-                          className="w-full sm:min-w-[200px] px-3 md:px-4 py-2 bg-white text-gray-900 rounded-lg text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent shadow-lg border-0"
-                        >
-                          {getAvailableMonths().map((month) => (
-                            <option key={month} value={month}>
-                              {formatMonthLabel(month)}
-                            </option>
-                          ))}
-                        </select>
                       </div>
+                      <button
+                        onClick={() => fetchTopAgents(true)}
+                        disabled={refreshing}
+                        className="bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-white/20 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Refresh data"
+                      >
+                        <RefreshCw className={`w-4 h-4 md:w-5 md:h-5 ${refreshing ? 'animate-spin' : ''}`} />
+                      </button>
                     </div>
                   </div>
 
@@ -406,23 +440,55 @@ export default function AchievementsPage() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-3 gap-2">
+                              <div className="grid grid-cols-4 gap-2 mb-2">
                                 <div className="text-center">
                                   <div className="text-xs text-gray-500 mb-1">QA</div>
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                                     {agent.averageScores.qaScore}
                                   </span>
                                 </div>
                                 <div className="text-center">
                                   <div className="text-xs text-gray-500 mb-1">Quiz</div>
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                     {agent.averageScores.quizScore}
                                   </span>
                                 </div>
                                 <div className="text-center">
                                   <div className="text-xs text-gray-500 mb-1">Typing</div>
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
                                     {agent.averageScores.typingTestScore}
+                                  </span>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-xs text-gray-500 mb-1">AFRT</div>
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                    {agent.averageScores.afrt}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-4 gap-2">
+                                <div className="text-center">
+                                  <div className="text-xs text-gray-500 mb-1">ART</div>
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-pink-100 text-pink-800">
+                                    {agent.averageScores.art}
+                                  </span>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-xs text-gray-500 mb-1">RT</div>
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                    {agent.averageScores.rt}
+                                  </span>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-xs text-gray-500 mb-1">RR</div>
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">
+                                    {agent.averageScores.rr}
+                                  </span>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-xs text-gray-500 mb-1">CSAT</div>
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                    {agent.averageScores.csat}
                                   </span>
                                 </div>
                               </div>
@@ -437,12 +503,17 @@ export default function AchievementsPage() {
                               <table className="w-full border-collapse">
                                 <thead className="sticky top-0 z-10 bg-gradient-to-r from-[#03438f] to-[#0259b7]">
                                   <tr>
-                                    <th className="px-3 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-semibold text-white">Foto</th>
-                                    <th className="px-3 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-semibold text-white">Nama</th>
-                                    <th className="px-2 md:px-4 py-2 md:py-3 text-center text-xs md:text-sm font-semibold text-white">QA Score</th>
-                                    <th className="px-2 md:px-4 py-2 md:py-3 text-center text-xs md:text-sm font-semibold text-white">Quiz Score</th>
-                                    <th className="px-2 md:px-4 py-2 md:py-3 text-center text-xs md:text-sm font-semibold text-white">Typing Test</th>
-                                    <th className="px-3 md:px-4 py-2 md:py-3 text-center text-xs md:text-sm font-semibold text-white">Overall</th>
+                                    <th className="px-2 md:px-3 py-2 md:py-3 text-left text-xs font-semibold text-white">Foto</th>
+                                    <th className="px-2 md:px-3 py-2 md:py-3 text-left text-xs font-semibold text-white">Nama</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">QA</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">Quiz</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">Typing</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">AFRT</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">ART</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">RT</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">RR</th>
+                                    <th className="px-1 md:px-2 py-2 md:py-3 text-center text-xs font-semibold text-white">CSAT</th>
+                                    <th className="px-2 md:px-3 py-2 md:py-3 text-center text-xs font-semibold text-white">Overall</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -453,47 +524,72 @@ export default function AchievementsPage() {
                                         index < 3 ? 'bg-yellow-50/30' : ''
                                       }`}
                                     >
-                                      <td className="px-3 md:px-4 py-2 md:py-3">
+                                      <td className="px-2 md:px-3 py-2 md:py-3">
                                         {agent.foto ? (
-                                          <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden border-2 border-gray-200">
+                                          <div className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full overflow-hidden border-2 border-gray-200">
                                             <Image
                                               src={agent.foto}
                                               alt={agent.name}
-                                              width={96}
-                                              height={96}
+                                              width={56}
+                                              height={56}
                                               className="w-full h-full object-cover"
                                               quality={100}
                                               unoptimized
                                             />
                                           </div>
                                         ) : (
-                                          <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
-                                            <Trophy className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-gray-400" />
+                                          <div className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
+                                            <Trophy className="w-3 h-3 md:w-4 md:h-4 text-gray-400" />
                                           </div>
                                         )}
                                       </td>
-                                      <td className="px-3 md:px-4 py-2 md:py-3">
-                                        <div className="flex items-center space-x-2">
+                                      <td className="px-2 md:px-3 py-2 md:py-3">
+                                        <div className="flex items-center space-x-1 md:space-x-2">
                                           {index < 3 && <div className="flex-shrink-0">{getRankIcon(index + 1)}</div>}
-                                          <span className="font-medium text-gray-900 text-sm md:text-base">{agent.name}</span>
+                                          <span className="font-medium text-gray-900 text-xs md:text-sm">{agent.name}</span>
                                         </div>
                                       </td>
-                                      <td className="px-2 md:px-4 py-2 md:py-3 text-center">
-                                        <span className="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold bg-blue-100 text-blue-800">
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                                           {agent.averageScores.qaScore}
                                         </span>
                                       </td>
-                                      <td className="px-2 md:px-4 py-2 md:py-3 text-center">
-                                        <span className="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold bg-green-100 text-green-800">
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                           {agent.averageScores.quizScore}
                                         </span>
                                       </td>
-                                      <td className="px-2 md:px-4 py-2 md:py-3 text-center">
-                                        <span className="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold bg-purple-100 text-purple-800">
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
                                           {agent.averageScores.typingTestScore}
                                         </span>
                                       </td>
-                                      <td className="px-3 md:px-4 py-2 md:py-3 text-center">
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                          {agent.averageScores.afrt}
+                                        </span>
+                                      </td>
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-pink-100 text-pink-800">
+                                          {agent.averageScores.art}
+                                        </span>
+                                      </td>
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                          {agent.averageScores.rt}
+                                        </span>
+                                      </td>
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">
+                                          {agent.averageScores.rr}
+                                        </span>
+                                      </td>
+                                      <td className="px-1 md:px-2 py-2 md:py-3 text-center">
+                                        <span className="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                          {agent.averageScores.csat}
+                                        </span>
+                                      </td>
+                                      <td className="px-2 md:px-3 py-2 md:py-3 text-center">
                                         <span className="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-bold bg-gradient-to-r from-[#03438f] to-[#0259b7] text-white">
                                           {agent.overallScore}%
                                         </span>

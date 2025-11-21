@@ -8,25 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum ProductStatus {
-  NEW
-  REVAMP
-  DISCONTINUE
-  ACTIVE
-}
-
 model Brand {
   id              String           @id @default(cuid())
   name            String           @unique
   description     String?
-  images          String[]
-  link_sampul     String?
-  colorbase       String?          @default("#03438f")
-  createdBy       String?
-  updatedBy       String?
-  updateNotes     String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  images          String[]
+  createdBy       String?
+  updateNotes     String?
+  updatedBy       String?
+  colorbase       String?          @default("#03438f")
+  link_sampul     String?
   kategoriProduks KategoriProduk[]
   produks         Produk[]
 
@@ -37,16 +30,16 @@ model KategoriProduk {
   id                 String              @id @default(cuid())
   name               String
   description        String?
-  images             String[]
   brandId            String
-  createdBy             String?
-  updatedBy          String?
-  updateNotes        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+  images             String[]
+  createdBy          String?
+  updateNotes        String?
+  updatedBy          String?
   brand              Brand               @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  subkategoriProduks SubkategoriProduk[]
   produks            Produk[]            @relation("KategoriProdukToProduk")
+  subkategoriProduks SubkategoriProduk[]
 
   @@map("kategori_produks")
 }
@@ -55,13 +48,13 @@ model SubkategoriProduk {
   id               String         @id @default(cuid())
   name             String
   description      String?
-  images           String[]
   kategoriProdukId String
-  createdBy        String?
-  updatedBy        String?
-  updateNotes      String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  images           String[]
+  createdBy        String?
+  updateNotes      String?
+  updatedBy        String?
   produks          Produk[]
   kategoriProduk   KategoriProduk @relation(fields: [kategoriProdukId], references: [id], onDelete: Cascade)
 
@@ -69,24 +62,24 @@ model SubkategoriProduk {
 }
 
 model Produk {
-  id                  String            @id @default(cuid())
+  id                  String             @id @default(cuid())
   name                String
   description         String?
-  kapasitas           String?
-  harga               Decimal?          @db.Decimal(12, 2)
-  status              ProductStatus     @default(ACTIVE)
+  subkategoriProdukId String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
   images              String[]
-  brandId             String?           // opsional - relasi langsung ke brand
-  categoryId          String?           // opsional
-  subkategoriProdukId String?           // opsional
   createdBy           String?
-  updatedBy           String?
   updateNotes         String?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  updatedBy           String?
+  status              ProductStatus      @default(ACTIVE)
+  kapasitas           String?
+  harga               Decimal?           @db.Decimal(12, 2)
+  categoryId          String?
+  brandId             String?
   detailProduks       DetailProduk[]
-  brand               Brand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  kategoriProduk      KategoriProduk?   @relation("KategoriProdukToProduk", fields: [categoryId], references: [id], onDelete: Cascade)
+  brand               Brand?             @relation(fields: [brandId], references: [id])
+  kategoriProduk      KategoriProduk?    @relation("KategoriProdukToProduk", fields: [categoryId], references: [id], onDelete: Cascade)
   subkategoriProduk   SubkategoriProduk? @relation(fields: [subkategoriProdukId], references: [id], onDelete: Cascade)
 
   @@map("produks")
@@ -95,11 +88,11 @@ model Produk {
 model DetailProduk {
   id        String   @id @default(cuid())
   name      String
-  detail    String
-  images     String[]
   produkId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  images    String[]
+  detail    String
   produk    Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
 
   @@map("detail_produks")
@@ -120,10 +113,10 @@ model SOP {
   id            String      @id @default(cuid())
   name          String
   description   String?
-  link          String?
   kategoriSOPId String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  link          String?
   jenisSOPs     JenisSOP[]
   kategoriSOP   KategoriSOP @relation(fields: [kategoriSOPId], references: [id], onDelete: Cascade)
 
@@ -131,19 +124,19 @@ model SOP {
 }
 
 model JenisSOP {
-  id         String      @id @default(cuid())
-  name       String
-  content    String?
-  images     String[]
-  link       String?
-  sopId      String
-  createdBy  String?
-  updatedBy  String?
+  id          String      @id @default(cuid())
+  name        String
+  content     String?
+  sopId       String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  images      String[]
+  createdBy   String?
   updateNotes String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  detailSOPs DetailSOP[]
-  sop        SOP         @relation(fields: [sopId], references: [id], onDelete: Cascade)
+  updatedBy   String?
+  link        String?
+  detailSOPs  DetailSOP[]
+  sop         SOP         @relation(fields: [sopId], references: [id], onDelete: Cascade)
 
   @@map("jenis_sops")
 }
@@ -173,15 +166,15 @@ model User {
 }
 
 model Agent {
-  id        String   @id
-  name      String
-  email     String   @unique
-  password  String
-  foto      String?  // URL foto dari Supabase bucket foto_agent
-  category  String   @default("socialMedia")
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id
+  name         String
+  email        String        @unique
+  password     String
+  category     String        @default("socialMedia")
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  foto         String?
   performances Performance[]
 
   @@index([name])
@@ -193,15 +186,20 @@ model Agent {
 }
 
 model Performance {
-  id             String   @id @default(cuid())
-  agentId        String   @map("agent_id")
-  qaScore        Int      @default(0) @map("qa_score")
-  quizScore      Int      @default(0) @map("quiz_score")
-  typingTestScore Int     @default(0) @map("typing_test_score")
-  timestamp      DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  agent          Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  id              String   @id @default(cuid())
+  agentId         String   @map("agent_id")
+  qaScore         Int      @default(0) @map("qa_score")
+  quizScore       Int      @default(0) @map("quiz_score")
+  typingTestScore Int      @default(0) @map("typing_test_score")
+  timestamp       DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  afrt            Int      @default(0)
+  art             Int      @default(0)
+  csat            Int      @default(0)
+  rr              Int      @default(0)
+  rt              Int      @default(0)
+  agent           Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([agentId])
   @@index([timestamp])
@@ -213,12 +211,12 @@ model Knowledge {
   id               String            @id @default(cuid())
   title            String
   description      String?
-  logos            String[]
-  createdBy        String?
-  updatedBy        String?
-  updateNotes      String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+  createdBy        String?
+  updatedBy        String?
+  logos            String[]
+  updateNotes      String?
   detailKnowledges DetailKnowledge[]
 
   @@index([title])
@@ -227,63 +225,57 @@ model Knowledge {
 }
 
 model DetailKnowledge {
-  id                     String                        @id @default(cuid())
-  name                   String
-  description            String?
-  logos                  String[]
-  knowledgeId            String
-  createdAt              DateTime                      @default(now())
-  updatedAt              DateTime                      @updatedAt
-  knowledge              Knowledge                     @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
-  jenisDetailKnowledges  JenisDetailKnowledge[]
+  id                    String                 @id @default(cuid())
+  name                  String
+  knowledgeId           String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  description           String?
+  logos                 String[]
+  knowledge             Knowledge              @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  jenisDetailKnowledges JenisDetailKnowledge[]
 
   @@map("detail_knowledges")
 }
 
 model JenisDetailKnowledge {
-  id                          String                             @id @default(cuid())
+  id                          String                       @id @default(cuid())
   name                        String
   description                 String?
   logos                       String[]
   detailKnowledgeId           String
-  createdAt                   DateTime                           @default(now())
-  updatedAt                   DateTime                           @updatedAt
-  detailKnowledge             DetailKnowledge                    @relation(fields: [detailKnowledgeId], references: [id], onDelete: Cascade)
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  detailKnowledge             DetailKnowledge              @relation(fields: [detailKnowledgeId], references: [id], onDelete: Cascade)
   produkJenisDetailKnowledges ProdukJenisDetailKnowledge[]
 
   @@map("jenis_detail_knowledges")
 }
 
 model ProdukJenisDetailKnowledge {
-  id                      String                @id @default(cuid())
-  name                    String
-  description             String?
-  logos                   String[]
-  jenisDetailKnowledgeId  String
-  createdAt               DateTime              @default(now())
-  updatedAt               DateTime              @updatedAt
-  jenisDetailKnowledge    JenisDetailKnowledge  @relation(fields: [jenisDetailKnowledgeId], references: [id], onDelete: Cascade)
+  id                     String               @id @default(cuid())
+  name                   String
+  description            String?
+  logos                  String[]
+  jenisDetailKnowledgeId String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  jenisDetailKnowledge   JenisDetailKnowledge @relation(fields: [jenisDetailKnowledgeId], references: [id], onDelete: Cascade)
 
   @@map("produk_jenis_detail_knowledges")
 }
 
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  AGENT
-}
-
 model QualityTraining {
-  id                      String                   @id @default(cuid())
-  title                   String
-  description             String?
-  logos                   String[]
-  createdBy               String?
-  updatedBy               String?
-  updateNotes             String?
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  jenisQualityTrainings   JenisQualityTraining[]
+  id                    String                 @id @default(cuid())
+  title                 String
+  description           String?
+  logos                 String[]
+  createdBy             String?
+  updatedBy             String?
+  updateNotes           String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  jenisQualityTrainings JenisQualityTraining[]
 
   @@index([title])
   @@index([createdAt])
@@ -291,70 +283,69 @@ model QualityTraining {
 }
 
 model JenisQualityTraining {
-  id                   String             @id @default(cuid())
-  name                 String
-  description          String?
-  logos                String[]
-  qualityTrainingId    String
-  updatedBy            String?
-  updateNotes          String?
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  qualityTraining      QualityTraining    @relation(fields: [qualityTrainingId], references: [id], onDelete: Cascade)
+  id                     String                  @id @default(cuid())
+  name                   String
+  description            String?
+  logos                  String[]
+  qualityTrainingId      String
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  updateNotes            String?
+  updatedBy              String?
   detailQualityTrainings DetailQualityTraining[]
+  qualityTraining        QualityTraining         @relation(fields: [qualityTrainingId], references: [id], onDelete: Cascade)
 
   @@map("jenis_quality_trainings")
 }
 
 model DetailQualityTraining {
-  id                        String                 @id @default(cuid())
+  id                        String                     @id @default(cuid())
   name                      String
   description               String?
-  linkslide                 String?
-  updatedBy                 String?
-  updateNotes               String?
   logos                     String[]
   jenisQualityTrainingId    String
-  createdAt                 DateTime               @default(now())
-  updatedAt                 DateTime               @updatedAt
-  jenisQualityTraining      JenisQualityTraining   @relation(fields: [jenisQualityTrainingId], references: [id], onDelete: Cascade)
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  linkslide                 String?
+  updateNotes               String?
+  updatedBy                 String?
+  jenisQualityTraining      JenisQualityTraining       @relation(fields: [jenisQualityTrainingId], references: [id], onDelete: Cascade)
   subdetailQualityTrainings SubdetailQualityTraining[]
 
   @@map("detail_quality_trainings")
 }
 
 model SubdetailQualityTraining {
-  id                       String                 @id @default(cuid())
-  name                     String
-  description              String?
-  updatedBy                String?
-  updateNotes              String?
-  logos                    String[]
-  detailQualityTrainingId  String
-  createdAt                DateTime               @default(now())
-  updatedAt                DateTime               @updatedAt
-  detailQualityTraining    DetailQualityTraining  @relation(fields: [detailQualityTrainingId], references: [id], onDelete: Cascade)
+  id                      String                @id @default(cuid())
+  name                    String
+  description             String?
+  logos                   String[]
+  detailQualityTrainingId String
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  updateNotes             String?
+  updatedBy               String?
+  detailQualityTraining   DetailQualityTraining @relation(fields: [detailQualityTrainingId], references: [id], onDelete: Cascade)
 
   @@map("subdetail_quality_trainings")
 }
 
 model TracerUpdate {
   id                String   @id @default(cuid())
-  sourceTable       String   @map("source_table")
-  sourceKey         String   @map("source_key")
-  fieldName         String   @map("field_name")
-  oldValue          String?  @db.Text @map("old_value")
-  newValue          String?  @db.Text @map("new_value")
-  actionType        String   @map("action_type") // INSERT, UPDATE, DELETE
+  actionType        String   @map("action_type")
   changedAt         DateTime @default(now()) @map("changed_at")
   changedBy         String?  @map("changed_by")
-  // Related IDs untuk query yang lebih efisien
+  fieldName         String   @map("field_name")
+  newValue          String?  @map("new_value")
+  oldValue          String?  @map("old_value")
+  sourceKey         String   @map("source_key")
+  sourceTable       String   @map("source_table")
   brandId           String?  @map("brand_id")
   categoryId        String?  @map("category_id")
-  subcategoryId     String?  @map("subcategory_id")
   knowledgeId       String?  @map("knowledge_id")
-  sopId             String?  @map("sop_id")
   qualityTrainingId String?  @map("quality_training_id")
+  sopId             String?  @map("sop_id")
+  subcategoryId     String?  @map("subcategory_id")
 
   @@index([sourceTable])
   @@index([sourceKey])
@@ -367,4 +358,17 @@ model TracerUpdate {
   @@index([sopId])
   @@index([qualityTrainingId])
   @@map("tracer_updates")
+}
+
+enum ProductStatus {
+  NEW
+  REVAMP
+  DISCONTINUE
+  ACTIVE
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  AGENT
 }

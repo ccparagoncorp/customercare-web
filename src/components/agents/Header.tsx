@@ -54,15 +54,6 @@ export function Header() {
         
         const newUnreadCount = unreadNotifications.length
         setUnreadCount(newUnreadCount)
-        
-        // Debug logging (can be removed later)
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Unread count updated:', {
-            totalNotifications: notifications.length,
-            readIds: readIds.length,
-            unreadCount: newUnreadCount
-          })
-        }
       } else {
         // If API fails, set to 0
         setUnreadCount(0)
@@ -114,7 +105,12 @@ export function Header() {
       if (!user?.id) return
 
       try {
-        const response = await fetch(`/api/agent/profile?userId=${user.id}`)
+        const response = await fetch(`/api/agent/profile?userId=${user.id}&t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
         if (response.ok) {
           const data = await response.json()
           if (data.foto) {

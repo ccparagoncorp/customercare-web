@@ -121,7 +121,6 @@ export default function SkinKnowledgePage() {
               priority={false}
               unoptimized={true}
               onError={(e) => {
-                console.log('Image failed to load:', logos);
                 const target = e.target as HTMLImageElement;
                 const fallback = target.parentElement?.querySelector('.fallback-image') as HTMLElement;
                 if (fallback) {
@@ -273,11 +272,7 @@ export default function SkinKnowledgePage() {
                         className="object-contain"
                         priority={true}
                         unoptimized={true}
-                        onLoad={() => {
-                          console.log('Image loaded successfully:', knowledge.logos[0]);
-                        }}
                         onError={(e) => {
-                          console.log('Image failed to load:', knowledge.logos[0]);
                           const target = e.target as HTMLImageElement;
                           const fallback = target.parentElement?.querySelector('.fallback-image') as HTMLElement;
                           if (fallback) {

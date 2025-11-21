@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/components/auth/AuthProvider"
-import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft, Edit, Lock } from "lucide-react"
+import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft, Edit, Lock, RefreshCw } from "lucide-react"
 import Image from "next/image"
 
 interface Performance {
@@ -13,6 +13,11 @@ interface Performance {
   qaScore: number
   quizScore: number
   typingTestScore: number
+  afrt: number
+  art: number
+  rt: number
+  rr: number
+  csat: number
   timestamp: string
 }
 
@@ -30,6 +35,11 @@ interface AgentProfile {
     qaScore: number
     quizScore: number
     typingTestScore: number
+    afrt: number
+    art: number
+    rt: number
+    rr: number
+    csat: number
   }
 }
 
@@ -46,6 +56,7 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const hasFetchedRef = useRef(false)
   const currentUserIdRef = useRef<string | null>(null)
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
   // Edit profile modal states
   const [showEditModal, setShowEditModal] = useState(false)
@@ -58,6 +69,7 @@ export default function ProfilePage() {
     confirmPassword: ''
   })
   const [editError, setEditError] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     // Skip if already have profile data
@@ -79,14 +91,21 @@ export default function ProfilePage() {
       return
     }
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (skipLoading = false) => {
       try {
-        setLoading(true)
+        if (!skipLoading) {
+          setLoading(true)
+        }
         setError(null)
         hasFetchedRef.current = true
         currentUserIdRef.current = user.id
 
-        const response = await fetch(`/api/agent/profile?userId=${user.id}`)
+        const response = await fetch(`/api/agent/profile?userId=${user.id}&t=${Date.now()}`, {
+          cache: 'no-store', // Always fetch fresh data
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
         
         if (!response.ok) {
           if (response.status === 401 || response.status === 404) {
@@ -117,6 +136,19 @@ export default function ProfilePage() {
     }
 
     fetchProfile()
+
+    // Auto-refresh every 30 seconds to get latest performance data
+    refreshIntervalRef.current = setInterval(() => {
+      if (user?.id) {
+        fetchProfile(true) // Refresh in background without showing loading
+      }
+    }, 30000) // 30 seconds
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]) // Only depend on user.id - profile is checked via ref
 
@@ -536,8 +568,37 @@ export default function ProfilePage() {
 
                 {/* Performance Summary */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Ringkasan Performa</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900">Ringkasan Performa</h3>
+                    <button
+                      onClick={async () => {
+                        setRefreshing(true)
+                        try {
+                          const response = await fetch(`/api/agent/profile?userId=${user?.id}&t=${Date.now()}`, {
+                            cache: 'no-store',
+                            headers: {
+                              'Cache-Control': 'no-cache'
+                            }
+                          })
+                          if (response.ok) {
+                            const data = await response.json()
+                            setProfile(data)
+                          }
+                        } catch (err) {
+                          console.error('Error refreshing profile:', err)
+                        } finally {
+                          setRefreshing(false)
+                        }
+                      }}
+                      disabled={refreshing}
+                      className="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Refresh data"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-gray-600">QA Score</span>
@@ -562,6 +623,46 @@ export default function ProfilePage() {
                       <p className="text-3xl font-bold text-purple-600">{profile.averageScores.typingTestScore}</p>
                       <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
                     </div>
+                    <div className="bg-orange-50 rounded-lg p-6 border border-orange-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">AFRT</span>
+                        <TrendingUp className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <p className="text-3xl font-bold text-orange-600">{profile.averageScores.afrt}</p>
+                      <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
+                    </div>
+                    <div className="bg-pink-50 rounded-lg p-6 border border-pink-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">ART</span>
+                        <TrendingUp className="w-5 h-5 text-pink-600" />
+                      </div>
+                      <p className="text-3xl font-bold text-pink-600">{profile.averageScores.art}</p>
+                      <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
+                    </div>
+                    <div className="bg-indigo-50 rounded-lg p-6 border border-indigo-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">RT</span>
+                        <TrendingUp className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <p className="text-3xl font-bold text-indigo-600">{profile.averageScores.rt}</p>
+                      <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
+                    </div>
+                    <div className="bg-teal-50 rounded-lg p-6 border border-teal-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">RR</span>
+                        <TrendingUp className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <p className="text-3xl font-bold text-teal-600">{profile.averageScores.rr}</p>
+                      <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
+                    </div>
+                    <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">CSAT</span>
+                        <TrendingUp className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <p className="text-3xl font-bold text-yellow-600">{profile.averageScores.csat}</p>
+                      <p className="text-xs text-gray-500 mt-1">Rata-rata dari {profile.performances.length} penilaian</p>
+                    </div>
                   </div>
                 </div>
 
@@ -573,31 +674,61 @@ export default function ProfilePage() {
                       <table className="w-full">
                         <thead>
                           <tr className="border-b border-gray-200">
-                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Tanggal</th>
-                            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">QA Score</th>
-                            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Quiz Score</th>
-                            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Typing Test</th>
+                            <th className="text-left py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">Tanggal</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">QA</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">Quiz</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">Typing</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">AFRT</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">ART</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">RT</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">RR</th>
+                            <th className="text-center py-3 px-2 text-xs sm:text-sm font-semibold text-gray-700">CSAT</th>
                           </tr>
                         </thead>
                         <tbody>
                           {profile.performances.map((performance) => (
                             <tr key={performance.id} className="border-b border-gray-100 hover:bg-gray-50">
-                              <td className="py-3 px-4 text-sm text-gray-900">
+                              <td className="py-3 px-2 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
                                 {formatDate(performance.timestamp)}
                               </td>
-                              <td className="py-3 px-4 text-sm text-center">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                   {performance.qaScore}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-sm text-center">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                   {performance.quizScore}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-sm text-center">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                   {performance.typingTestScore}
+                                </span>
+                              </td>
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                  {performance.afrt}
+                                </span>
+                              </td>
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                  {performance.art}
+                                </span>
+                              </td>
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                  {performance.rt}
+                                </span>
+                              </td>
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                                  {performance.rr}
+                                </span>
+                              </td>
+                              <td className="py-3 px-2 text-xs sm:text-sm text-center">
+                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                  {performance.csat}
                                 </span>
                               </td>
                             </tr>

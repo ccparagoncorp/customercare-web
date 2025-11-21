@@ -7,7 +7,6 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    console.log('API received data:', data); // Debug log
 
     const name = String(data.name || '').trim();
     const email = String(data.email || '').trim();
@@ -16,8 +15,6 @@ export async function POST(request: Request) {
     const role = String(data.role || '').trim();
     const source = String(data.source || 'contact-form').trim() as 'contact-form' | 'feedback-widget' | 'improvement-form';
     const rating = data.rating ? Number(data.rating) : undefined;
-
-    console.log('Processed fields:', { name, email, subject, role, messageLength: message.length, source, rating }); // Debug log
 
     // Validation - improvement form doesn't require email to be valid
     if (source === 'improvement-form') {
@@ -50,10 +47,6 @@ export async function POST(request: Request) {
     if (!host || !user || !pass || !to) {
       return NextResponse.json({ ok: false, error: 'Email not configured' }, { status: 500 });
     }
-
-    // For development/testing - log the email instead of sending if SMTP fails
-    console.log('Email would be sent to:', to);
-    console.log('Email content:', { from, subject: `[Feedback] ${subject}`, name, email, message });
 
     const transporter = nodemailer.createTransport({
       host,
@@ -119,15 +112,6 @@ export async function POST(request: Request) {
     } catch (smtpError) {
       console.error('SMTP Error:', smtpError);
       // Fallback: still return success but log the email and try to save to Google Sheets
-      console.log('Email saved to logs (SMTP failed):', {
-        to,
-        from,
-        subject: `[Feedback] ${subject}`,
-        name,
-        email,
-        message,
-        timestamp: new Date().toISOString()
-      });
 
       // Try to save to Google Sheets even if email fails
       const feedbackData: FeedbackData = {
@@ -148,7 +132,7 @@ export async function POST(request: Request) {
       }, { status: 200 });
     }
   } catch (e) {
-    console.error('API Error:', e); // Debug log
+    console.error('API Error:', e);
     return NextResponse.json({ 
       ok: false, 
       error: e instanceof Error ? e.message : 'Unknown error' 

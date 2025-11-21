@@ -47,7 +47,6 @@ export async function saveToGoogleSheets(data: FeedbackData): Promise<void> {
   const config = getGoogleSheetsConfig(data.source);
   
   if (!config.sheetId || !config.serviceAccountEmail || !config.privateKey) {
-    console.log(`Google Sheets not configured for ${data.source}, skipping...`);
     return;
   }
 
@@ -115,7 +114,6 @@ export async function saveToGoogleSheets(data: FeedbackData): Promise<void> {
           values,
         },
       });
-      console.log(`Data successfully saved to Google Sheets row 2 (${data.source})`);
     } else {
       // Row 2 has data, append to the end
       const rangeAppend = data.source === 'improvement-form' ? 'A:F' : 'A:G';
@@ -127,7 +125,6 @@ export async function saveToGoogleSheets(data: FeedbackData): Promise<void> {
           values,
         },
       });
-      console.log(`Data successfully saved to Google Sheets (${data.source})`);
     }
   } catch (error) {
     console.error(`Error saving to Google Sheets (${data.source}):`, error);
@@ -205,8 +202,6 @@ async function initializeSheet(
           values: [headers],
         },
       });
-
-      console.log(`Google Sheets headers initialized (${type})`);
     }
   } catch (error) {
     console.error(`Error initializing Google Sheet (${type}):`, error);
