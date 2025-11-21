@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowLeft, Package, History } from "lucide-react"
 import { generateColorPalette } from "@/lib/colorUtils"
 import Link from "next/link"

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
-import { Trophy, Medal, Award, TrendingUp, FileText, Clock, ArrowLeft, Calendar } from "lucide-react"
+import { Trophy, Medal, Award, ArrowLeft, Calendar } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 

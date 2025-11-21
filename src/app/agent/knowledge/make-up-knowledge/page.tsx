@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Search, Image as ImageIcon, History } from "lucide-react"
+import { Edit3, FileText, BookOpen, ChevronUp, ChevronDown, Image as ImageIcon, History } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import makeupContent from "@/content/agent/knowledge/makeup.json"

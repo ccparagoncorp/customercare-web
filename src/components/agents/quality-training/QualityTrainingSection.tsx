@@ -1,6 +1,5 @@
 "use client"
 
-import { useRef } from "react"
 import Image from "next/image"
 import { ChevronUp, ChevronDown, ExternalLink, Check, X } from "lucide-react"
 import { JenisQualityTraining, DetailQualityTraining } from "./types"

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPrismaClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
+import bcrypt from 'bcryptjs'
 
 export async function GET(request: NextRequest) {
   try {
@@ -153,8 +155,7 @@ export async function PUT(request: NextRequest) {
         )
       }
 
-      // Import Supabase admin for password update
-      const { createClient } = require('@supabase/supabase-js')
+      // Use Supabase admin for password update
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
       const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -196,7 +197,6 @@ export async function PUT(request: NextRequest) {
         }
       } else {
         // If Supabase is not configured, update in database directly (fallback)
-        const bcrypt = require('bcryptjs')
         const hashedPassword = await bcrypt.hash(newPassword, 10)
         await prisma.agent.update({
           where: { id: userId },
@@ -214,7 +214,6 @@ export async function PUT(request: NextRequest) {
 
       // If email was updated, also update in Supabase Auth
       if (updateData.email) {
-        const { createClient } = require('@supabase/supabase-js')
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
         const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 

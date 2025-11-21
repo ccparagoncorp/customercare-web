@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ChevronRight, ArrowLeft, FileText, ListChecks, ExternalLink } from "lucide-react"
+import { ChevronRight, ArrowLeft, FileText, ListChecks } from "lucide-react"
 import sopContent from "@/content/agent/sop.json"
 import { TracerButton } from "../TracerButton"
 

@@ -1,6 +1,5 @@
 import { FileText, ChevronRight, Shield } from "lucide-react"
 import { JenisQualityTraining } from "./types"
-import { createSlug } from "./utils"
 
 interface QAAgentCardsProps {
   jenisQualityTrainings: JenisQualityTraining[]

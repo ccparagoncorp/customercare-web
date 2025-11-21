@@ -24,7 +24,6 @@ type LoginFormData = z.infer<typeof loginSchema>
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
   const { login: authLogin } = useAuth()

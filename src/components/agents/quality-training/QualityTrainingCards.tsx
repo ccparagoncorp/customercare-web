@@ -1,6 +1,5 @@
 import { FileText, ChevronRight, ClipboardList } from "lucide-react"
 import { JenisQualityTraining } from "./types"
-import { createSlug } from "./utils"
 
 interface QualityTrainingCardsProps {
   jenisQualityTrainings: JenisQualityTraining[]
