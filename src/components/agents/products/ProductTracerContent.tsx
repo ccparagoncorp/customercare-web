@@ -67,17 +67,14 @@ export function ProductTracerContent({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex gap-4">
         <Link
-          href={backUrl}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          href={`/agent/products/${slugify(brandName)}`}
+          className="p-2 flex items-center gap-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <span className="text-sm text-gray-600 font-medium">Back</span>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tracer Updates - {product.name}</h1>
-          <p className="text-gray-500 mt-1">View all updates for this product</p>
-        </div>
       </div>
 
       <TracerUpdateDisplay 

@@ -11,7 +11,7 @@ interface DashboardLayoutProps {
 export function Layout({ children }: DashboardLayoutProps) {
   return (
     <div>
-      <div className="min-h-screen bg-[#d6e5ff]">
+      <div className="min-h-screen bg-gradient-to-br from-[#d6e5ff] via-white to-[#e8f0ff]">
         {/* Sidebar */}
         <Sidebar isOpen={false} onToggle={() => {}} />
         

@@ -44,24 +44,21 @@ export function BrandTracerContent({ brandName }: BrandTracerContentProps) {
   const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-')
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-4 mt-3">
+      <div className="flex gap-4">
         <Link
           href={`/agent/products/${slugify(brandName)}`}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 flex items-center gap-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <span className="text-sm text-gray-600 font-medium">Back</span>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tracer Updates - {brand.name}</h1>
-          <p className="text-gray-500 mt-1">View all updates for this brand</p>
-        </div>
       </div>
 
-      <TracerUpdateDisplay 
-        brandId={brand.id}
-        title={`Tracer Updates for ${brand.name}`}
-      />
+        <TracerUpdateDisplay 
+          brandId={brand.id}
+          title={`Tracer Updates for ${brand.name}`}
+          />
     </div>
   )
 }

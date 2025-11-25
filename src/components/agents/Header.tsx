@@ -23,20 +23,24 @@ export function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const hasFetchedFotoRef = useRef(false)
   
-  // Fetch unread notification count
+  // Fetch unread announcement count
   const fetchUnreadCount = useCallback(async () => {
     try {
-      // Fetch recent notifications (last 100)
-      const response = await fetch('/api/notifications?limit=100')
+      // Fetch recent announcements (last 100)
+      const response = await fetch(`/api/announcements?limit=100&t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       if (response.ok) {
         const data = await response.json()
-        const notifications = data.notifications || []
+        const announcements = data.announcements || []
         
-        // Get read notification IDs from localStorage
-        // Use try-catch in case localStorage is not available
+        // Get read announcement IDs from localStorage
         let readIds: string[] = []
         try {
-          const readIdsStr = localStorage.getItem('readNotifications')
+          const readIdsStr = localStorage.getItem('readAnnouncements')
           if (readIdsStr) {
             readIds = JSON.parse(readIdsStr) as string[]
           }
@@ -45,31 +49,27 @@ export function Header() {
           readIds = []
         }
         
-        // Count only unread notifications from the recent ones
-        // Use Set for faster lookup
+        // Count only unread announcements from the recent ones
         const readIdsSet = new Set(readIds)
-        const unreadNotifications = notifications.filter(
-          (notif: { id: string }) => !readIdsSet.has(notif.id)
+        const unreadAnnouncements = announcements.filter(
+          (announcement: { id: string }) => !readIdsSet.has(announcement.id)
         )
         
-        const newUnreadCount = unreadNotifications.length
+        const newUnreadCount = unreadAnnouncements.length
         setUnreadCount(newUnreadCount)
       } else {
-        // If API fails, set to 0
         setUnreadCount(0)
       }
     } catch (error) {
       console.error('Error fetching unread count:', error)
-      // Set to 0 on error to avoid showing stale count
       setUnreadCount(0)
     }
   }, [])
 
-  // Listen for storage events to update unread count when notifications are marked as read
+  // Listen for storage events to update unread count when announcements are marked as read
   useEffect(() => {
-    // Listen for custom event when notifications are marked as read
-    const handleNotificationsUpdated = () => {
-      // Add delay to ensure localStorage is updated first
+    // Listen for custom event when announcements are marked as read
+    const handleAnnouncementsUpdated = () => {
       setTimeout(() => {
         fetchUnreadCount()
       }, 300)
@@ -77,19 +77,18 @@ export function Header() {
     
     // Listen for storage events (in case localStorage changes from other tabs)
     const handleStorageChange = (e: StorageEvent) => {
-      // Only react to changes to readNotifications
-      if (e.key === 'readNotifications') {
+      if (e.key === 'readAnnouncements') {
         setTimeout(() => {
           fetchUnreadCount()
         }, 100)
       }
     }
     
-    window.addEventListener('notifications-updated', handleNotificationsUpdated)
+    window.addEventListener('announcements-updated', handleAnnouncementsUpdated)
     window.addEventListener('storage', handleStorageChange)
     
     return () => {
-      window.removeEventListener('notifications-updated', handleNotificationsUpdated)
+      window.removeEventListener('announcements-updated', handleAnnouncementsUpdated)
       window.removeEventListener('storage', handleStorageChange)
     }
   }, [fetchUnreadCount])
