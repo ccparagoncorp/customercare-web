@@ -53,6 +53,14 @@ export async function GET(request: NextRequest) {
       rt: number
       rr: number
       csat: number
+      qaScoreRemarks?: string | null
+      quizScoreRemarks?: string | null
+      typingTestScoreRemarks?: string | null
+      afrtRemarks?: string | null
+      artRemarks?: string | null
+      rtRemarks?: string | null
+      rrRemarks?: string | null
+      csatRemarks?: string | null
       id: string
       timestamp: Date | string
       [key: string]: unknown
@@ -65,6 +73,13 @@ export async function GET(request: NextRequest) {
         return value !== undefined && value !== null ? Number(value) : 0
       }
       return 0
+    }
+    const getRemarks = (p: PerformanceData | unknown, field: string): string | null => {
+      if (p && typeof p === 'object' && field in p) {
+        const value = (p as Record<string, unknown>)[field]
+        return typeof value === 'string' && value.trim().length > 0 ? value : null
+      }
+      return null
     }
     const avgQAScore = performances.length > 0
       ? Math.round(performances.reduce((sum: number, p: PerformanceData) => sum + getField(p, 'qaScore'), 0) / performances.length)
@@ -97,6 +112,9 @@ export async function GET(request: NextRequest) {
       id: agent.id,
       name: agent.name,
       email: agent.email,
+      nip: agent.nip ?? null,
+      tl: agent.tl ?? null,
+      qa: agent.qa ?? null,
       foto: agent.foto,
       category: agent.category,
       isActive: agent.isActive,
@@ -112,6 +130,14 @@ export async function GET(request: NextRequest) {
         rt: getField(p, 'rt'),
         rr: getField(p, 'rr'),
         csat: getField(p, 'csat'),
+          qaScoreRemarks: getRemarks(p, 'qaScoreRemarks'),
+          quizScoreRemarks: getRemarks(p, 'quizScoreRemarks'),
+          typingTestScoreRemarks: getRemarks(p, 'typingTestScoreRemarks'),
+          afrtRemarks: getRemarks(p, 'afrtRemarks'),
+          artRemarks: getRemarks(p, 'artRemarks'),
+          rtRemarks: getRemarks(p, 'rtRemarks'),
+          rrRemarks: getRemarks(p, 'rrRemarks'),
+          csatRemarks: getRemarks(p, 'csatRemarks'),
         timestamp: p.timestamp ? new Date(p.timestamp).toISOString() : new Date().toISOString()
       })),
       averageScores: {

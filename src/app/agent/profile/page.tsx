@@ -5,19 +5,27 @@ import { useRouter } from "next/navigation"
 import { Layout } from "@/components/agents/dashboard"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/components/auth/AuthProvider"
-import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft, Edit, Lock, RefreshCw } from "lucide-react"
+import { User, Mail, Calendar, Award, TrendingUp, FileText, Clock, Camera, X, Upload, ArrowLeft, Edit, Lock, RefreshCw, IdCard, UserCircle, ShieldCheck } from "lucide-react"
 import Image from "next/image"
 
 interface Performance {
   id: string
   qaScore: number
+  qaScoreRemarks?: string | null
   quizScore: number
+  quizScoreRemarks?: string | null
   typingTestScore: number
+  typingTestScoreRemarks?: string | null
   afrt: number
+  afrtRemarks?: string | null
   art: number
+  artRemarks?: string | null
   rt: number
+  rtRemarks?: string | null
   rr: number
+  rrRemarks?: string | null
   csat: number
+  csatRemarks?: string | null
   timestamp: string
 }
 
@@ -26,6 +34,9 @@ interface AgentProfile {
   name: string
   email: string
   foto: string | null
+  nip: string | null
+  tl: string | null
+  qa: string | null
   category: string
   isActive: boolean
   createdAt: string
@@ -166,6 +177,23 @@ export default function ProfilePage() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ')
   }
+
+  const renderScoreCell = (
+    value: number,
+    colorClasses: string,
+    remarks?: string | null
+  ) => (
+    <div className="flex flex-col items-center text-center">
+      <span className={`inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses}`}>
+        {value}
+      </span>
+      {remarks ? (
+        <span className="mt-1 text-[10px] leading-tight text-gray-500 break-words max-w-[140px]">
+          {remarks}
+        </span>
+      ) : null}
+    </div>
+  )
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -556,6 +584,27 @@ export default function ProfilePage() {
                         <p className="text-gray-900 font-medium">{formatCategory(profile.category)}</p>
                       </div>
                     </div>
+                  <div className="flex items-start space-x-3">
+                    <IdCard className="w-5 h-5 text-gray-400 mt-1" />
+                    <div>
+                      <p className="text-sm text-gray-500">NIP</p>
+                      <p className="text-gray-900 font-medium">{profile.nip || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <UserCircle className="w-5 h-5 text-gray-400 mt-1" />
+                    <div>
+                      <p className="text-sm text-gray-500">Team Leader (TL)</p>
+                      <p className="text-gray-900 font-medium">{profile.tl || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <ShieldCheck className="w-5 h-5 text-gray-400 mt-1" />
+                    <div>
+                      <p className="text-sm text-gray-500">Quality Analyst (QA)</p>
+                      <p className="text-gray-900 font-medium">{profile.qa || '-'}</p>
+                    </div>
+                  </div>
                     <div className="flex items-start space-x-3">
                       <Calendar className="w-5 h-5 text-gray-400 mt-1" />
                       <div>
@@ -692,44 +741,28 @@ export default function ProfilePage() {
                                 {formatDate(performance.timestamp)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  {performance.qaScore}
-                                </span>
+                                {renderScoreCell(performance.qaScore, 'bg-blue-100 text-blue-800', performance.qaScoreRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                  {performance.quizScore}
-                                </span>
+                                {renderScoreCell(performance.quizScore, 'bg-green-100 text-green-800', performance.quizScoreRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                  {performance.typingTestScore}
-                                </span>
+                                {renderScoreCell(performance.typingTestScore, 'bg-purple-100 text-purple-800', performance.typingTestScoreRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                  {performance.afrt}
-                                </span>
+                                {renderScoreCell(performance.afrt, 'bg-orange-100 text-orange-800', performance.afrtRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                                  {performance.art}
-                                </span>
+                                {renderScoreCell(performance.art, 'bg-pink-100 text-pink-800', performance.artRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                  {performance.rt}
-                                </span>
+                                {renderScoreCell(performance.rt, 'bg-indigo-100 text-indigo-800', performance.rtRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
-                                  {performance.rr}
-                                </span>
+                                {renderScoreCell(performance.rr, 'bg-teal-100 text-teal-800', performance.rrRemarks)}
                               </td>
                               <td className="py-3 px-2 text-xs sm:text-sm text-center">
-                                <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                  {performance.csat}
-                                </span>
+                                {renderScoreCell(performance.csat, 'bg-yellow-100 text-yellow-800', performance.csatRemarks)}
                               </td>
                             </tr>
                           ))}

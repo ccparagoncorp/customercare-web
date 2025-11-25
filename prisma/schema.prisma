@@ -175,6 +175,9 @@ model Agent {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   foto         String?
+  nip          String?
+  qa           String?
+  tl           String?
   performances Performance[]
 
   @@index([name])
@@ -186,20 +189,28 @@ model Agent {
 }
 
 model Performance {
-  id              String   @id @default(cuid())
-  agentId         String   @map("agent_id")
-  qaScore         Int      @default(0) @map("qa_score")
-  quizScore       Int      @default(0) @map("quiz_score")
-  typingTestScore Int      @default(0) @map("typing_test_score")
-  timestamp       DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  afrt            Int      @default(0)
-  art             Int      @default(0)
-  csat            Int      @default(0)
-  rr              Int      @default(0)
-  rt              Int      @default(0)
-  agent           Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  id                     String   @id @default(cuid())
+  agentId                String   @map("agent_id")
+  qaScore                Int      @default(0) @map("qa_score")
+  quizScore              Int      @default(0) @map("quiz_score")
+  typingTestScore        Int      @default(0) @map("typing_test_score")
+  timestamp              DateTime @default(now())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  afrt                   Int      @default(0)
+  art                    Int      @default(0)
+  csat                   Int      @default(0)
+  rr                     Int      @default(0)
+  rt                     Int      @default(0)
+  afrtRemarks            String?
+  artRemarks             String?
+  csatRemarks            String?
+  qaScoreRemarks         String?
+  quizScoreRemarks       String?
+  rrRemarks              String?
+  rtRemarks              String?
+  typingTestScoreRemarks String?
+  agent                  Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([agentId])
   @@index([timestamp])
